@@ -1,0 +1,46 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.CompileOnBackground=0
+Compilator.ProgSaveAll=0
+Compilator.ProgRunSelection=0
+Compilator.LogType=0
+Compilator.LogEncoding=0
+DefaultDir=C:\YellowPrinter\trial_espnow
+DefaultCP=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+Extensions=*.*
+[Project tree]
+trial_espnow
+	+trial_espnow
+		-CYD_GetPrint
+			CYD_GetPrint\CYD_GetPrint.ino
+		-ESP_NOW_Broadcast_Master
+			ESP_NOW_Broadcast_Master\ci.yml
+			ESP_NOW_Broadcast_Master\ESP_NOW_Broadcast_Master.ino
+		-ESP_NOW_Broadcast_Slave
+			ESP_NOW_Broadcast_Slave\ci.yml
+			ESP_NOW_Broadcast_Slave\ESP_NOW_Broadcast_Slave.ino
+		+ESP_NOW_Serial
+			ESP_NOW_Serial\ci.yml
+			ESP_NOW_Serial\ESP_NOW_Serial.ino
+		+GetMac
+			GetMac\GetMac.ino
+		trial_espnow.md
+		trial_espnow.ppr
+[Open project files]
+0=GetMac\GetMac.ino
+1=ESP_NOW_Serial\ESP_NOW_Serial.ino
+[Selected Project Files]
+Main=
+Selected=GetMac\GetMac.ino
+[GetMac\GetMac.ino]
+TopLine=15
+Caret=12,22
+[ESP_NOW_Serial\ESP_NOW_Serial.ino]
+TopLine=39
+Caret=1,1
