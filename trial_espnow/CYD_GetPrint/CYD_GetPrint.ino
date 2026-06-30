@@ -14,6 +14,9 @@
 
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
+#include <TFT_eSPI_Scroll.h>
+#include <4bit.h>
+TFT_eSPI_Scroll scroll;
 
 // 0: AP mode, 1: Station mode
 #define ESPNOW_WIFI_MODE_STATION 1
@@ -35,7 +38,8 @@ TFT_eSPI tft = TFT_eSPI();
 */
 
 // Устанавливаем MAC-адрес устройства c которого будут поступать данные
-const MacAddress peer_mac({0x94, 0x54, 0xC5, 0xA8, 0x21, 0x9C}); // AI Thinker ESP32-CAM 8
+const MacAddress peer_mac({0xF8, 0xB3, 0xB7, 0xA7, 0xE1, 0x18}); // AI Thinker ESP32-CAM 6
+// const MacAddress peer_mac({0x94, 0x54, 0xC5, 0xA8, 0x21, 0x9C}); // AI Thinker ESP32-CAM 8
 // Определяем объект для приема данных по ESP_NOW
 ESP_NOW_Serial_Class NowSerial(peer_mac, ESPNOW_WIFI_CHANNEL, ESPNOW_WIFI_IF);
 
@@ -58,6 +62,14 @@ void setup()
   tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
 
+  // Initializing the tft_espi_scroll int 1bit B/W
+  if(scroll.init(&tft, 4) != NO_ERROR)
+  {
+    Serial.println("Failed... Reseting...");        
+    return;
+  }
+
+
   // инициализация SPIFFS
   if (!SPIFFS.begin()) 
   {
@@ -65,9 +77,10 @@ void setup()
   }  
 
   //tft.loadFont("nasalization48"); // загрузка в память шрифта
-  tft.loadFont("HuaweiSans16");     // загрузка в память шрифта
+  //tft.loadFont("HuaweiSans16");     // загрузка в память шрифта
   tft.setCursor(0,0);
-  tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+  tft.setTextSize(1);           // размер текста - №1
+  //tft.setTextColor(TFT_ORANGE, TFT_BLACK);
   //tft.println("ВНИМАНИЕ!");
   //tft.unloadFont();                 // выгрузка шрифта из памяти
 
@@ -102,56 +115,76 @@ void setup()
 void say(char mess[])
 {
   Serial.print(mess);
-  tft.print(mess);
+  //tft.print(mess);
+  scroll.write(mess);
+  yield(); 
 }
 void sayln(char mess[])
 {
   Serial.println(mess);
-  tft.println(mess);
+  //tft.println(mess);
+  scroll.write(String(mess));
+  yield(); 
 }
 
 void say(const char mess[])
 {
   Serial.print(mess);
-  tft.print(mess);
+  //tft.print(mess);
+  scroll.write(String(mess));
+  yield(); 
 }
 void sayln(const char mess[])
 {
   Serial.println(mess);
-  tft.println(mess);
+  //tft.println(mess);
+  scroll.write(String(mess));
+  yield(); 
 }
 
 void say(int mess)
 {
   Serial.print(mess);
-  tft.print(mess);
+  //tft.print(mess);
+  scroll.write(String(mess));
+  yield(); 
 }
 void sayln(int mess)
 {
   Serial.println(mess);
-  tft.println(mess);
+  //tft.println(mess);
+  scroll.write(String(mess));
+  yield(); 
 }
 
 void say(char mess)
 {
   Serial.print(mess);
-  tft.print(mess);
+  //tft.print(mess);
+  scroll.write(String(mess));
+  yield(); 
 }
 void sayln(char mess)
 {
   Serial.println(mess);
-  tft.println(mess);
+  //tft.println(mess);
+  scroll.write(String(mess));
+  yield(); 
 }
 
 void say(String mess)
 {
   Serial.print(mess);
-  tft.print(mess);
+  //tft.print(mess);
+  scroll.write(mess);
+  yield(); 
 }
 void sayln(String mess)
 {
   Serial.println(mess);
-  tft.println(mess);
+  //tft.println(mess);
+  scroll.write(mess);
+  yield(); 
 }
 
 void loop() 
