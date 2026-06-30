@@ -13,11 +13,12 @@ DontOpen=0
 AbsolutePath=0
 FileFormat=0
 ProjectFilesOnly=0
+HTServer=localhost
 Extensions=*.*
 [Project tree]
 trial_espnow
 	+trial_espnow
-		-CYD_GetPrint
+		+CYD_GetPrint
 			CYD_GetPrint\CYD_GetPrint.ino
 		-ESP_NOW_Broadcast_Master
 			ESP_NOW_Broadcast_Master\ci.yml
@@ -28,19 +29,21 @@ trial_espnow
 		+ESP_NOW_Serial
 			ESP_NOW_Serial\ci.yml
 			ESP_NOW_Serial\ESP_NOW_Serial.ino
-		+GetMac
+		-GetAllMac
+			GetAllMac\GetAllMac.ino
+		-GetMac
 			GetMac\GetMac.ino
 		trial_espnow.md
 		trial_espnow.ppr
 [Open project files]
-0=GetMac\GetMac.ino
+0=CYD_GetPrint\CYD_GetPrint.ino
 1=ESP_NOW_Serial\ESP_NOW_Serial.ino
 [Selected Project Files]
 Main=
-Selected=GetMac\GetMac.ino
-[GetMac\GetMac.ino]
-TopLine=15
-Caret=12,22
+Selected=CYD_GetPrint\CYD_GetPrint.ino
+[CYD_GetPrint\CYD_GetPrint.ino]
+TopLine=1
+Caret=45,82
 [ESP_NOW_Serial\ESP_NOW_Serial.ino]
-TopLine=39
+TopLine=1
 Caret=1,1
