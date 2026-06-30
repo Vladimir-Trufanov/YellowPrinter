@@ -14,6 +14,13 @@
                          SoftAP MAC:    B8:D6:1A:5C:F9:55
                          Bluetooth MAC: B8:D6:1A:5C:F9:56
                          Ethernet MAC:  B8:D6:1A:5C:F9:57
+
+ AI Thinker ESP32-CAM 8  - MAC Address: 94:54:C5:A8:21:9C
+                         --------------------------------
+                         Station MAC:   94:54:C5:A8:21:9C
+                         SoftAP MAC:    94:54:C5:A8:21:9D
+                         Bluetooth MAC: 94:54:C5:A8:21:9E
+                         Ethernet MAC:  94:54:C5:A8:21:9F
 */
 
 #include <WiFi.h>
@@ -25,7 +32,7 @@ uint8_t baseMac[6];
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("");
+  Serial.println("\n");
 
   GetOneMac("Station MAC:   ", ESP_MAC_WIFI_STA);
   GetOneMac("SoftAP MAC:    ", ESP_MAC_WIFI_SOFTAP);

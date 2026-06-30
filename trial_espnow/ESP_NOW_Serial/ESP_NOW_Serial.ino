@@ -44,12 +44,13 @@
 /*
  AI Thinker ESP32-CAM [6] - MAC Address: F8:B3:B7:A7:E1:18
  ESP32-2432S028 (CYD) [7] - MAC Address: B8:D6:1A:5C:F9:54
+ AI Thinker ESP32-CAM [8] - MAC Address: 94:54:C5:A8:21:9C
 */
 
 // Set the MAC address of the device that will receive the data
 // For example: F4:12:FA:40:64:4C
 // const MacAddress peer_mac({0xF4, 0x12, 0xFA, 0x40, 0x64, 0x4C});
-const MacAddress peer_mac({0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54}); // AI Thinker ESP32-CAM 6
+const MacAddress peer_mac({0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54}); // ESP32-2432S028 (CYD) [7]
 
 ESP_NOW_Serial_Class NowSerial(peer_mac, ESPNOW_WIFI_CHANNEL, ESPNOW_WIFI_IF);
 
