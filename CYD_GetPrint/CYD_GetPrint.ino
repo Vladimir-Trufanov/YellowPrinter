@@ -1,8 +1,6 @@
 /*
   CYD_GetPrint.ino
-
-  Принять сообщение по ESP-NOW и вывести его на экран фонтом по умолчанию
-  
+  Принять сообщение по ESP-NOW и вывести его на экран загружаемым фонтом
   На примере одноадресной передачи данных от Lucas Saavedra Vaz - 2024 ESP_NOW_Serial.ino
 */
 
@@ -14,9 +12,6 @@
 
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
-#include <TFT_eSPI_Scroll.h>
-#include <4bit.h>
-TFT_eSPI_Scroll scroll;
 
 // 0: AP mode, 1: Station mode
 #define ESPNOW_WIFI_MODE_STATION 1
@@ -46,29 +41,10 @@ ESP_NOW_Serial_Class NowSerial(peer_mac, ESPNOW_WIFI_CHANNEL, ESPNOW_WIFI_IF);
 void setup() 
 {
   delay(3000);
-
-  /*
-  tft.init();                   // инициализация дисплея
-  tft.setRotation(1);           // альбомная
-  tft.fillScreen(TFT_BLACK);    // заливка фона чёрным цветом
-  tft.setTextColor(TFT_WHITE);  // цвет текста - белый
-  tft.setCursor(0,0);           // x,y координаты текста
-  tft.setTextSize(2);           // размер текста - №2 (7*2 = 14 точек)
-  tft.print("Привет!");       // вывод текста 
-  tft.print("И пока.");         // вывод текста 
-  */
  
   tft.init();
   tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
-
-  // Initializing the tft_espi_scroll int 1bit B/W
-  if(scroll.init(&tft, 4) != NO_ERROR)
-  {
-    Serial.println("Failed... Reseting...");        
-    return;
-  }
-
 
   // инициализация SPIFFS
   if (!SPIFFS.begin()) 
@@ -77,12 +53,10 @@ void setup()
   }  
 
   //tft.loadFont("nasalization48"); // загрузка в память шрифта
-  //tft.loadFont("HuaweiSans16");     // загрузка в память шрифта
+  tft.loadFont("HuaweiSans16");     // загрузка в память шрифта
   tft.setCursor(0,0);
-  tft.setTextSize(1);           // размер текста - №1
   //tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-  //tft.println("ВНИМАНИЕ!");
-  //tft.unloadFont();                 // выгрузка шрифта из памяти
+  //tft.unloadFont();               // выгрузка шрифта из памяти
 
   Serial.begin(115200);
   Serial.println("\n");
@@ -115,87 +89,79 @@ void setup()
 void say(char mess[])
 {
   Serial.print(mess);
-  //tft.print(mess);
-  scroll.write(mess);
-  yield(); 
+  tft.print(mess);
 }
 void sayln(char mess[])
 {
   Serial.println(mess);
-  //tft.println(mess);
-  scroll.write(String(mess));
-  yield(); 
+  tft.println(mess);
 }
 
 void say(const char mess[])
 {
   Serial.print(mess);
-  //tft.print(mess);
-  scroll.write(String(mess));
-  yield(); 
+  tft.print(mess);
 }
 void sayln(const char mess[])
 {
   Serial.println(mess);
-  //tft.println(mess);
-  scroll.write(String(mess));
-  yield(); 
+  tft.println(mess);
 }
 
 void say(int mess)
 {
   Serial.print(mess);
-  //tft.print(mess);
-  scroll.write(String(mess));
-  yield(); 
+  tft.print(mess);
 }
 void sayln(int mess)
 {
   Serial.println(mess);
-  //tft.println(mess);
-  scroll.write(String(mess));
-  yield(); 
+  tft.println(mess);
 }
 
 void say(char mess)
 {
   Serial.print(mess);
-  //tft.print(mess);
-  scroll.write(String(mess));
-  yield(); 
+  tft.print(mess);
 }
 void sayln(char mess)
 {
   Serial.println(mess);
-  //tft.println(mess);
-  scroll.write(String(mess));
-  yield(); 
+  tft.println(mess);
 }
 
 void say(String mess)
 {
   Serial.print(mess);
-  //tft.print(mess);
-  scroll.write(mess);
-  yield(); 
+  tft.print(mess);
 }
 void sayln(String mess)
 {
   Serial.println(mess);
-  //tft.println(mess);
-  scroll.write(mess);
-  yield(); 
+  tft.println(mess);
 }
+
+int dispmode=0; // <>1-выводить символы на дисплей, 1-выводить коды на дисплей
+int simbcode;
 
 void loop() 
 {
   while (NowSerial.available()) 
   {
-    //Serial.write(NowSerial.read());
+    // Cчитываем символ из буфера ESP_NOW
     char c = NowSerial.read();
-    say(c);
+    // Получаем код
+    simbcode=int(c);
+    // Выводим
+    if (dispmode==1)
+    {
+      say(simbcode); say(" ");
+    }
+    else say(c);
+    // Если возврат каретки, то переходим на новую строку
+    if (simbcode==13) sayln("");
   }
-
+  
   while (Serial.available() && NowSerial.availableForWrite()) 
   {
     if (NowSerial.write(Serial.read()) <= 0) 
