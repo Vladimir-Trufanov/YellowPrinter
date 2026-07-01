@@ -1,4 +1,4 @@
-//https://github.com/Bodmer/TFT_eSPI/discussions/1828
+// https://github.com/Bodmer/TFT_eSPI/discussions/1828
 
 // Example to show how to use the TFT_eSPI library to create banners of horizontally scrolling text.
 // Steve M. Potter stevempotter.tech 11 May 2022
@@ -20,7 +20,8 @@ TFT_eSprite ScrollTextSprite = TFT_eSprite(&tft); // Create a Sprite object call
 
 int VerticalPosition = 50; // Upper edge of scrolling banner.
 int ScrollStepCounter = 0;
-int ScrollStep = -9; // Must be negative for scrolling from right to left. Use a more neg. number for faster scrolling, but jumpier.
+//int ScrollStep = -9; // Must be negative for scrolling from right to left. Use a more neg. number for faster scrolling, but jumpier.
+int ScrollStep = -1; // Must be negative for scrolling from right to left. Use a more neg. number for faster scrolling, but jumpier.
 int16_t MsgPixWidth; // The width of your entire message to be scrolled, in pixels.
 String MessageToScroll = "You are AWESOME! Here is a longer message: 1234567890. The quick brown fox jumps over the lazy dog.";
 int SpaceBetweenRepeats = 50; // in pixels.
@@ -51,7 +52,8 @@ void setup() {
 }
 
 ////////////////////////////////////////////////////////////
-void loop() {
+void loop() 
+{
   ScrollStepCounter--; 
   if (ScrollStepCounter <= 0)
   { // Redraw the text to the right, just off the screen.
