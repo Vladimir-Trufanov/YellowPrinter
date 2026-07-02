@@ -43,6 +43,8 @@
 
 #### [Как отправлять данные с ESP32 на несколько плат ESP32 или ESP8266](https://voltiq.ru/esp-now-one-to-many-esp32-esp8266/)
 
+#### [Русский текст на TFT SPI дисплее: гайд по настройке](https://voltiq.ru/tft-espi-russian-text/)
+
 ###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
 
 ---
