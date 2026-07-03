@@ -46,7 +46,8 @@ int grid = 0;
 int tcount = 0;
 
 //==========================================================================================
-void setup() {
+void setup() 
+{
   tft.init();
   tft.fillScreen(TFT_BLACK);
 
