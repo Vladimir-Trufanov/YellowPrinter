@@ -39,11 +39,28 @@
 
 ---
 
+### [Сенсорный экран, слайдер и клавиатура](#)
+
+Вначале обращаюсь к Rui Santos & Sara Santos.
+
+---
+
 ### Библиография
+
+#### [Introduction to TFT_eSPI](https://doc-tft-espi.readthedocs.io/)
 
 #### [Как отправлять данные с ESP32 на несколько плат ESP32 или ESP8266](https://voltiq.ru/esp-now-one-to-many-esp32-esp8266/)
 
 #### [Русский текст на TFT SPI дисплее: гайд по настройке](https://voltiq.ru/tft-espi-russian-text/)
+
+#### [Подключение сенсорного TFT дисплея к ESP32: Схема и пример кода](https://voltiq.ru/esp32-touchscreen-display-connection/)
+
+#### [Легкая и универсальная графическая библиотека](https://github.com/lvgl/lvgl)
+
+Легкая и универсальная графическая библиотека = Light and Versatile Graphics Library = LVGL.
+
+#### [CYD-KeyPad](https://github.com/ElectriPixie/CYD-KeyPad/tree/main)
+
 
 ###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
 
