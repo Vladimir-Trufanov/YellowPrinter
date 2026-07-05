@@ -1,16 +1,22 @@
-# [YellowPrinter - приёмник сообщений на CYD - дешёвом желтом дисплее](YellowPrinter/YellowPrinter.md)
+# YellowPrinter - приёмник сообщений на CYD - дешёвом желтом дисплее
+
 
 > ***YellowPrinter - железо и программа на CYD (дешёвом желтом дисплее), которые принимают и показывают сообщения, поступающие через ESP_NOW или по последовательному интерфейсу***
 
+
 ### Содержание
 
-#### [Знакомство с ESP-NOW 3.3.10](#%D0%B7%D0%BD%D0%B0%D0%BA%D0%BE%D0%BC%D1%81%D1%82%D0%B2%D0%BE-%D1%81-esp-now)
+### [YellowPrinter - приёмник сообщений на CYD - дешёвом желтом дисплее](YellowPrinter/YellowPrinter.md)
 
-#### [Как сделать скрoллинг дисплея](#%D0%BA%D0%B0%D0%BA-%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C-%D1%81%D0%BA%D1%80%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3-%D0%B4%D0%B8%D1%81%D0%BF%D0%BB%D0%B5%D1%8F)
+### [Знакомство с ESP-NOW 3.3.10](#%D0%B7%D0%BD%D0%B0%D0%BA%D0%BE%D0%BC%D1%81%D1%82%D0%B2%D0%BE-%D1%81-esp-now)
 
-#### [Память и другие параметры контроллеров](MemoryAndOther/MemoryAndOther.md)
+### [Как сделать скрoллинг дисплея](#%D0%BA%D0%B0%D0%BA-%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C-%D1%81%D0%BA%D1%80%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3-%D0%B4%D0%B8%D1%81%D0%BF%D0%BB%D0%B5%D1%8F)
 
-#### [Библиoграфия](#%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%8F)
+### [Сенсорный экран, слайдер и клавиатура](#%D1%81%D0%B5%D0%BD%D1%81%D0%BE%D1%80%D0%BD%D1%8B%D0%B9-%D1%8D%D0%BA%D1%80%D0%B0%D0%BD---%D1%81%D0%BB%D0%B0%D0%B9%D0%B4%D0%B5%D1%80---%D0%BA%D0%BB%D0%B0%D0%B2%D0%B8%D0%B0%D1%82%D1%83%D1%80%D0%B0)
+
+### [Память и другие параметры контроллеров](MemoryAndOther/MemoryAndOther.md)
+
+### [Библиoграфия](#%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%8F)
 
 ---
 
@@ -40,9 +46,24 @@
 
 ---
 
-### [Сенсорный экран, слайдер и клавиатура](#)
+### [Сенсорный экран - слайдер - клавиатура](#)
 
-Вначале обращаюсь к Rui Santos & Sara Santos.
+Вначале обращаюсь к Rui Santos & Sara Santos:
+
+#### [DispTextCreateButSlider - управляющая кнопка, переключатель и прокрутка](SpriteScroll/DispTextCreateButSlider/DispTextCreateButSlider.ino)
+
+Решение использует графическую библиотеку LVGL - удобно будет использовать с большим числом графических элементов, но занимает память.
+
+![DispTextCreateButSlider.ino](SpriteScroll/DispTextCreateButSlider.jpg)
+
+#### [TestTouchscreen - координаты точки касания и сила нажатия](SpriteScroll/TestTouchscreen/TestTouchscreen.ino)
+
+Демонстрация взаимодействия с сенсорным экраном.
+
+![TestTouchscreen.ino](SpriteScroll/TestTouchscreen.jpg)
+
+
+###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
 
 ---
 
@@ -63,8 +84,6 @@
 #### [CYD-KeyPad](https://github.com/ElectriPixie/CYD-KeyPad/tree/main)
 
 #### [Прокрутка текста без остановки](https://wokwi.com/projects/389861165064399873)
-
-
 
 ###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
 

@@ -1,0 +1,53 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.CompileOnBackground=0
+Compilator.ProgSaveAll=0
+Compilator.ProgRunSelection=0
+Compilator.LogType=0
+Compilator.LogEncoding=0
+DefaultDir=C:\YellowPrinter\SpriteScroll
+DefaultCP=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+Extensions=*.*
+[Project tree]
+SpriteScroll
+	+SpriteScroll
+		-ButtonOnOff
+			ButtonOnOff\ButtonOnOff.ino
+		-CYD_KeyPad
+			CYD_KeyPad\CYD_KeyPad.ino
+		+DispTextCreateButSlider
+			DispTextCreateButSlider\DispTextCreateButSlider.ino
+		-ESP32_Smooth_Font_SD
+			-data
+				ESP32_Smooth_Font_SD\data\Final-Frontier-28.vlw
+			ESP32_Smooth_Font_SD\ESP32_Smooth_Font_SD.ino
+		-proba
+			proba\proba.ino
+		-Sprite_scroll
+			-data
+				Sprite_scroll\data\HuaweiSans16.vlw
+			Sprite_scroll\Sprite_scroll.ino
+		-Sprite_scroll_1bit
+			-data
+				Sprite_scroll_1bit\data\HuaweiSans16.vlw
+				Sprite_scroll_1bit\data\nasalization48.vlw
+			Sprite_scroll_1bit\Sprite_scroll_1bit.ino
+		-StripSlider
+			StripSlider\StripSlider.ino
+		-TestTouchscreen
+			TestTouchscreen\TestTouchscreen.ino
+		User_Setup_20260703.h
+[Open project files]
+0=DispTextCreateButSlider\DispTextCreateButSlider.ino
+[Selected Project Files]
+Main=
+Selected=DispTextCreateButSlider\DispTextCreateButSlider.ino
+[DispTextCreateButSlider\DispTextCreateButSlider.ino]
+TopLine=31
+Caret=1,1
