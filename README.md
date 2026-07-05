@@ -61,6 +61,9 @@
 
 #### [CYD-KeyPad](https://github.com/ElectriPixie/CYD-KeyPad/tree/main)
 
+#### [Прокрутка текста без остановки](https://wokwi.com/projects/389861165064399873)
+
+
 
 ###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
 
