@@ -20,7 +20,7 @@
 
 ---
 
-### [Знакомство с ESP-NOW](trial_espnow/trial_espnow.md)
+### [Знакомство с ESP-NOW](1_TrialEspnow/trial_espnow.md)
 
 Пробы 29-30.06.2026 показали правила работы с интерфейсом ESP-NOW. Финальный вариант показал, как можно обеспечить передачу данных со стороннего контроллера по ESP-NOW на CYD и вывод текста с загружаемым шрифтом на дисплей:
 
@@ -48,7 +48,7 @@
 
 ### [Сенсорный экран - слайдер - клавиатура](#)
 
-Вначале обращаюсь к Rui Santos & Sara Santos:
+***Примеры от Rui Santos & Sara Santos:***
 
 #### [DispTextCreateButSlider - управляющая кнопка, переключатель и прокрутка](SpriteScroll/DispTextCreateButSlider/DispTextCreateButSlider.ino)
 
@@ -61,6 +61,25 @@
 Демонстрация взаимодействия с сенсорным экраном.
 
 ![TestTouchscreen.ino](SpriteScroll/TestTouchscreen.jpg)
+
+#### [ButtonOnOff - активный переключатель](SpriteScroll/ButtonOnOff/ButtonOnOff.ino)
+
+Активный переключатель "On/Off" на тачскрин.
+
+![ButtonOnOff.ino](SpriteScroll/ButtonOnOff.jpg)
+
+***Прочие заготовки:***
+
+#### [CYD_KeyPad - работа с клавиатурой](SpriteScroll/CYD_KeyPad/CYD_KeyPad.ino)
+
+Представление клавиатуры и обработка нажатий на клавиши.
+
+Скетч использует 339200 байт (25%) памяти устройства. Всего доступно 1310720 байт.
+Глобальные переменные используют 23300 байт (7%) динамической памяти, оставляя 304380 байт для локальных переменных. Максимум: 327680 байт.
+
+![CYD_KeyPad.ino](SpriteScroll/CYD_KeyPad.jpg)
+
+
 
 
 ###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
