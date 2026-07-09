@@ -9,6 +9,8 @@
 
 Найденное сообщение в сети заставило обратиться к версии ESP-NOW 3.3.10
 
+> ***Удобно в использовании, но оказалось, что работает только для ESP32.***
+
 ---
 
 ### Содержание
@@ -45,7 +47,7 @@ architectures=esp32
 
 MAC-адрес (Media Access Control) — это уникальный идентификатор сетевого устройства, состоящий из 12 шестнадцатеричных символов, сгруппированных в пары, например AA:BB:CC:DD:EE:FF.
 
-#### [Скетч "Узнать mac-адрес контроллера"](GetMac/GetMac.ino)
+#### [Скетч "Узнать mac-адрес контроллера" - GetMac.ino](GetMac/GetMac.ino)
 
 Каждое устройство, подключаемое к сети, оснащено контроллером сетевого интерфейса (Network Interface Controller, NIC), который содержит схемы, необходимые для связи по сетевым протоколам, таким как Wi-Fi, Bluetooth или Ethernet. Во время производства производители присваивают каждому контроллеру сетевого интерфейса уникальный MAC-адрес, который навсегда сохраняется в аппаратной части устройства.
 
@@ -78,7 +80,7 @@ Bluetooth	  base_mac +2 к последнему октету	80:7D:3A:CB:12:5E
 Ethernet	  base_mac +3 к последнему октету	80:7D:3A:CB:12:5F
 ```
 
-#### [Скетч "Узнать mac-адреса сетевых интерфейсов ESP32"](GetAllMac/GetAllMac.ino)
+#### [Скетч "Узнать mac-адреса сетевых интерфейсов ESP32" -  GetAllMac.ino](GetAllMac/GetAllMac.ino)
 
 
 ###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
@@ -89,11 +91,11 @@ Ethernet	  base_mac +3 к последнему октету	80:7D:3A:CB:12:5F
 
 #### [Обсуждение проблем](https://github.com/espressif/arduino-esp32/issues/9737)
 
-#### [Скетч "Как передавать сообщения на все устройства в сети ESP-NOW"](ESP_NOW_Broadcast_Master/ESP_NOW_Broadcast_Master.ino)
+#### [Скетч "Передать сообщения на все устройства сети" -  ESP_NOW_Broadcast_Master.ino](ESP_NOW_Broadcast_Master/ESP_NOW_Broadcast_Master.ino)
 
-#### [Скетч "Как получать широковещательные сообщения от ведущего устройства"](ESP_NOW_Broadcast_Slave/ESP_NOW_Broadcast_Slave.ino)
+#### [Скетч "Получить широковещательное сообщение" - ESP_NOW_Broadcast_Slave.ino](ESP_NOW_Broadcast_Slave/ESP_NOW_Broadcast_Slave.ino)
 
-#### [Скетч: Передача данных по протоколу ESP-NOW "один к одному"](ESP_NOW_Serial/ESP_NOW_Serial.ino)
+#### [Скетч: Передача данных по протоколу "один к одному" - ESP_NOW_Serial.ino](ESP_NOW_Serial/ESP_NOW_Serial.ino)
 
 ###### [к содержанию](#%D1%81%D0%BE%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5)
 
