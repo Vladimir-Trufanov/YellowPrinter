@@ -89,7 +89,7 @@ void setup()
   esp_now_register_recv_cb(messageReceived);
   
   //saymem("В конце SETUP"); 
-  getmems("В конце SETUP");
+  //getmems("В конце SETUP");
 }
 
 void getmems(char* prefix)

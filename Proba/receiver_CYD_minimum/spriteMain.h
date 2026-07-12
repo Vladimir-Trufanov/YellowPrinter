@@ -65,9 +65,11 @@ class TSprite_Main
   {
     // Задаем среднюю глубину цвета и создаем спрайт
     // заданного размера в пикселах в оперативной памяти
-    stext3.setColorDepth(8);
+    stext3.setColorDepth(1);
     //stext3.createSprite(200, 110);
-    stext3.createSprite(200, 208);
+    //stext3.createSprite(200, 208);
+    //stext3.createSprite(244, 208);
+    stext3.createSprite(280, 160);
     // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
     stext3.fillSprite(TFT_BLACK);
     // Отключаем перенос текста и по горизонтали и по вертикали 
