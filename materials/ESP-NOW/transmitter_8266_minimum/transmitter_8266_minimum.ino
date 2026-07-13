@@ -39,7 +39,9 @@ void messageSent(uint8_t *macAddr, uint8_t status)
 void setup()
 {
   Serial.begin(115200);
-  // delay(1000); // uncomment if your serial monitor is empty
+  delay(2000); // uncomment if your serial monitor is empty
+  Serial.println("\n");
+  
   WiFi.mode(WIFI_STA);
   if (esp_now_init() == 0) 
   {

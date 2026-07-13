@@ -1,4 +1,4 @@
-// xsprite.ino
+// xsprite_v2.ino
 
 #include <esp_now.h>
 #include <WiFi.h>
@@ -22,8 +22,7 @@ void getheap(char* prefix)
   //Serial.print("Свободной памяти: "); Serial.println(getFreeMemory());
 }
 
-char line[128];  // строка спрайта
-char fill[128];  // заполнитель строки
+char fill[76];  // заполнитель строки
 
 void setup()
 {
@@ -44,6 +43,18 @@ void setup()
     while (1) yield();
   }  
 
+  /*
+  // Create a sprite
+  stext3.setColorDepth(8);
+  stext3.createSprite(32,32);
+  // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
+  stext3.fillSprite(TFT_BLACK);
+  // Отключаем перенос текста и по горизонтали и по вертикали 
+  stext3.setTextWrap(false, false);
+  // Определяем цвет текста с прозрачным фоном  
+  stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
+  */
+  
   // Create a sprite
   stext3.setColorDepth(8);
   stext3.createSprite(304, 208);
@@ -54,67 +65,66 @@ void setup()
   // Определяем цвет текста с прозрачным фоном  
   stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
   // Загружаем шрифт в память спрайта
-  stext3.loadFont("HuaweiSans16");     // загрузка в память шрифта
-
+  stext3.loadFont("HuaweiSans16");   
+  //stext3.unloadFont();             // выгрузка шрифта из памяти
   getheap("Создан спрайт");
 
   // Чистим заполнитель
-  memset(fill,32,127); 
-  fill[127]='\0';
+  memset(fill,32,75); 
+  fill[75]='\0';
 
-  stext3.loadFont("HuaweiSans16");   // загрузка в память шрифта
-  //stext3.unloadFont();             // выгрузка шрифта из памяти
   getheap("Загружен фонт");
 }
 
 uint16_t i=0;
 
+char line[][128] = 
+{
+    "Text",
+    "Привет Hello world",
+    "Line 2",
+    "0123456 10 123456 20 123456 30 123456 40",
+    "04 Это пробный текст на русском языке для CYD",   
+    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+    "06 Это пробный текст на русском языке для CYD",   
+    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+    "08 Это пробный текст на русском языке для CYD",   
+    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+    "10 Это пробный текст на русском языке для CYD",   
+    "11 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+    "12 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+};
+
 void loop()
 {
+  //stext3.pushSprite(288,0);
+  
   viewLine(i);
   stext3.pushSprite(16,0);
   getheap("Цикл пройден ");
   i++;
-
+  
   delay(5000);
 }
 
 void viewLine(uint16_t i)
 {
+
+  uint8_t ydelta=16;
+  uint8_t ypoint;
+
+  for (uint8_t jline = 0; jline < 13; jline++) 
+  {
+    ypoint=jline*ydelta;
+    stext3.setCursor(2,ypoint);
+    stext3.print(fill);
+    stext3.setCursor(2,ypoint);
+    stext3.print(line[jline]);
+  }
   stext3.setCursor(2,0);
   stext3.print(fill);
   stext3.setCursor(2,0);
   stext3.print("Число = "); stext3.print(i); stext3.print("!");
-  
-  stext3.setCursor(2,16);
-  stext3.print("0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  stext3.setCursor(2,32);
-  stext3.print("3 Это пробный текст на русском языке для КОНТРОЛЛЕРА CYD    60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  
-  stext3.setCursor(2,48);
-  stext3.print("0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  stext3.setCursor(2,64);
-  stext3.print("5 Это пробный текст на русском языке для КОНТРОЛЛЕРА CYD    60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  
-  stext3.setCursor(2,80);
-  stext3.print("0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  stext3.setCursor(2,96);
-  stext3.print("7 Это пробный текст на русском языке для КОНТРОЛЛЕРА CYD    60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  
-  stext3.setCursor(2,112);
-  stext3.print("0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  stext3.setCursor(2,128);
-  stext3.print("9 Это пробный текст на русском языке для КОНТРОЛЛЕРА CYD    60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  
-  stext3.setCursor(2,144);
-  stext3.print("0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  stext3.setCursor(2,160);
-  stext3.print("11 Это пробный текст на русском языке для КОНТРОЛЛЕРА CYD    60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  
-  stext3.setCursor(2,176);
-  stext3.print("0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60 123456 70 123456 80 123456 20 123456 90 12345 100");
-  stext3.setCursor(2,192);
-  stext3.print("13 Это пробный текст на русском языке для КОНТРОЛЛЕРА CYD    60 123456 70 123456 80 123456 20 123456 90 12345 100");
 }
 
 /*
