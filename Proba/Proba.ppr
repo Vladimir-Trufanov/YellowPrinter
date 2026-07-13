@@ -18,7 +18,7 @@ Extensions=*.*
 [Project tree]
 Proba
 	+Proba
-		+receiver_CYD_minimum
+		-receiver_CYD_minimum
 			-data
 				receiver_CYD_minimum\data\HuaweiSans16.vlw
 				receiver_CYD_minimum\data\HuaweiSans24.vlw
@@ -27,24 +27,16 @@ Proba
 			receiver_CYD_minimum\inimem.h
 			receiver_CYD_minimum\receiver_CYD_minimum.ino
 			receiver_CYD_minimum\spriteMain.h
+		-SPIFFS_.info
+			SPIFFS_.info\SPIFFS_.info.ino
+		+Sprite_RLE_Font_test
+			Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino
 		Proba.ppr
 [Open project files]
-0=receiver_CYD_minimum\spriteMain.h
-1=receiver_CYD_minimum\inimem.h
-2=receiver_CYD_minimum\receiver_CYD_minimum.ino
-3=receiver_CYD_minimum\fs_trass.h
+0=Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino
 [Selected Project Files]
 Main=
-Selected=receiver_CYD_minimum\fs_trass.h
-[receiver_CYD_minimum\spriteMain.h]
-TopLine=76
-Caret=35,115
-[receiver_CYD_minimum\inimem.h]
+Selected=Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino
+[Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino]
 TopLine=23
-Caret=28,49
-[receiver_CYD_minimum\receiver_CYD_minimum.ino]
-TopLine=28
-Caret=33,30
-[receiver_CYD_minimum\fs_trass.h]
-TopLine=61
-Caret=25,60
+Caret=1,1

@@ -74,7 +74,7 @@ void setup()
 
   
   //tft.loadFont("nasalization48"); // загрузка в память шрифта
-  tft.loadFont("HuaweiSans16");     // загрузка в память шрифта
+  //tft.loadFont("HuaweiSans16");     // загрузка в память шрифта
   tft.setCursor(0,0);
   tft.setTextColor(TFT_ORANGE, TFT_BLACK,true);
   //tft.unloadFont();               // выгрузка шрифта из памяти
