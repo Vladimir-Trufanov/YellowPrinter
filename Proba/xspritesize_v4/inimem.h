@@ -9,6 +9,26 @@
 
 #pragma once   
 
+#include <TFT_eSPI.h>
+TFT_eSPI tft = TFT_eSPI();
+
+void getheap(char* prefix)
+{
+  Serial.print(prefix); Serial.print(": ");
+  // uint32_t getHeapSize();      //total heap size
+  //Serial.print("HeapSize = "); Serial.print(ESP.getHeapSize());
+  //Serial.print("; ");
+  // uint32_t getFreeHeap();      //available heap
+  Serial.print("FreeHeap = "); Serial.println(ESP.getFreeHeap());
+  //Serial.print("Свободной памяти: "); Serial.println(getFreeMemory());
+}
+
+// getheap("setup        ");
+// getheap("Создан спрайт");
+// getheap("Загружен фонт");
+// getheap("Цикл пройден ");
+
+
 /*
 #define idctrl   205                           // идентификатор контроллера
 #define namectrl "Esp32-CAM на дорогу к даче"  // тип контроллера и место размещения

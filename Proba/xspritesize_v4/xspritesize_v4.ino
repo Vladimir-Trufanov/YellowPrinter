@@ -6,32 +6,13 @@
 #include <SPIFFS.h>
 //#include <MemoryFree.h>
 #include "inimem.h"
-
-#include <TFT_eSPI.h>
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite stext3 = TFT_eSprite(&tft); // Sprite object stext3
-
-void getheap(char* prefix)
-{
-  Serial.print(prefix); Serial.print(": ");
-  // uint32_t getHeapSize();      //total heap size
-  //Serial.print("HeapSize = "); Serial.print(ESP.getHeapSize());
-  //Serial.print("; ");
-  // uint32_t getFreeHeap();      //available heap
-  Serial.print("FreeHeap = "); Serial.println(ESP.getFreeHeap());
-  //Serial.print("Свободной памяти: "); Serial.println(getFreeMemory());
-}
-
-char fill[80];  // заполнитель строки
+#include "spriteMain.h"
 
 void setup()
 {
   Serial.begin(115200);
   delay(3000); // uncomment if your serial monitor is empty
   getheap("setup        ");
-  //getheap("Создан спрайт");
-  //getheap("Загружен фонт");
-  //getheap("Цикл пройден ");
 
   tft.init();
   tft.setRotation(1);      
@@ -46,127 +27,42 @@ void setup()
   /*
   // Create a sprite
   stext3.setColorDepth(8);
-  stext3.createSprite(32,32);
-  // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
-  stext3.fillSprite(TFT_BLACK);
-  // Отключаем перенос текста и по горизонтали и по вертикали 
-  stext3.setTextWrap(false, false);
-  // Определяем цвет текста с прозрачным фоном  
-  stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
-  */
-  
-  // Create a sprite
-  stext3.setColorDepth(8);
   stext3.createSprite(304, 208);
   // Delete the sprite to free up the RAM
   // void deleteSprite(void);
   if (stext3.created())
   {
-    Serial.println("Получилось");
+    getheap("Создан спрайт");
+    yessMain=true; 
+    // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
+    stext3.fillSprite(TFT_BLACK);
+    // Отключаем перенос текста и по горизонтали и по вертикали 
+    stext3.setTextWrap(false, false);
+    // Определяем цвет текста с прозрачным фоном  
+    stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
+    // Загружаем шрифт в память спрайта
+    stext3.loadFont("HuaweiSans16");   
+    //stext3.unloadFont();             // выгрузка шрифта из памяти
+    // Чистим заполнитель
+    memset(fill,32,79); 
+    fill[79]='\0';
+    getheap("Загружен фонт");
   }
   else
   {
     Serial.println("НЕ ПОЛУЧИЛОСЬ!");
   }
-
-  // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
-  stext3.fillSprite(TFT_BLACK);
-  // Отключаем перенос текста и по горизонтали и по вертикали 
-  stext3.setTextWrap(false, false);
-  // Определяем цвет текста с прозрачным фоном  
-  stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
-  // Загружаем шрифт в память спрайта
-  stext3.loadFont("HuaweiSans16");   
-  //stext3.unloadFont();             // выгрузка шрифта из памяти
-  getheap("Создан спрайт");
-
-  // Чистим заполнитель
-  memset(fill,32,79); 
-  fill[79]='\0';
-
-  getheap("Загружен фонт");
+  */
 }
 
 uint16_t i=0;
 
-char line[][128] = 
-{
-    "Text",
-    "Привет Hello world",
-    "Line 2",
-    "0123456 10 123456 20 123456 30 123456 40",
-    "04 Это пробный текст на русском языке для CYD",   
-    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "06 Это пробный текст на русском языке для CYD",   
-    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "08 Это пробный текст на русском языке для CYD",   
-    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "10 Это пробный текст на русском языке для CYD",   
-    "11 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "12 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-};
-
 void loop()
 {
-  //stext3.pushSprite(288,0);
-  
-  viewLine(i);
-  stext3.pushSprite(16,0);
+  sprite_Main(i);
   getheap("Цикл пройден ");
   i++;
-  
   delay(5000);
-}
-
-// ****************************************************************************
-// *            Преобразовать беззнаковое  целое в строку символов            *
-// ****************************************************************************
-char charNumby[6]; // char[5]+'\0'
-char* IntToChar(uint16_t numbIn) 
-{
-  uint16_t numby=numbIn;
-  memset(charNumby,'\0',6); 
-  if (numby>65534) numby=0;
-  String(numby).toCharArray(charNumby,6);
-  return charNumby;
-}
-
-
-void viewLine(uint16_t i)
-{
-
-  // В окончательном варианте работать через семафор на формирование и вывод спрайта
-  
-  uint8_t ydelta=16;
-  uint8_t ypoint;
-  char chi[] = "Число = ";
-
-  // Сдвигаем строки спрайта вниз
-  for (uint8_t jline = 12; jline > 0; jline--) 
-  {
-    memcpy(line[jline],line[jline-1], sizeof(line[jline-1]));
-  }
-  // Заполняем 0 строку
-  memset(line[0],'\0',76); 
-  memcpy(line[0],chi, sizeof(chi));
-  memcpy(line[0],IntToChar(i), sizeof(IntToChar(i)));
- 
-  // Размещаем строки в спрайте
-  for (uint8_t jline = 0; jline < 13; jline++) 
-  {
-    ypoint=jline*ydelta;
-    stext3.setCursor(2,ypoint);
-    stext3.print(fill);
-    stext3.setCursor(2,ypoint);
-    stext3.print(line[jline]);
-  }
-
-  /*
-  stext3.setCursor(2,0);
-  stext3.print(fill);
-  stext3.setCursor(2,0);
-  stext3.print("Число = "); stext3.print(i); stext3.print("!");
-  */
 }
 
 /*

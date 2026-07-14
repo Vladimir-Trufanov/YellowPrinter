@@ -9,10 +9,98 @@
 #pragma once
 
 #include <Arduino.h>
-#include <TFT_eSPI.h>
+#include "inimem.h"
 
+TFT_eSprite stext3 = TFT_eSprite(&tft); // Sprite object stext3
 char* IntToChar(uint16_t numbIn); 
+void viewLine(uint16_t i);
 
+//bool yessMain=false;   // true - создан спрайт вывода сообщений
+
+char fill[80];  // заполнитель строки
+char line[][80] = 
+{
+  "Text",
+  "Привет Hello world",
+  "Line 2",
+  "0123456 10 123456 20 123456 30 123456 40",
+  "04 Это пробный текст на русском языке для CYD",   
+  "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+  "06 Это пробный текст на русском языке для CYD",   
+  "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+  "08 Это пробный текст на русском языке для CYD",   
+  "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+  "10 Это пробный текст на русском языке для CYD",   
+  "11 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+  "12 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
+};
+
+void sprite_Main(uint16_t i)
+{
+  // Create a sprite
+  stext3.setColorDepth(8);
+  stext3.createSprite(304, 208);
+  // Delete the sprite to free up the RAM
+  if (stext3.created())
+  {
+    getheap("Создан спрайт");
+    //yessMain=true; 
+    // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
+    stext3.fillSprite(TFT_BLACK);
+    // Отключаем перенос текста и по горизонтали и по вертикали 
+    stext3.setTextWrap(false, false);
+    // Определяем цвет текста с прозрачным фоном  
+    stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
+    // Загружаем шрифт в память спрайта
+    stext3.loadFont("HuaweiSans16");   
+    // Чистим заполнитель
+    memset(fill,32,79); 
+    fill[79]='\0';
+    getheap("Загружен фонт");
+
+    viewLine(i);
+    stext3.pushSprite(16,0);
+
+    stext3.unloadFont();             // выгрузка шрифта из памяти
+    stext3.deleteSprite();
+  }
+  else
+  {
+    Serial.println("НЕ ПОЛУЧИЛОСЬ!");
+  }
+}
+
+void viewLine(uint16_t i)
+{
+  // В окончательном варианте работать через семафор на формирование и вывод спрайта
+
+  uint8_t ydelta=16;
+  uint8_t ypoint;
+  char chi[] = "Число = ";
+
+  // Сдвигаем строки спрайта вниз
+  for (uint8_t jline = 12; jline > 0; jline--) 
+  {
+    memcpy(line[jline],line[jline-1], sizeof(line[jline-1]));
+  }
+  // Заполняем 0 строку
+  memset(line[0],'\0',76); 
+  memcpy(line[0],chi, sizeof(chi));
+  memcpy(line[0],IntToChar(i), sizeof(IntToChar(i)));
+ 
+  // Размещаем строки в спрайте
+  for (uint8_t jline = 0; jline < 13; jline++) 
+  {
+    ypoint=jline*ydelta;
+    stext3.setCursor(2,ypoint);
+    stext3.print(fill);
+    stext3.setCursor(2,ypoint);
+    stext3.print(line[jline]);
+  }
+}
+
+
+/*
 class TSprite_Main 
 {
   public:
@@ -33,17 +121,6 @@ class TSprite_Main
   char fill[128];  // заполнитель строки
 
 
-  /*
-  // Определяем счетчик прерываний от таймера и общее их количество до
-  // события отправки одного из четырех сообщений = чуть быстрее четверти секунды 
-  unsigned int cntr = 0;                      // счетчик тиков таймера
-  volatile unsigned int timerToggle = 21000;  // 62499 -> 1 секунда;
-  volatile bool OneSecondFlag = false;        // истечение 1 сек для запуска трассировок
-  volatile bool Motor1_Flag = false;          // истечение 1 четверти сек для отправки данных по мотору
-  volatile bool Vcc2_Flag = false;            // истечение 2 четверти сек для отправки данных по напряжению батареи
-  volatile bool Act3_Flag = false;            // истечение 3 четверти сек для подтверждения крайней команды
-  volatile byte quatr = 0;                    // счетчик четвертей секунды
-  */
 };
 
 
@@ -116,6 +193,7 @@ class TSprite_Main
     //stext3.pushSprite(10,60);
     stext3.pushSprite(16,16);
   }
+  */
 
   // ****************************************************************************
   // *            Преобразовать беззнаковое  целое в строку символов            *
