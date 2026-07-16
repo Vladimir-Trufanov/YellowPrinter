@@ -1,0 +1,40 @@
+In file included from C:\YellowPrinter\Proba\xspritesize_v7\xspritesize_v7.ino:9:
+C:\YellowPrinter\Proba\xspritesize_v7\spriteMain.h: In constructor 'TSprite_Main::TSprite_Main(TFT_eSPI)':
+spriteMain.h:151:42: error: no matching function for call to 'TFT_eSprite::TFT_eSprite()'
+  151 | TSprite_Main::TSprite_Main(TFT_eSPI tftIn)
+      |                                          ^
+In file included from C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/TFT_eSPI.h:1009,
+                 from C:\YellowPrinter\Proba\xspritesize_v7\inimem.h:14,
+                 from C:\YellowPrinter\Proba\xspritesize_v7\xspritesize_v7.ino:7:
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h:12:12: note: candidate: 'TFT_eSprite::TFT_eSprite(TFT_eSPI*)'
+   12 |   explicit TFT_eSprite(TFT_eSPI *tft);
+      |            ^~~~~~~~~~~
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h:12:12: note:   candidate expects 1 argument, 0 provided
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h:8:7: note: candidate: 'TFT_eSprite::TFT_eSprite(const TFT_eSprite&)'
+    8 | class TFT_eSprite : public TFT_eSPI {
+      |       ^~~~~~~~~~~
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h:8:7: note:   candidate expects 1 argument, 0 provided
+spriteMain.h:154:30: error: use of deleted function 'TFT_eSprite& TFT_eSprite::operator=(const TFT_eSprite&)'
+  154 |   stext3 = TFT_eSprite(&tftIn);
+      |                              ^
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h:8:7: note: 'TFT_eSprite& TFT_eSprite::operator=(const TFT_eSprite&)' is implicitly deleted because the default definition would be ill-formed:
+    8 | class TFT_eSprite : public TFT_eSPI {
+      |       ^~~~~~~~~~~
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h: At global scope:
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h:8:7: error: use of deleted function 'TFT_eSPI& TFT_eSPI::operator=(const TFT_eSPI&)'
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/TFT_eSPI.h:427:7: note: 'TFT_eSPI& TFT_eSPI::operator=(const TFT_eSPI&)' is implicitly deleted because the default definition would be ill-formed:
+  427 | class TFT_eSPI : public Print { friend class TFT_eSprite; // Sprite class has access to protected members
+      |       ^~~~~~~~
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/TFT_eSPI.h:427:7: error: non-static reference member 'fs::FS& TFT_eSPI::fontFS', cannot use default assignment operator
+C:\Users\??????????\Documents\Arduino\libraries\TFT_eSPI-master/Extensions/Sprite.h:8:7: note: use '-fdiagnostics-all-candidates' to display considered candidates
+    8 | class TFT_eSprite : public TFT_eSPI {
+      |       ^~~~~~~~~~~
+C:\YellowPrinter\Proba\xspritesize_v7\xspritesize_v7.ino: In function 'void loop()':
+xspritesize_v7:34:10: error: 'lineIn' was not declared in this scope
+   34 |   memset(lineIn,'\0',80);
+      |          ^~~~~~
+xspritesize_v7:35:17: error: 'chi' was not declared in this scope; did you mean 'cli'?
+   35 |   strcat(lineIn,chi);
+      |                 ^~~
+      |                 cli
+Несколько библиотек найдено для "WiFi.h"

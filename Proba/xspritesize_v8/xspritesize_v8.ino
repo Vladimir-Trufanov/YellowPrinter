@@ -1,12 +1,13 @@
-// xsprite_v4.ino
+// xsprite_v8.ino
 
 #include <esp_now.h>
 #include <WiFi.h>
 #include <ESP.h>
 #include <SPIFFS.h>
-//#include <MemoryFree.h>
 #include "inimem.h"
+
 #include "spriteMain.h"
+TSprite_Main ypsMain;
 
 void setup()
 {
@@ -23,46 +24,23 @@ void setup()
   {
     while (1) yield();
   }  
-
-  /*
-  // Create a sprite
-  stext3.setColorDepth(8);
-  stext3.createSprite(304, 208);
-  // Delete the sprite to free up the RAM
-  // void deleteSprite(void);
-  if (stext3.created())
-  {
-    getheap("Создан спрайт");
-    yessMain=true; 
-    // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
-    stext3.fillSprite(TFT_BLACK);
-    // Отключаем перенос текста и по горизонтали и по вертикали 
-    stext3.setTextWrap(false, false);
-    // Определяем цвет текста с прозрачным фоном  
-    stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
-    // Загружаем шрифт в память спрайта
-    stext3.loadFont("HuaweiSans16");   
-    //stext3.unloadFont();             // выгрузка шрифта из памяти
-    // Чистим заполнитель
-    memset(fill,32,79); 
-    fill[79]='\0';
-    getheap("Загружен фонт");
-  }
-  else
-  {
-    Serial.println("НЕ ПОЛУЧИЛОСЬ!");
-  }
-  */
 }
 
 uint16_t i=0;
+char lineIn[smLINESIZE];    // буфер входного сообщения
+char chi[] = "Число i = ";
 
 void loop()
 {
-  sprite_Main(i);
+  // Формируем  0 строку
+  memset(lineIn,'\0',80); 
+  strcat(lineIn,chi);   
+  strcat(lineIn,IntToChar(i));   
+
+  ypsMain.View(lineIn);
   getheap("Цикл пройден ");
   i++;
-  delay(5000);
+  delay(3000);
 }
 
 /*

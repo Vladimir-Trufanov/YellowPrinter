@@ -17,7 +17,7 @@ HTServer=localhost
 Extensions=*.*
 [Project tree]
 Proba
-	+Proba
+	-Proba
 		-receiver_CYD_minimum
 			-data
 				receiver_CYD_minimum\data\HuaweiSans16.vlw
@@ -29,14 +29,53 @@ Proba
 			receiver_CYD_minimum\spriteMain.h
 		-SPIFFS_.info
 			SPIFFS_.info\SPIFFS_.info.ino
-		+Sprite_RLE_Font_test
-			Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino
+		-xspritesize_v5
+			-data
+				xspritesize_v5\data\HuaweiSans16.vlw
+			xspritesize_v5\fs_trass.h
+			xspritesize_v5\inimem.h
+			xspritesize_v5\spriteMain.h
+			xspritesize_v5\xspritesize_v5.ino
+		-xspritesize_v6
+			-data
+				xspritesize_v6\data\HuaweiSans16.vlw
+			xspritesize_v6\fs_trass.h
+			xspritesize_v6\inimem.h
+			xspritesize_v6\spriteMain.h
+			xspritesize_v6\xspritesize_v6.ino
+		-xspritesize_v7
+			-data
+				xspritesize_v7\data\HuaweiSans16.vlw
+			xspritesize_v7\fs_trass.h
+			xspritesize_v7\inimem.h
+			xspritesize_v7\spriteMain.h
+			xspritesize_v7\xspritesize_v7.ino
+		-xspritesize_v8
+			-data
+				xspritesize_v8\data\HuaweiSans16.vlw
+			xspritesize_v8\fs_trass.h
+			xspritesize_v8\inimem.h
+			xspritesize_v8\spriteMain.h
+			xspritesize_v8\xspritesize_v8.ino
+		-xspritesize0
+			-data
+				xspritesize0\data\HuaweiSans16.vlw
+			xspritesize0\xspritesize0.ino
+		errors.txt
 		Proba.ppr
 [Open project files]
-0=Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino
+0=xspritesize_v8\xspritesize_v8.ino
+1=xspritesize_v8\inimem.h
+2=xspritesize_v8\spriteMain.h
 [Selected Project Files]
 Main=
-Selected=Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino
-[Sprite_RLE_Font_test\Sprite_RLE_Font_test.ino]
-TopLine=23
-Caret=1,1
+Selected=xspritesize_v8\spriteMain.h
+[xspritesize_v8\xspritesize_v8.ino]
+TopLine=17
+Caret=22,31
+[xspritesize_v8\inimem.h]
+TopLine=21
+Caret=1,49
+[xspritesize_v8\spriteMain.h]
+TopLine=8
+Caret=2,96

@@ -46,33 +46,6 @@ char* IntToChar(uint16_t numbIn)
   return charNumby;
 }
 
-/*
-#define idctrl   205                           // идентификатор контроллера
-#define namectrl "Esp32-CAM на дорогу к даче"  // тип контроллера и место размещения
-
-bool isLocalWiFi=false;     // true - контроллер подключился к локальной сети WiFi
-bool isSoftWiFi=false;      // true - контроллер создал свою собственную сеть WiFi
-bool isSD=false;            // true - подключена SD-карта
-bool isCamera=false;        // true - камера сконфигурирована и работает
-
-uint32_t errState=0;        // карта ошибочных состояний [4 294 967 295]
-#define errWiFi 1000000000  // проблема с WiFi
-#define errSD    100000000  // проблема с SD
-#define errCamera 10000000  // проблема с камерой
-
-#include "time.h"
-#include "FS.h"
-#include <SD_MMC.h>
-
-// Объявляем дескрипторы файлов
-File avifile;  // файл потока графических изображений (кадров)
-File idxfile;  // файл указателей кадров
-
-//static const char _hsoftIP[] ="IP-адрес своей сети контроллера - http://";
-//static const char _hlocalIP[]="IP-адрес в локальной сети       - http://";
-// char softip[20];                    // IP-адрес собственной сети контроллера
-*/
-
 /* 
 Целочисленные типы переменных:
 ------------------ -------- ---------- --------------------------- ------
