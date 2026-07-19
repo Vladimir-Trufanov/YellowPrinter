@@ -67,11 +67,24 @@ void setup()
   esp_now_register_send_cb(messageSent);  
 }
 
+uint16_t i=0;
  
 void loop()
 {
-  char message[] = "Hi 8266, this is a message from the transmitting ESP";
-  esp_now_send(receiverAddress, (uint8_t *) message, sizeof(message)-1); // -1 to not send the NULL terminator
-  Serial.println(message);
+  uint16_t remainder = i % 2;
+  char charArray[8];       // Буфер должен быть достаточно большим
+  if (remainder==0)
+  {
+    ultoa(i,charArray,10); // 10 — основание (десятичная система)
+    esp_now_send(receiverAddress, (uint8_t *) charArray, sizeof(charArray)-1); // -1 to not send the NULL terminator
+    Serial.println(charArray);
+  }
+  else
+  {
+    char message[] = "Hi 8266, this is a message from the transmitting ESP";
+    esp_now_send(receiverAddress, (uint8_t *) message, sizeof(message)-1); // -1 to not send the NULL terminator
+    Serial.println(message);
+  }
+  i++;
   delay(5000);
 }

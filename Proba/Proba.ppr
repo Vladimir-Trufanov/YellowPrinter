@@ -17,7 +17,7 @@ HTServer=localhost
 Extensions=*.*
 [Project tree]
 Proba
-	-Proba
+	+Proba
 		-receiver_CYD_minimum
 			-data
 				receiver_CYD_minimum\data\HuaweiSans16.vlw
@@ -29,27 +29,6 @@ Proba
 			receiver_CYD_minimum\spriteMain.h
 		-SPIFFS_.info
 			SPIFFS_.info\SPIFFS_.info.ino
-		-xspritesize_v5
-			-data
-				xspritesize_v5\data\HuaweiSans16.vlw
-			xspritesize_v5\fs_trass.h
-			xspritesize_v5\inimem.h
-			xspritesize_v5\spriteMain.h
-			xspritesize_v5\xspritesize_v5.ino
-		-xspritesize_v6
-			-data
-				xspritesize_v6\data\HuaweiSans16.vlw
-			xspritesize_v6\fs_trass.h
-			xspritesize_v6\inimem.h
-			xspritesize_v6\spriteMain.h
-			xspritesize_v6\xspritesize_v6.ino
-		-xspritesize_v7
-			-data
-				xspritesize_v7\data\HuaweiSans16.vlw
-			xspritesize_v7\fs_trass.h
-			xspritesize_v7\inimem.h
-			xspritesize_v7\spriteMain.h
-			xspritesize_v7\xspritesize_v7.ino
 		-xspritesize_v8
 			-data
 				xspritesize_v8\data\HuaweiSans16.vlw
@@ -57,6 +36,14 @@ Proba
 			xspritesize_v8\inimem.h
 			xspritesize_v8\spriteMain.h
 			xspritesize_v8\xspritesize_v8.ino
+		+xspritesize_v9
+			-data
+				xspritesize_v9\data\HuaweiSans16.vlw
+			xspritesize_v9\fs_trass.h
+			xspritesize_v9\inimem.h
+			xspritesize_v9\receiver_CYD_minimum.ino
+			xspritesize_v9\spriteMain.h
+			xspritesize_v9\xspritesize_v9.ino
 		-xspritesize0
 			-data
 				xspritesize0\data\HuaweiSans16.vlw
@@ -64,18 +51,18 @@ Proba
 		errors.txt
 		Proba.ppr
 [Open project files]
-0=xspritesize_v8\xspritesize_v8.ino
-1=xspritesize_v8\inimem.h
-2=xspritesize_v8\spriteMain.h
+0=xspritesize_v9\xspritesize_v9.ino
+1=xspritesize_v9\receiver_CYD_minimum.ino
+2=xspritesize_v9\spriteMain.h
 [Selected Project Files]
 Main=
-Selected=xspritesize_v8\spriteMain.h
-[xspritesize_v8\xspritesize_v8.ino]
-TopLine=17
-Caret=22,31
-[xspritesize_v8\inimem.h]
-TopLine=21
-Caret=1,49
-[xspritesize_v8\spriteMain.h]
-TopLine=8
-Caret=2,96
+Selected=xspritesize_v9\xspritesize_v9.ino
+[xspritesize_v9\xspritesize_v9.ino]
+TopLine=35
+Caret=3,26
+[xspritesize_v9\receiver_CYD_minimum.ino]
+TopLine=1
+Caret=1,3
+[xspritesize_v9\spriteMain.h]
+TopLine=11
+Caret=19,15

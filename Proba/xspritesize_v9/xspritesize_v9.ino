@@ -9,11 +9,45 @@
 #include "spriteMain.h"
 TSprite_Main ypsMain;
 
+typedef struct message 
+{
+  char line[smLINESIZE];
+} message;
+
+message CtrlMessage;    // сообщение контроллера
+
+void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
+{
+  //memcpy(&CtrlMessage, incomingData, sizeof(CtrlMessage));
+  memset(CtrlMessage.line,'\0',smLINESIZE); 
+  memcpy(&CtrlMessage, incomingData, len);
+  Serial.printf("Transmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n\r", 
+    info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
+  Serial.print("Message: ");
+  Serial.println(CtrlMessage.line);
+  Serial.println();
+  ypsMain.View(CtrlMessage.line);
+}
+
+
 void setup()
 {
   Serial.begin(115200);
   delay(3000); // uncomment if your serial monitor is empty
   getheap("setup        ");
+  
+  WiFi.mode(WIFI_STA);
+  if (esp_now_init() == ESP_OK) 
+  {
+    Serial.println("ESPNow Init success");
+  }
+  else 
+  {
+    Serial.println("ESPNow Init fail");
+    return;
+  }
+  esp_now_register_recv_cb(messageReceived);
+
 
   tft.init();
   tft.setRotation(1);      
@@ -27,17 +61,20 @@ void setup()
 }
 
 uint16_t i=0;
-char lineIn[smLINESIZE];    // буфер входного сообщения
-char chi[] = "Число i = ";
+//char lineIn[smLINESIZE];    // буфер входного сообщения
+//char chi[] = "Число i = ";
 
 void loop()
 {
   // Формируем  0 строку
+  
+  /*
   memset(lineIn,'\0',80); 
   strcat(lineIn,chi);   
   strcat(lineIn,IntToChar(i));   
-
   ypsMain.View(lineIn);
+  */
+  
   getheap("Цикл пройден ");
   i++;
   delay(3000);
