@@ -1,17 +1,17 @@
-/** Arduino-Esp32-CAM                        *** ex5-1-33-twousoneMutex.ino ***
+/** Esp32-2432S028R CYD                               *** YellowPrinter.ino ***
  *  
- *          Пример работы трех задач в ESP32 board 5.1.33: основной цикл мигает
- *             контрольным светодиодом, а две другие задачи делят между собой с
- *  помощью мьютекса счетчик и последовательный порт, на который выводят тексты 
- *                                        (на контроллере AI-Thinker ESP32-CAM)
+ *                           ПРИЁМНИК СООБЩЕНИЙ НА CYD - ДЕШЁВОМ ЖЕЛТОМ ДИСПЛЕЕ
+ *        (железо и программа на CYD, которые принимают и показывают сообщения, 
+ *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v1.0, 13.10.2024                                   Автор:      Труфанов В.Е.
- * Copyright © 2024 tve                               Дата создания: 13.10.2024
+ * v1.0.3, 22.07.2026                                 Автор:      Труфанов В.Е.
+ * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
 // Определяем пин контрольного светодиода
 // #define LED_BUILTIN 33    // на ESP32-CAM
 #define LED_BUILTIN 16       // зеленый на CYD
+
 // Определяем объект мьютекса - дескриптор (во FreeRTOS и мьютекс, и семафор реализованы
 // как обычные совместно используемые подпрограммы. Это связано со сходством между обеими 
 // концепциями. Дескриптор семафора может использоваться для создания семафоров любого 
@@ -21,16 +21,11 @@
 SemaphoreHandle_t    xMutex = NULL;  
 SemaphoreHandle_t messMutex = NULL;  
 
-// Определяем мьютекс, который будет связан с критической секцией
-// и проинициализируем его (то есть разблокируем для дальнейшего захвата)
-//portMUX_TYPE taskMux = portMUX_INITIALIZER_UNLOCKED; 
-
 // Определяем глобальную переменную counter, которая будет действовать как общий ресурс. 
 // Две задачи - task1 и task2 могут обращаться к переменной counter. Однако, поскольку 
 // это общий ресурс, задачи выполняются параллельно, нужен мьютекс для предотвращения 
 // конфликтов
 int counter = 0;  // A shared variable
-
 
 #include <esp_now.h>
 #include <WiFi.h>
@@ -45,9 +40,11 @@ typedef struct message
 {
   char line[smLINESIZE];
 } message;
-
 message CtrlMessage;    // сообщение контроллера
-bool messBool;  
+message CYD_message;    // сообщение для дисплея CYD
+
+uint16_t messCalc=0;
+bool     messBool;  
 
 void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
 {
@@ -61,12 +58,13 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       memcpy(&CtrlMessage, incomingData, len);
       Serial.printf("Transmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n\r", 
         info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-      Serial.print("Message: ");
-      Serial.println(CtrlMessage.line);
-      Serial.println();
-      ypsMain.View(CtrlMessage.line);
+      //Serial.print("Message: ");
+      //Serial.println(CtrlMessage.line);
+      //Serial.println();
+      //ypsMain.View(CtrlMessage.line);
+      messCalc++;
+      messBool=false;
       xSemaphoreGive (messMutex);  
-      messBool=false;  
       delay (64);
     }
   }
@@ -141,6 +139,17 @@ void setup()
       NULL,      // Task handle.
       0          // Core where the task should run
    );
+
+   xTaskCreatePinnedToCore 
+   (
+      taskMain,     // Function to implement the task
+      "taskMain",   // Name of the task
+      4096,      // Stack size in words
+      NULL,      // Task input parameter
+      15,        // Priority of the task
+      NULL,      // Task handle.
+      0          // Core where the task should run
+   );
 }
 
 uint16_t i=0;
@@ -178,8 +187,8 @@ void task1 (void *pvParameters)
     // Как только захватили мьютекс, выполняем свою работу
     if (xSemaphoreTake (xMutex, portMAX_DELAY)) 
     {  
-      Serial.print ("Task 1: Mutex взят задачей ");
-      Serial.println (xTaskGetTickCount());
+      //Serial.print ("Task 1: Mutex взят задачей ");
+      //Serial.println (xTaskGetTickCount());
       counter = counter + 1;  
       Serial.print ("Task 1: Counter = ");
       Serial.println (counter);
@@ -188,7 +197,7 @@ void task1 (void *pvParameters)
       delay (800);
     }
   }
-  //delay(1000);
+  delay(1000);
 }
 
 // ============================================================================
@@ -209,20 +218,55 @@ void task2 (void *pvParameters)
    {
       if (xSemaphoreTake (xMutex, (200 * portTICK_PERIOD_MS))) 
       { 
-         Serial.print ("Task 2: Mutex взят задачей ");
-         Serial.println (xTaskGetTickCount());
+         //Serial.print ("Task 2: Mutex взят задачей ");
+         //Serial.println (xTaskGetTickCount());
          counter = counter + 1000;
-         Serial.print ("Task 2: Counter = ");
-         Serial.println (counter);
+         //Serial.print ("Task 2: Counter = ");
+         //Serial.println (counter);
          xSemaphoreGive (xMutex);  
-         delay (1200);
       }
       else 
       {  
-         Serial.print ("Task 2: Mutex не захвачен ");
-         Serial.println (xTaskGetTickCount());
+         //Serial.print ("Task 2: Mutex не захвачен ");
+         //Serial.println (xTaskGetTickCount());
       }
+      delay (200);
   }
 }
 
-// ********************************************* ex5-1-33-twousoneMutex.ino ***
+uint16_t copyCalc=195;  // !=0
+
+void taskMain (void *pvParameters) 
+{
+  while (1) 
+  {
+    if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
+    { 
+      //Serial.print("copyCalc==messCalc: "); Serial.print(copyCalc); Serial.print("="); Serial.println(messCalc);
+      if (!(copyCalc==messCalc))
+      {
+        memcpy(CYD_message.line, CtrlMessage.line, smLINESIZE);
+        Serial.println("***");
+        Serial.println(CtrlMessage.line);
+        Serial.println(CYD_message.line);
+        Serial.println("***");
+        ypsMain.View(CYD_message.line);
+
+        // memset(CtrlMessage.line,'\0',smLINESIZE); 
+        // memcpy(&CtrlMessage, incomingData, len);
+        // memcpy(&CtrlMessage.line, CtrlMessage.line, smLINESIZE);
+
+        copyCalc=messCalc;
+      }
+      xSemaphoreGive(messMutex);  
+    }
+    else 
+    {  
+      //Serial.print ("Task 2: Mutex не захвачен ");
+      //Serial.println (xTaskGetTickCount());
+    }
+    delay (64);
+  }
+}
+
+// ****************************************************** YellowPrinter.ino ***

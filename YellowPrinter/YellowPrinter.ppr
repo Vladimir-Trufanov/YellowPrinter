@@ -30,12 +30,16 @@ YellowPrinter
 [Open project files]
 0=YellowPrinter.ino
 1=error.txt
+2=inimem.h
 [Selected Project Files]
 Main=
 Selected=YellowPrinter.ino
 [YellowPrinter.ino]
-TopLine=52
-Caret=5,191
+TopLine=225
+Caret=1,250
 [error.txt]
 TopLine=1
 Caret=1,21
+[inimem.h]
+TopLine=101
+Caret=1,1
