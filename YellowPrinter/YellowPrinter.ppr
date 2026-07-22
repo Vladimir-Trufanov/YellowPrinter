@@ -1,0 +1,41 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.CompileOnBackground=0
+Compilator.ProgSaveAll=0
+Compilator.ProgRunSelection=0
+Compilator.LogType=0
+Compilator.LogEncoding=0
+DefaultDir=C:\YellowPrinter\YellowPrinter
+DefaultCP=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+HTServer=localhost
+Extensions=*.*
+[Project tree]
+YellowPrinter
+	+YellowPrinter
+		-data
+			data\HuaweiSans16.vlw
+		fs_trass.h
+		inimem.h
+		spriteMain.h
+		xspritesize_v9.h
+		YellowPrinter.ino
+		YellowPrinter.md
+		YellowPrinter.ppr
+[Open project files]
+0=YellowPrinter.ino
+1=error.txt
+[Selected Project Files]
+Main=
+Selected=YellowPrinter.ino
+[YellowPrinter.ino]
+TopLine=52
+Caret=5,191
+[error.txt]
+TopLine=1
+Caret=1,21

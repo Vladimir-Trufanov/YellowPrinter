@@ -1,0 +1,20 @@
+C:\YellowPrinter\YellowPrinter\YellowPrinter.ino: In function 'void messageReceived(const esp_now_recv_info*, const uint8_t*, int)':
+YellowPrinter:97:1: error: a function-definition is not allowed here before '{' token
+   97 | {
+      | ^
+YellowPrinter:158:1: error: a function-definition is not allowed here before '{' token
+  158 | {
+      | ^
+YellowPrinter:181:1: error: a function-definition is not allowed here before '{' token
+  181 | {
+      | ^
+YellowPrinter:215:1: error: a function-definition is not allowed here before '{' token
+  215 | {
+      | ^
+YellowPrinter:234:2: error: expected '}' at end of input
+  234 | }
+      |  ^
+C:\YellowPrinter\YellowPrinter\YellowPrinter.ino:46:1: note: to match this '{'
+   46 | {
+      | ^
+Несколько библиотек найдено для "WiFi.h"

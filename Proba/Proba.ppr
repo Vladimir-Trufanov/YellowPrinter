@@ -52,17 +52,13 @@ Proba
 		Proba.ppr
 [Open project files]
 0=xspritesize_v9\xspritesize_v9.ino
-1=xspritesize_v9\receiver_CYD_minimum.ino
-2=xspritesize_v9\spriteMain.h
+1=xspritesize_v9\spriteMain.h
 [Selected Project Files]
 Main=
 Selected=xspritesize_v9\xspritesize_v9.ino
 [xspritesize_v9\xspritesize_v9.ino]
-TopLine=35
+TopLine=26
 Caret=3,26
-[xspritesize_v9\receiver_CYD_minimum.ino]
-TopLine=1
-Caret=1,3
 [xspritesize_v9\spriteMain.h]
 TopLine=11
 Caret=19,15
