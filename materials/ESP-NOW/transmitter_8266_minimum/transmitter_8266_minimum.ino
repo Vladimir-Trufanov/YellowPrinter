@@ -81,7 +81,8 @@ void loop()
   }
   else
   {
-    char message[] = "Hi 8266, this is a message from the transmitting ESP";
+    char message[] = "Привет от ESP8266 (Esp01) - это сообщение передатчика!";
+    //char message[] = "Hi 8266, this is a message from the transmitting ESP";
     esp_now_send(receiverAddress, (uint8_t *) message, sizeof(message)-1); // -1 to not send the NULL terminator
     Serial.println(message);
   }
