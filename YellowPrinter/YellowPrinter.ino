@@ -43,16 +43,16 @@ int counter = 0;  // A shared variable
 
 
 // Определяем заголовок для объекта таймера
-hw_timer_t *timer = NULL;
+//hw_timer_t *timer = NULL;
 // Инициируем спинлок критической секции в обработчике таймерного прерывания
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+//portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 // Определяем число, которое будет считываться в основном цикле
 // с последовательного порта для иммитации зависания
 volatile int inumber;
 
-
 int flag[] = {0, 0};   // 0 => loop(); 1 => messageReceived()
 
+/*
 // Обработка прерывания от таймера
 void IRAM_ATTR onTimer() 
 {
@@ -74,8 +74,7 @@ void IRAM_ATTR onTimer()
    }
    portEXIT_CRITICAL_ISR(&timerMux);
 }
-
-
+*/
 
 #include "spriteMain.h"
 TSprite_Main ypsMain;
@@ -212,6 +211,17 @@ void setup()
       NULL,      // Task handle.
       0          // Core where the task should run
    );
+
+   /*
+   // Создаём объект таймера, устанавливаем его частоту отсчёта (1Mhz)
+   timer = timerBegin(1000000);
+   // Подключаем функцию обработчика прерывания от таймера - onTimer
+   timerAttachInterrupt(timer, &onTimer);
+   // Настраиваем таймер: интервал перезапуска - 3 секунды (3000000 микросекунд),
+   // всегда повторяем перезапуск (третий параметр = true), неограниченное число 
+   // раз (четвертый параметр = 0) 
+   timerAlarm(timer, 3000000, true, 0);
+   */
 }
 
 uint16_t i=0;
@@ -226,7 +236,6 @@ void MimicMCUhangEvent(String NameTask)
    {
       Serial.print(NameTask);
       Serial.println(": зависание процессора!!!");
-      delay(1000);
    }
 }
 // ============================================================================ 
@@ -240,7 +249,7 @@ void loop()
   {
     int ii=Serial.parseInt();
     if (ii>0) inumber=ii;
-    //delay(100);
+    delay(100);
   }
 
   portENTER_CRITICAL(&taskMux);  // lock the mutex (busy waiting)
@@ -257,7 +266,9 @@ void loop()
   portEXIT_CRITICAL (&taskMux);   // unlock the mutex
   //portEXIT_CRITICAL_ISR(&taskMux);
 
-  if (inumber == 1) MimicMCUhangEvent("Loop");   
+  // Имитируем зависание микроконтроллера с помощью опознанного числа,
+  // принятого в последовательном порту
+  //if (inumber == 1) MimicMCUhangEvent("Loop");   
  
   
   vTaskDelay(128);
@@ -292,6 +303,7 @@ void task1 (void *pvParameters)
     }
   }
   vTaskDelay(1000);
+  if (inumber == 1) MimicMCUhangEvent("task1");   
 }
 
 // ============================================================================
