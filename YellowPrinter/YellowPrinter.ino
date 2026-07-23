@@ -4,7 +4,7 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v1.0.3, 22.07.2026                                 Автор:      Труфанов В.Е.
+ * v1.0.4, 23.07.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
@@ -23,7 +23,7 @@ SemaphoreHandle_t messMutex = NULL;
 
 // Определяем мьютекс, который будет связан с критической секцией
 // и проинициализируем его (то есть разблокируем для дальнейшего захвата)
-//portMUX_TYPE taskMux = portMUX_INITIALIZER_UNLOCKED; 
+portMUX_TYPE taskMux = portMUX_INITIALIZER_UNLOCKED; 
 
 // Определяем глобальную переменную counter, которая будет действовать как общий ресурс. 
 // Две задачи - task1 и task2 могут обращаться к переменной counter. Однако, поскольку 
@@ -36,6 +36,46 @@ int counter = 0;  // A shared variable
 #include <ESP.h>
 #include <SPIFFS.h>
 #include "inimem.h"
+
+//#include <esp_task_wdt.h>
+//int WDT_TIMEOUT = 8;          // WDT Timeout in seconds
+//int flag[] = {0, 0};   // 0 => loop(); 1 => messageReceived()
+
+
+// Определяем заголовок для объекта таймера
+hw_timer_t *timer = NULL;
+// Инициируем спинлок критической секции в обработчике таймерного прерывания
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+// Определяем число, которое будет считываться в основном цикле
+// с последовательного порта для иммитации зависания
+volatile int inumber;
+
+
+int flag[] = {0, 0};   // 0 => loop(); 1 => messageReceived()
+
+// Обработка прерывания от таймера
+void IRAM_ATTR onTimer() 
+{
+   portENTER_CRITICAL_ISR(&timerMux);
+   // Если флаги всех задач установлены в 1, 
+   // то сбрасываем флаги задач и счетчик сторожевого таймера
+   if (flag[0] == 1 && flag[1] == 1) 
+   {
+      // Сбрасываем флаги задач
+      flag[0] = 0;
+      flag[1] = 0;
+      // "Пинаем собаку" - сбрасываем счетчик сторожевого таймера
+      timerWrite(timer, 0);
+   }
+   // Иначе перезагружаем контроллер
+   else 
+   {
+      ESP.restart();
+   }
+   portEXIT_CRITICAL_ISR(&timerMux);
+}
+
+
 
 #include "spriteMain.h"
 TSprite_Main ypsMain;
@@ -74,6 +114,9 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       Serial.printf("Длительность messageReceived(): %d ms\n", duration * portTICK_PERIOD_MS);
     }
     //delay(64);
+    flag[1] = 1;
+    if (inumber == 2) MimicMCUhangEvent("messageReceived");   
+
     vTaskDelay(64);
   }
 
@@ -95,7 +138,7 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
 void setup() 
 {
   Serial.begin(115200);
-  delay(3000); // uncomment if your serial monitor is empty
+  delay(300); // uncomment if your serial monitor is empty
 
   /*
   const TickType_t Delay500   = pdMS_TO_TICKS(500); 
@@ -175,20 +218,50 @@ uint16_t i=0;
 //char lineIn[smLINESIZE];    // буфер входного сообщения
 //char chi[] = "Число i = ";
 
+
+// Имитируем событие зависания процессора
+void MimicMCUhangEvent(String NameTask)
+{
+   while (true)
+   {
+      Serial.print(NameTask);
+      Serial.println(": зависание процессора!!!");
+      delay(1000);
+   }
+}
 // ============================================================================ 
 void loop() 
 {
-  //portENTER_CRITICAL(&taskMux);  // lock the mutex (busy waiting)
+
+  // Считываем с последовательного порта целое число
+  // (так как в зависимости от окружения за целым числом может следовать нулевое значение,
+  // то отсекаем 0)  
+  if (Serial.available() > 0) 
+  {
+    int ii=Serial.parseInt();
+    if (ii>0) inumber=ii;
+    //delay(100);
+  }
+
+  portENTER_CRITICAL(&taskMux);  // lock the mutex (busy waiting)
+  //portENTER_CRITICAL_ISR(&taskMux);
   TickType_t start = xTaskGetTickCount();
   digitalWrite (LED_BUILTIN, HIGH);  
   vTaskDelay(1000);
   digitalWrite (LED_BUILTIN, LOW);   
-  vTaskDelay(1000);
-  getheap("Цикл пройден ");
+  vTaskDelay(872);
   i++;
   TickType_t duration = xTaskGetTickCount() - start;
   Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
-  //portEXIT_CRITICAL (&taskMux);   // unlock the mutex
+  flag[0] = 1;
+  portEXIT_CRITICAL (&taskMux);   // unlock the mutex
+  //portEXIT_CRITICAL_ISR(&taskMux);
+
+  if (inumber == 1) MimicMCUhangEvent("Loop");   
+ 
+  
+  vTaskDelay(128);
+  getheap("Цикл пройден ");
 }
 
 // ============================================================================
