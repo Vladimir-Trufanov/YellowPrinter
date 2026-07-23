@@ -21,6 +21,10 @@
 SemaphoreHandle_t    xMutex = NULL;  
 SemaphoreHandle_t messMutex = NULL;  
 
+// Определяем мьютекс, который будет связан с критической секцией
+// и проинициализируем его (то есть разблокируем для дальнейшего захвата)
+//portMUX_TYPE taskMux = portMUX_INITIALIZER_UNLOCKED; 
+
 // Определяем глобальную переменную counter, которая будет действовать как общий ресурс. 
 // Две задачи - task1 и task2 могут обращаться к переменной counter. Однако, поскольку 
 // это общий ресурс, задачи выполняются параллельно, нужен мьютекс для предотвращения 
@@ -54,6 +58,7 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
     // Как только захватили мьютекс, выполняем свою работу
     if (xSemaphoreTake (messMutex, portMAX_DELAY)) 
     {
+      TickType_t start = xTaskGetTickCount();
       memset(CtrlMessage.line,'\0',smLINESIZE); 
       memcpy(&CtrlMessage, incomingData, len);
       Serial.printf("Transmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n\r", 
@@ -65,8 +70,11 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       messCalc++;
       messBool=false;
       xSemaphoreGive (messMutex);  
-      delay (64);
+      TickType_t duration = xTaskGetTickCount() - start;
+      Serial.printf("Длительность messageReceived(): %d ms\n", duration * portTICK_PERIOD_MS);
     }
+    //delay(64);
+    vTaskDelay(64);
   }
 
   /*
@@ -88,6 +96,17 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000); // uncomment if your serial monitor is empty
+
+  /*
+  const TickType_t Delay500   = pdMS_TO_TICKS(500); 
+  const TickType_t Delay10000 = pdMS_TO_TICKS(10000); 
+  const TickType_t Delay64    = pdMS_TO_TICKS(64); 
+  Serial.print("Delay500   = "); Serial.println(Delay500);
+  Serial.print("Delay10000 = "); Serial.println(Delay10000);
+  Serial.print("Delay64    = "); Serial.println(Delay64);
+  vTaskDelay(Delay10000);     // Задержка
+  */
+
   getheap("setup        ");
   
   WiFi.mode(WIFI_STA);
@@ -122,7 +141,7 @@ void setup()
    (
       task1,     // Function to implement the task
       "task1",   // Name of the task
-      1000,      // Stack size in words
+      1024,      // Stack size in words
       NULL,      // Task input parameter
       10,        // Priority of the task
       NULL,      // Task handle.
@@ -133,7 +152,7 @@ void setup()
    (
       task2,     // Function to implement the task
       "task2",   // Name of the task
-      1000,      // Stack size in words
+      1024,      // Stack size in words
       NULL,      // Task input parameter
       10,        // Priority of the task
       NULL,      // Task handle.
@@ -159,15 +178,17 @@ uint16_t i=0;
 // ============================================================================ 
 void loop() 
 {
+  //portENTER_CRITICAL(&taskMux);  // lock the mutex (busy waiting)
+  TickType_t start = xTaskGetTickCount();
   digitalWrite (LED_BUILTIN, HIGH);  
-  delay (1000);                      
+  vTaskDelay(1000);
   digitalWrite (LED_BUILTIN, LOW);   
-  delay (1000);       
-    
+  vTaskDelay(1000);
   getheap("Цикл пройден ");
   i++;
-  //delay(3000);
-               
+  TickType_t duration = xTaskGetTickCount() - start;
+  Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
+  //portEXIT_CRITICAL (&taskMux);   // unlock the mutex
 }
 
 // ============================================================================
@@ -192,12 +213,12 @@ void task1 (void *pvParameters)
       counter = counter + 1;  
       Serial.print ("Task 1: Counter = ");
       Serial.println (counter);
-      delay (1000);
+      vTaskDelay(1000);
       xSemaphoreGive (xMutex);  
-      delay (800);
+      vTaskDelay(800);
     }
   }
-  delay(1000);
+  vTaskDelay(1000);
 }
 
 // ============================================================================
@@ -230,7 +251,7 @@ void task2 (void *pvParameters)
          //Serial.print ("Task 2: Mutex не захвачен ");
          //Serial.println (xTaskGetTickCount());
       }
-      delay (200);
+      vTaskDelay(200);
   }
 }
 
@@ -265,7 +286,7 @@ void taskMain (void *pvParameters)
       //Serial.print ("Task 2: Mutex не захвачен ");
       //Serial.println (xTaskGetTickCount());
     }
-    delay (64);
+    vTaskDelay(64);
   }
 }
 
