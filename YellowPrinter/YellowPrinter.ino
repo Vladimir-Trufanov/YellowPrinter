@@ -37,13 +37,17 @@ int counter = 0;  // A shared variable
 #include <SPIFFS.h>
 #include "inimem.h"
 
+// Готовим к использованию сторожевой таймер
+#include <esp_task_wdt.h>
+int WDT_TIMEOUT = 5; // WDT Timeout in seconds
+
 // Определяем число, которое будет считываться в основном цикле
 // с последовательного порта для иммитации зависания
 volatile int inumber;
 // Флаги контрольных участков сторожевого таймера
-#define fLoop             0   // 0 => loop();
-#define fmessageReceived  1   // 1 => messageReceived()
-int flag[] = {0,0};   
+#define fLoop             1   // 1 => loop();
+#define fmessageReceived  2   // 2 => messageReceived()
+int flag[] = {-1,0,0};   
 
 #include "spriteMain.h"
 TSprite_Main ypsMain;
@@ -83,8 +87,10 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       TickType_t duration = xTaskGetTickCount() - start;
       Serial.printf("Длительность messageReceived(): %d ms\n", duration * portTICK_PERIOD_MS);
     }
-    flag[1] = 1;
-    if (inumber == 2) MimicMCUhangEvent("messageReceived");   
+    // Отмечаем завершение функции для сторожевого таймера
+    flag[fmessageReceived] = 1;
+    // Если было введено число=fmessageReceived
+    if (inumber == fmessageReceived) MimicMCUhangEvent("messageReceived");   
     vTaskDelay(64);
   }
 }
@@ -158,6 +164,16 @@ void setup()
       NULL,      // Task handle.
       0          // Core where the task should run
    );
+   
+   xTaskCreatePinnedToCore(
+      vCheckFlagTask,         // Task function
+      "CheckFlags",           // Task name
+      1024,                   // Stack size
+      NULL,                  // Parameters passed to the task function
+      16,                     // Priority
+      NULL,                   // Task handle
+      0
+   );
 }
 
 // ****************************************************************************
@@ -175,7 +191,7 @@ void MimicMCUhangEvent(String NameTask)
 // ****************************************************************************
 // *                                 loop                                     *
 // ****************************************************************************
-uint16_t i=0;
+uint16_t iLoop=0;
 void loop() 
 {
   // Считываем с последовательного порта целое число
@@ -185,29 +201,22 @@ void loop()
   {
     int ii=Serial.parseInt();
     if (ii>0) inumber=ii;
-    delay(100);
   }
-
-  //portENTER_CRITICAL(&taskMux);  // lock the mutex (busy waiting)
-  //portENTER_CRITICAL_ISR(&taskMux);
   TickType_t start = xTaskGetTickCount();
   digitalWrite (LED_BUILTIN, HIGH);  
   vTaskDelay(1000);
   digitalWrite (LED_BUILTIN, LOW);   
   vTaskDelay(872);
-  i++;
+  // Задержку на сборку мусора
+  vTaskDelay(128);
+  iLoop++;
   TickType_t duration = xTaskGetTickCount() - start;
   Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
-  flag[0] = 1;
-  //portEXIT_CRITICAL (&taskMux);   // unlock the mutex
-  //portEXIT_CRITICAL_ISR(&taskMux);
-
+  // Отмечаем завершение цикла Loop для сторожевого таймера
+  flag[fLoop] = 1;
   // Имитируем зависание микроконтроллера с помощью опознанного числа,
   // принятого в последовательном порту
-  //if (inumber == 1) MimicMCUhangEvent("Loop");   
- 
-  
-  vTaskDelay(128);
+  if (inumber == fLoop) MimicMCUhangEvent("Loop");   
   getheap("Цикл пройден ");
 }
 
@@ -275,6 +284,31 @@ void task2 (void *pvParameters)
       vTaskDelay(200);
   }
 }
+
+
+void vCheckFlagTask(void* pvParameters) 
+{
+  for ( ;; )
+  {
+    // Сбрасываем флаги и "пинаем сторожевую собаку" (fLoop=1, fmessageReceived=2)
+    if (flag[fLoop] == 1 && flag[fmessageReceived] == 1) 
+    {
+      flag[fLoop] = 0;
+      flag[fmessageReceived] = 0;
+      WDT_TIMEOUT = 5;
+    }
+    else 
+    {
+      WDT_TIMEOUT --;
+      if (WDT_TIMEOUT == 0) 
+      {
+        ESP.restart();
+      }
+    }
+    vTaskDelay(1000/portTICK_PERIOD_MS);
+  }
+}
+
 
 uint16_t copyCalc=195;  // !=0
 

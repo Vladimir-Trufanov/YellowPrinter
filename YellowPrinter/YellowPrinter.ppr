@@ -37,8 +37,8 @@ YellowPrinter
 Main=
 Selected=YellowPrinter.ino
 [YellowPrinter.ino]
-TopLine=289
-Caret=5,202
+TopLine=179
+Caret=36,203
 [error.txt]
 TopLine=1
 Caret=1,21
@@ -46,7 +46,7 @@ Caret=1,21
 TopLine=21
 Caret=1,1
 [spriteMain.h]
-TopLine=65
+TopLine=17
 Caret=1,17
 [fs_trass.h]
 TopLine=43
