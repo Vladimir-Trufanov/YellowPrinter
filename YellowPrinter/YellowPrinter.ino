@@ -4,7 +4,7 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v1.0.4, 23.07.2026                                 Автор:      Труфанов В.Е.
+ * v1.0.5, 25.07.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
@@ -23,7 +23,7 @@ SemaphoreHandle_t messMutex = NULL;
 
 // Определяем мьютекс, который будет связан с критической секцией
 // и проинициализируем его (то есть разблокируем для дальнейшего захвата)
-portMUX_TYPE taskMux = portMUX_INITIALIZER_UNLOCKED; 
+//portMUX_TYPE taskMux = portMUX_INITIALIZER_UNLOCKED; 
 
 // Определяем глобальную переменную counter, которая будет действовать как общий ресурс. 
 // Две задачи - task1 и task2 могут обращаться к переменной counter. Однако, поскольку 
@@ -37,44 +37,13 @@ int counter = 0;  // A shared variable
 #include <SPIFFS.h>
 #include "inimem.h"
 
-//#include <esp_task_wdt.h>
-//int WDT_TIMEOUT = 8;          // WDT Timeout in seconds
-//int flag[] = {0, 0};   // 0 => loop(); 1 => messageReceived()
-
-
-// Определяем заголовок для объекта таймера
-//hw_timer_t *timer = NULL;
-// Инициируем спинлок критической секции в обработчике таймерного прерывания
-//portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 // Определяем число, которое будет считываться в основном цикле
 // с последовательного порта для иммитации зависания
 volatile int inumber;
-
-int flag[] = {0, 0};   // 0 => loop(); 1 => messageReceived()
-
-/*
-// Обработка прерывания от таймера
-void IRAM_ATTR onTimer() 
-{
-   portENTER_CRITICAL_ISR(&timerMux);
-   // Если флаги всех задач установлены в 1, 
-   // то сбрасываем флаги задач и счетчик сторожевого таймера
-   if (flag[0] == 1 && flag[1] == 1) 
-   {
-      // Сбрасываем флаги задач
-      flag[0] = 0;
-      flag[1] = 0;
-      // "Пинаем собаку" - сбрасываем счетчик сторожевого таймера
-      timerWrite(timer, 0);
-   }
-   // Иначе перезагружаем контроллер
-   else 
-   {
-      ESP.restart();
-   }
-   portEXIT_CRITICAL_ISR(&timerMux);
-}
-*/
+// Флаги контрольных участков сторожевого таймера
+#define fLoop             0   // 0 => loop();
+#define fmessageReceived  1   // 1 => messageReceived()
+int flag[] = {0,0};   
 
 #include "spriteMain.h"
 TSprite_Main ypsMain;
@@ -86,9 +55,14 @@ typedef struct message
 message CtrlMessage;    // сообщение контроллера
 message CYD_message;    // сообщение для дисплея CYD
 
-uint16_t messCalc=0;
-bool     messBool;  
-
+// Инициируем счетчик поступающих сообщений
+uint16_t messCalc=0;   
+// Готовим индикатор ожидания мьютекса и выборки поступающего сообщения
+bool messBool;      
+  
+// ****************************************************************************
+// *            Принять поступающее сообщение в захвате мьютекса              *
+// ****************************************************************************
 void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
 {
   messBool=true;  
@@ -102,53 +76,26 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       memcpy(&CtrlMessage, incomingData, len);
       Serial.printf("Transmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n\r", 
         info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-      //Serial.print("Message: ");
-      //Serial.println(CtrlMessage.line);
-      //Serial.println();
-      //ypsMain.View(CtrlMessage.line);
+      //Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line); Serial.println();
       messCalc++;
       messBool=false;
       xSemaphoreGive (messMutex);  
       TickType_t duration = xTaskGetTickCount() - start;
       Serial.printf("Длительность messageReceived(): %d ms\n", duration * portTICK_PERIOD_MS);
     }
-    //delay(64);
     flag[1] = 1;
     if (inumber == 2) MimicMCUhangEvent("messageReceived");   
-
     vTaskDelay(64);
   }
-
-  /*
-  //memcpy(&CtrlMessage, incomingData, sizeof(CtrlMessage));
-  memset(CtrlMessage.line,'\0',smLINESIZE); 
-  memcpy(&CtrlMessage, incomingData, len);
-  Serial.printf("Transmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n\r", 
-    info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-  Serial.print("Message: ");
-  Serial.println(CtrlMessage.line);
-  Serial.println();
-  ypsMain.View(CtrlMessage.line);
-  */
-  
 }
 
-// ============================================================================
+// ****************************************************************************
+// *                                 setup                                    *
+// ****************************************************************************
 void setup() 
 {
   Serial.begin(115200);
-  delay(300); // uncomment if your serial monitor is empty
-
-  /*
-  const TickType_t Delay500   = pdMS_TO_TICKS(500); 
-  const TickType_t Delay10000 = pdMS_TO_TICKS(10000); 
-  const TickType_t Delay64    = pdMS_TO_TICKS(64); 
-  Serial.print("Delay500   = "); Serial.println(Delay500);
-  Serial.print("Delay10000 = "); Serial.println(Delay10000);
-  Serial.print("Delay64    = "); Serial.println(Delay64);
-  vTaskDelay(Delay10000);     // Задержка
-  */
-
+  delay(300);
   getheap("setup        ");
   
   WiFi.mode(WIFI_STA);
@@ -211,37 +158,26 @@ void setup()
       NULL,      // Task handle.
       0          // Core where the task should run
    );
-
-   /*
-   // Создаём объект таймера, устанавливаем его частоту отсчёта (1Mhz)
-   timer = timerBegin(1000000);
-   // Подключаем функцию обработчика прерывания от таймера - onTimer
-   timerAttachInterrupt(timer, &onTimer);
-   // Настраиваем таймер: интервал перезапуска - 3 секунды (3000000 микросекунд),
-   // всегда повторяем перезапуск (третий параметр = true), неограниченное число 
-   // раз (четвертый параметр = 0) 
-   timerAlarm(timer, 3000000, true, 0);
-   */
 }
 
-uint16_t i=0;
-//char lineIn[smLINESIZE];    // буфер входного сообщения
-//char chi[] = "Число i = ";
-
-
-// Имитируем событие зависания процессора
+// ****************************************************************************
+// *                  Имитировать событие зависания процессора                *
+// ****************************************************************************
 void MimicMCUhangEvent(String NameTask)
 {
-   while (true)
-   {
-      Serial.print(NameTask);
-      Serial.println(": зависание процессора!!!");
-   }
+  while (true)
+  {
+    Serial.print(NameTask);
+    Serial.println(": зависание процессора!!!");
+  }
 }
-// ============================================================================ 
+
+// ****************************************************************************
+// *                                 loop                                     *
+// ****************************************************************************
+uint16_t i=0;
 void loop() 
 {
-
   // Считываем с последовательного порта целое число
   // (так как в зависимости от окружения за целым числом может следовать нулевое значение,
   // то отсекаем 0)  
@@ -252,7 +188,7 @@ void loop()
     delay(100);
   }
 
-  portENTER_CRITICAL(&taskMux);  // lock the mutex (busy waiting)
+  //portENTER_CRITICAL(&taskMux);  // lock the mutex (busy waiting)
   //portENTER_CRITICAL_ISR(&taskMux);
   TickType_t start = xTaskGetTickCount();
   digitalWrite (LED_BUILTIN, HIGH);  
@@ -263,7 +199,7 @@ void loop()
   TickType_t duration = xTaskGetTickCount() - start;
   Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
   flag[0] = 1;
-  portEXIT_CRITICAL (&taskMux);   // unlock the mutex
+  //portEXIT_CRITICAL (&taskMux);   // unlock the mutex
   //portEXIT_CRITICAL_ISR(&taskMux);
 
   // Имитируем зависание микроконтроллера с помощью опознанного числа,
