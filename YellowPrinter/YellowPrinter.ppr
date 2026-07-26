@@ -37,8 +37,8 @@ YellowPrinter
 Main=
 Selected=YellowPrinter.ino
 [YellowPrinter.ino]
-TopLine=179
-Caret=36,203
+TopLine=65
+Caret=43,198
 [error.txt]
 TopLine=1
 Caret=1,21

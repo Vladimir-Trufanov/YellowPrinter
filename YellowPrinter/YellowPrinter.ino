@@ -4,7 +4,7 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v1.0.5, 25.07.2026                                 Автор:      Труфанов В.Е.
+ * v1.0.6, 26.07.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
@@ -21,15 +21,11 @@
 SemaphoreHandle_t    xMutex = NULL;  
 SemaphoreHandle_t messMutex = NULL;  
 
-// Определяем мьютекс, который будет связан с критической секцией
-// и проинициализируем его (то есть разблокируем для дальнейшего захвата)
-//portMUX_TYPE taskMux = portMUX_INITIALIZER_UNLOCKED; 
-
 // Определяем глобальную переменную counter, которая будет действовать как общий ресурс. 
 // Две задачи - task1 и task2 могут обращаться к переменной counter. Однако, поскольку 
 // это общий ресурс, задачи выполняются параллельно, нужен мьютекс для предотвращения 
 // конфликтов
-int counter = 0;  // A shared variable
+int counter = 0;  
 
 #include <esp_now.h>
 #include <WiFi.h>
@@ -42,11 +38,11 @@ int counter = 0;  // A shared variable
 int WDT_TIMEOUT = 5; // WDT Timeout in seconds
 
 // Определяем число, которое будет считываться в основном цикле
-// с последовательного порта для иммитации зависания
-volatile int inumber;
+// с последовательного порта для иммитации зависания и других действий
+volatile int inumber=-1;
 // Флаги контрольных участков сторожевого таймера
-#define fLoop             1   // 1 => loop();
-#define fmessageReceived  2   // 2 => messageReceived()
+#define fLoop      1   // 1 => loop();
+#define ftaskMain  2   // 2 => taskMain()
 int flag[] = {-1,0,0};   
 
 #include "spriteMain.h"
@@ -85,12 +81,8 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       messBool=false;
       xSemaphoreGive (messMutex);  
       TickType_t duration = xTaskGetTickCount() - start;
-      Serial.printf("Длительность messageReceived(): %d ms\n", duration * portTICK_PERIOD_MS);
+      //Serial.printf("Длительность messageReceived(): %d ms\n", duration * portTICK_PERIOD_MS);
     }
-    // Отмечаем завершение функции для сторожевого таймера
-    flag[fmessageReceived] = 1;
-    // Если было введено число=fmessageReceived
-    if (inumber == fmessageReceived) MimicMCUhangEvent("messageReceived");   
     vTaskDelay(64);
   }
 }
@@ -131,29 +123,7 @@ void setup()
    // Создаем объект мьютекса - мьютекс
    xMutex = xSemaphoreCreateMutex();  
    messMutex = xSemaphoreCreateMutex();  
-   // Cоздаем задачи, привязывая их к ядру 0
-   xTaskCreatePinnedToCore 
-   (
-      task1,     // Function to implement the task
-      "task1",   // Name of the task
-      1024,      // Stack size in words
-      NULL,      // Task input parameter
-      10,        // Priority of the task
-      NULL,      // Task handle.
-      0          // Core where the task should run
-   );
-
-   xTaskCreatePinnedToCore 
-   (
-      task2,     // Function to implement the task
-      "task2",   // Name of the task
-      1024,      // Stack size in words
-      NULL,      // Task input parameter
-      10,        // Priority of the task
-      NULL,      // Task handle.
-      0          // Core where the task should run
-   );
-
+   // Cоздаем задачи
    xTaskCreatePinnedToCore 
    (
       taskMain,     // Function to implement the task
@@ -192,6 +162,7 @@ void MimicMCUhangEvent(String NameTask)
 // *                                 loop                                     *
 // ****************************************************************************
 uint16_t iLoop=0;
+static char taskList[1024]; 
 void loop() 
 {
   // Считываем с последовательного порта целое число
@@ -211,90 +182,85 @@ void loop()
   vTaskDelay(128);
   iLoop++;
   TickType_t duration = xTaskGetTickCount() - start;
-  Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
+  //Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
   // Отмечаем завершение цикла Loop для сторожевого таймера
   flag[fLoop] = 1;
   // Имитируем зависание микроконтроллера с помощью опознанного числа,
   // принятого в последовательном порту
   if (inumber == fLoop) MimicMCUhangEvent("Loop");   
+  // ---Имитируем зависание микроконтроллера с помощью опознанного числа,
+  // ---принятого в последовательном порту
+
+/*
+ * 
+Функция vTaskList(char *pcWriteBuffer) в FreeRTOS предназначена для отладки: она формирует читаемый отчёт со списком всех текущих задач и их состоянием. 
+docs.espressif.com
+docs.espressif.com
+microsin.net
+Параметры функции
+pcWriteBuffer — указатель на буфер в памяти, куда функция запишет сформированную таблицу в текстовом (ASCII) виде. Предполагается, что размер буфера достаточен для всего отчёта. Ориентировочно на одну задачу требуется около 40 байт. 
+docs.espressif.com
+docs.espressif.com
+Содержимое отчёта
+Для каждой задачи в таблице выводится строка с полями:
+Поле  Что означает
+Имя задачи  Строка, присвоенная задаче при создании (второй аргумент xTaskCreate()). Может повторяться для разных экземпляров одной задачи, но уникальный номер задачи в системе будет разным.
+Состояние Однобуквенный код:
+B Blocked — задача заблокирована (например, ждёт события или таймера).
+R Ready — задача готова к выполнению и ждёт своего шанса.
+D Deleted — задача была удалена (через vTaskDelete()), но ещё не освободила ресурсы и ждёт очистки.
+S Suspended — задача приостановлена (например, с помощью vTaskSuspend()).
+X Executed (Running) — задача выполняется в данный момент.
+Приоритет Текущий приоритет задачи. Чем значение выше, тем приоритет выше.
+Максимальный объём стека (Stack HWM)  Показатель «высокого водного mark» (HWM) — это максимальное количество байт стека, которое задача использовала за всё время своего существования. Меньшее значение означает, что задача чаще приближалась к переполнению стека.
+Уникальный номер задачи (Task Number) Идентификатор задачи, назначенный ядром FreeRTOS.
+Адрес начала стека  Указатель на начало области памяти, выделенной под стек задачи. 
+kit-e.ru
+docs.espressif.com
+docs.espressif.com
+openrtos.org
+microsin.net
+Важные замечания
+Доступность функции. Чтобы vTaskList была доступна, в конфигурационном файле FreeRTOSConfig.h должны быть определены в 1 три макроса: configUSE_TRACE_FACILITY, configUSE_STATS_FORMATTING_FUNCTIONS и INCLUDE_vTaskSuspend. 
+docs.espressif.com
+kolegite.com
+Отключение прерываний. Во время выполнения функция отключает прерывания, что может повлиять на работу системы. Поэтому её не рекомендуется использовать в рабочем, производственном коде — только для отладки. 
+docs.espressif.com
+docs.espressif.com
+Реализация. Внутри vTaskList вызывает uxTaskGetSystemState(), которая получает сырые данные о состоянии всех задач, а затем форматирует их в читаемую таблицу. 
+docs.espressif.com
+docs.espressif.com
+Зависимость от sprintf(). Функция использует стандартную функцию C sprintf(), что может увеличить размер кода, потреблять стек и давать разные результаты на разных платформах. В некоторых демо-проектах FreeRTOS есть альтернативная, более компактная реализация sprintf(). 
+docs.espressif.com
+Рекомендация для продакшена. Если вам нужна «сырая» статистика для анализа, лучше напрямую вызывать uxTaskGetSystemState(), а не форматировать его через vTaskList(). 
+docs.espressif.com
+Пример вывода
+Name State Priority Stack Num
+Print R 4 358 64
+QConsB R 0 192 58
+IDLE R 0 212 66
+В этом примере задача Print выполняется (X), задача QConsB заблокирована (B), а IDLE готова к выполнению (R).
+ */
+  
+  if (inumber == 3)
+  {
+    vTaskList(taskList);
+    Serial.println(taskList);
+    // Сбрасываем значение индикатора
+    inumber=-1;  
+  }
   getheap("Цикл пройден ");
 }
-
-// ============================================================================
-// Сначала в задаче task1 пытаемся захватить и заблокировать мьютекс xMutex с помощью функции 
-// xSemaphoreTake(xMutex,portMAX_DELAY). Функции передаются два параметра: дескриптор мьютекса 
-// и значение таймаута. Здесь используется portMAX_DELAY макрос, который соответствует 
-// неопределенной задержке. Это означает, что task1 будет пытаться получить блокировку 
-// на неопределенный срок, пока не добьется успеха. Когда получаем блокировку, 
-// то печатаем некоторую информацию и увеличиваем значение counter на 1.
-// Затем печатаем значение счетчика и ждем 1 секунду, прежде чем снять 
-// блокировку мьютекса с помощью вызова xSemaphoreGive(xMutex), отдаем мьютекс и ждем еще 800 
-// миллисекунд, прежде чем повторить всю операцию.
-void task1 (void *pvParameters) 
-{
-  while (1) 
-  {
-    // Как только захватили мьютекс, выполняем свою работу
-    if (xSemaphoreTake (xMutex, portMAX_DELAY)) 
-    {  
-      //Serial.print ("Task 1: Mutex взят задачей ");
-      //Serial.println (xTaskGetTickCount());
-      counter = counter + 1;  
-      Serial.print ("Task 1: Counter = ");
-      Serial.println (counter);
-      vTaskDelay(1000);
-      xSemaphoreGive (xMutex);  
-      vTaskDelay(800);
-    }
-  }
-  vTaskDelay(1000);
-  if (inumber == 1) MimicMCUhangEvent("task1");   
-}
-
-// ============================================================================
-// В task2 конкурируем за ту же counter переменную. Пытаемся заблокировать xMutex 
-// с таймаутом в 200 миллисекунд, указанным как 200*portTICK_PERIOD_MS. Если захватить
-// блокировку не получается в течение этого периода времени, прекращаем попытки 
-// и вместо этого печатает сообщение. 
-//
-// !!! Блокировка task2 может быть установлена, только если она находится в состоянии 
-// разблокировки или, другими словами, не заблокирована task1. Поскольку для освобождения 
-// мьютекса task1 требуется 1 секунда, task2 придется подождать не менее 1 секунды, 
-// прежде чем он сможет получить блокировку. 
-//
-// Это будет видно в выводе на последовательный монитор
-void task2 (void *pvParameters) 
-{
-   while (1) 
-   {
-      if (xSemaphoreTake (xMutex, (200 * portTICK_PERIOD_MS))) 
-      { 
-         //Serial.print ("Task 2: Mutex взят задачей ");
-         //Serial.println (xTaskGetTickCount());
-         counter = counter + 1000;
-         //Serial.print ("Task 2: Counter = ");
-         //Serial.println (counter);
-         xSemaphoreGive (xMutex);  
-      }
-      else 
-      {  
-         //Serial.print ("Task 2: Mutex не захвачен ");
-         //Serial.println (xTaskGetTickCount());
-      }
-      vTaskDelay(200);
-  }
-}
-
 
 void vCheckFlagTask(void* pvParameters) 
 {
   for ( ;; )
   {
     // Сбрасываем флаги и "пинаем сторожевую собаку" (fLoop=1, fmessageReceived=2)
-    if (flag[fLoop] == 1 && flag[fmessageReceived] == 1) 
+    if (flag[fLoop] == 1 && flag[ftaskMain] == 1) 
     {
       flag[fLoop] = 0;
-      flag[fmessageReceived] = 0;
+      flag[ftaskMain] = 0;
       WDT_TIMEOUT = 5;
     }
     else 
@@ -316,6 +282,7 @@ void taskMain (void *pvParameters)
 {
   while (1) 
   {
+    TickType_t start = xTaskGetTickCount();
     if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
     { 
       //Serial.print("copyCalc==messCalc: "); Serial.print(copyCalc); Serial.print("="); Serial.println(messCalc);
@@ -341,6 +308,13 @@ void taskMain (void *pvParameters)
       //Serial.print ("Task 2: Mutex не захвачен ");
       //Serial.println (xTaskGetTickCount());
     }
+    // Отмечаем завершение цикла задаси для сторожевого таймера
+    flag[ftaskMain] = 1;
+    TickType_t duration = xTaskGetTickCount() - start;
+    //Serial.printf("Длительность taskMain(): %d ms\n", duration * portTICK_PERIOD_MS);
+    // Если было введено число=fmessageReceived
+    if (inumber == ftaskMain) MimicMCUhangEvent("taskMain");   
+
     vTaskDelay(64);
   }
 }
