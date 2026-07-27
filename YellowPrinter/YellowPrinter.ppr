@@ -30,24 +30,12 @@ YellowPrinter
 [Open project files]
 0=YellowPrinter.ino
 1=error.txt
-2=inimem.h
-3=spriteMain.h
-4=fs_trass.h
 [Selected Project Files]
 Main=
 Selected=YellowPrinter.ino
 [YellowPrinter.ino]
-TopLine=65
-Caret=43,198
+TopLine=241
+Caret=1,263
 [error.txt]
 TopLine=1
 Caret=1,21
-[inimem.h]
-TopLine=21
-Caret=1,1
-[spriteMain.h]
-TopLine=17
-Caret=1,17
-[fs_trass.h]
-TopLine=43
-Caret=1,55
