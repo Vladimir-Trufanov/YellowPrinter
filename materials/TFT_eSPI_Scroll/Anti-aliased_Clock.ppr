@@ -1,0 +1,42 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.CompileOnBackground=0
+Compilator.ProgSaveAll=0
+Compilator.ProgRunSelection=0
+Compilator.LogType=0
+Compilator.LogEncoding=0
+DefaultDir=C:\YellowPrinter\materials\TFT_eSPI_Scroll\Anti-aliased_Clock
+DefaultCP=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+Extensions=*.*
+[Project tree]
+Anti-aliased_Clock
+	+Anti-aliased_Clock
+		Anti-aliased_Clock\Anti-aliased_Clock.ino
+		Anti-aliased_Clock\NotoSansBold15.h
+		Anti-aliased_Clock\NTP_Time.h
+[Open project files]
+0=Anti-aliased_Clock\NotoSansBold15.h
+1=Anti-aliased_Clock\NTP_Time.h
+2=Anti-aliased_Clock\Anti-aliased_Clock.ino
+3=..\..\..\Users\Евгеньевич\Documents\Arduino\libraries\Timezone-master\src\Timezone.cpp
+[Selected Project Files]
+Main=
+Selected=..\..\..\Users\Евгеньевич\Documents\Arduino\libraries\Timezone-master\src\Timezone.cpp
+[Anti-aliased_Clock\NotoSansBold15.h]
+TopLine=1
+Caret=1,1
+[Anti-aliased_Clock\NTP_Time.h]
+TopLine=93
+Caret=11,11
+[Anti-aliased_Clock\Anti-aliased_Clock.ino]
+TopLine=69
+Caret=23,84
+[..\..\..\Users\Евгеньевич\Documents\Arduino\libraries\Timezone-master\src\Timezone.cpp]
+TopLine=55
+Caret=1,1
