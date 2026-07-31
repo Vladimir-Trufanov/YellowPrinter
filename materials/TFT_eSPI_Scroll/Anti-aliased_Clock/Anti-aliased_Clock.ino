@@ -15,8 +15,6 @@
 #include <TFT_eSPI.h> // Master copy here: https://github.com/Bodmer/TFT_eSPI
 #include <SPI.h>
 
-#include "NotoSansBold15.h"
-
 TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
 TFT_eSprite face = TFT_eSprite(&tft);
 
@@ -28,7 +26,15 @@ TFT_eSprite face = TFT_eSprite(&tft);
 #define SECCOND_FG TFT_RED
 #define LABEL_FG   TFT_GOLD
 
-#define CLOCK_R       127.0f / 2.0f // Clock face radius (float type)
+//#define CLOCK_R       127.0f / 2.0f // Clock face radius (float type)
+//#define CLOCK_R       92.0f / 2.0f // Clock face radius (float type)
+//#define POSiY          240 - 93
+//#define POSiX         320 - 93
+
+#define CLOCK_R       79.0f / 2.0f // Clock face radius (float type)
+#define POSiY         240 - 80
+#define POSiX         320 - 80
+
 #define H_HAND_LENGTH CLOCK_R/2.0f
 #define M_HAND_LENGTH CLOCK_R/1.4f
 #define S_HAND_LENGTH CLOCK_R/1.3f
@@ -70,7 +76,7 @@ void setup() {
   // Ideally set orientation for good viewing angle range because
   // the anti-aliasing effectiveness varies with screen viewing angle
   // Usually this is when screen ribbon connector is at the bottom
-  tft.setRotation(0);
+  tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
 
   // Create the clock face sprite
@@ -78,7 +84,9 @@ void setup() {
   face.createSprite(FACE_W, FACE_H);
 
   // Only 1 font used in the sprite, so can remain loaded
-  face.loadFont(NotoSansBold15);
+  //face.loadFont(NotoSansBold15);
+  face.loadFont("HuaweiSans16");   
+
 
   // Draw the whole clock - NTP time not available yet
   renderFace(time_secs);
@@ -89,7 +97,8 @@ void setup() {
 // =========================================================================
 // Loop
 // =========================================================================
-void loop() {
+void loop() 
+{
   // Update time periodically
   if (targetTime < millis()) {
 
@@ -144,7 +153,8 @@ static void renderFace(float t) {
 
   // Add text (could be digital time...)
   face.setTextColor(LABEL_FG, CLOCK_BG);
-  face.drawString("TFT_eSPI", CLOCK_R, CLOCK_R * 0.75);
+  //face.drawString("TFT_eSPI", CLOCK_R, CLOCK_R * 0.75);
+  //face.drawString("TFT_iiSPI", CLOCK_R, CLOCK_R * 0.75);
 
   // Draw minute hand
   getCoord(CLOCK_R, CLOCK_R, &xp, &yp, M_HAND_LENGTH, m_angle);
@@ -162,7 +172,9 @@ static void renderFace(float t) {
   // Draw cecond hand
   getCoord(CLOCK_R, CLOCK_R, &xp, &yp, S_HAND_LENGTH, s_angle);
   face.drawWedgeLine(CLOCK_R, CLOCK_R, xp, yp, 2.5, 1.0, SECCOND_FG);
-  face.pushSprite(5, 5, TFT_TRANSPARENT);
+  //face.pushSprite(5, 5, TFT_TRANSPARENT);
+  face.pushSprite(POSiX, POSiY, TFT_TRANSPARENT);
+  
 }
 
 // =========================================================================

@@ -8,7 +8,7 @@
 
 // Time zone correction library:
 // https://github.com/JChristensen/Timezone
-#include <Timezone.h>
+//#include <Timezone.h>
 
 // Choose library to load
 #ifdef ARDUINO_ARCH_ESP8266
@@ -31,7 +31,7 @@ WiFiUDP udp;
 //                                  Settings
 //====================================================================================
 
-#define TIMEZONE MSK // See below for other "Zone references", UK, usMT etc.
+//#define TIMEZONE MSK // See below for other "Zone references", UK, usMT etc.
 
 #ifdef ESP32 // Temporary fix, ESP8266 fails to communicate with some servers...
 // Try to use pool URL instead so the server IP address is looked up from those available
@@ -91,9 +91,9 @@ Timezone UK(BST, GMT);
  Сам по себе TimeChangeRule не выполняет преобразование времени — он только задаёт условия. 
  На основе набора правил объект другого класса (например, Timezone в тех же библиотеках) уже проводит все необходимые вычисления, чтобы перевести время из UTC в локальное с учётом летнего времени
 */
-TimeChangeRule myLET = {"LET", First, Sun, Mar, 2, 0};        
-TimeChangeRule myZIM = {"ZIM", First, Sun, Oct, 2, 0};        
-Timezone MSK(myLET,myZIM);
+//TimeChangeRule myLET = {"LET", First, Sun, Mar, 2, 0};        
+//TimeChangeRule myZIM = {"ZIM", First, Sun, Oct, 2, 0};        
+//Timezone MSK(myLET,myZIM);
 
 /*
 // Zone reference "euCET" Central European Time (Frankfurt, Paris)
@@ -133,7 +133,7 @@ Timezone usPT(usPDT, usPST);
 //====================================================================================
 //                                  Variables
 //====================================================================================
-TimeChangeRule *tz1_Code;   // Pointer to the time change rule, use to get the TZ abbrev, e.g. "GMT"
+//TimeChangeRule *tz1_Code;   // Pointer to the time change rule, use to get the TZ abbrev, e.g. "GMT"
 
 time_t utc = 0;
 
