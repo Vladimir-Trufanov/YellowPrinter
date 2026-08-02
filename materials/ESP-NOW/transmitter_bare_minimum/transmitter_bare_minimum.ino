@@ -14,7 +14,8 @@ esp_now_peer_info_t peerInfo;
 void setup()
 {
     Serial.begin(115200);
-    // delay(1000); // uncomment if your serial monitor is empty
+    delay(3000); 
+
     WiFi.mode(WIFI_STA);
     
     esp_now_init();
