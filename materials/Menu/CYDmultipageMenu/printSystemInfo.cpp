@@ -1,4 +1,5 @@
   #include <Arduino.h>
+  #include <esp_chip_info.h>
   
   /**
    * Print system info to the serial monitor as shown below:
@@ -26,7 +27,12 @@
       if (chipInfo.features & b) Serial.printf("%s   ", chipFeatures[i]);
       b <<= 1; // mask the next bit
     }
-    Serial.printf("\n  Revision       %d\n  Full revision  %d\n", chipInfo.revision, chipInfo.full_revision);
+    
+    // 07/08/2026 ошибка 'struct esp_chip_info_t' has no member named 'full_revision'; did you mean 'revision'
+    // Serial.printf("\n  Revision       %d\n  Full revision  %d\n", chipInfo.revision, chipInfo.full_revision);
+
+    
+    Serial.printf("\n  Revision       %d\n ", chipInfo.revision);
     Serial.printf("  Heap size   %6d kB\n", ESP.getHeapSize()/1024);
     Serial.printf("  Free heap   %6d kB\n", ESP.getFreeHeap()/1024);
     Serial.printf("  Psram size  %6d kB\n", ESP.getPsramSize()/1024);
