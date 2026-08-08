@@ -180,7 +180,7 @@ public:
     }
 //*/
 
-//*
+/*
     { // Установите параметры управления с помощью сенсорного экрана.(Удалите, если в этом нет необходимости)
       auto cfg = _touch_instance.config();
 
@@ -189,7 +189,7 @@ public:
       cfg.y_min      = 0;    // タッチスクリーンから得られる最小のY値(生の値)
       cfg.y_max      = 319;  // タッチスクリーンから得られる最大のY値(生の値)
     //cfg.pin_int    = 38;   // INT - Подключен к пин-коду
-      cfg.pin_int    = 36;   // INT - Подключен к пин-коду
+      cfg.pin_int    = 36;   // 2 INT - Подключен к пин-коду
       cfg.bus_shared = true; // 画面と共通のバスを使用している場合 trueを設定
       cfg.offset_rotation = 0;// 表示とタッチの向きのが一致しない場合の調整 0~7の値で設定
 
@@ -198,13 +198,13 @@ public:
       cfg.spi_host = HSPI_HOST;// 使用するSPIを選択 (HSPI_HOST or VSPI_HOST)
       cfg.freq = 1000000;     // SPIクロックを設定
     //cfg.pin_sclk = 18;     // SCLKが接続されているピン番号
-      cfg.pin_sclk = 25;     // SCLKが接続されているピン番号
+      cfg.pin_sclk = 13; //25;     // SCLKが接続されているピン番号
     //cfg.pin_mosi = 23;     // MOSIが接続されているピン番号
-      cfg.pin_mosi = 32;     // MOSIが接続されているピン番号
+      cfg.pin_mosi = 11; //32;     // MOSIが接続されているピン番号
     //cfg.pin_miso = 19;     // MISOが接続されているピン番号
-      cfg.pin_miso = 39;     // MISOが接続されているピン番号
+      cfg.pin_miso = 12; //39;     // MISOが接続されているピン番号
     //cfg.pin_cs   =  5;     //   CSが接続されているピン番号
-      cfg.pin_cs   = 33;     //   CSが接続されているピン番号
+      cfg.pin_cs   = 8; //33;     //   CSが接続されているピン番号
 
 // I2C接続の場合
       cfg.i2c_port = 1;      // 使用するI2Cを選択 (0 or 1)
@@ -216,7 +216,7 @@ public:
       _touch_instance.config(cfg);
       _panel_instance.setTouch(&_touch_instance);  // タッチスクリーンをパネルにセットします。
     }
-//*/
+*/
 
     setPanel(&_panel_instance); // 使用するパネルをセットします。
   }
@@ -233,8 +233,8 @@ void setup(void)
   display.setTextSize((std::max(display.width(), display.height()) + 255) >> 8);
 
   // タッチが使用可能な場合のキャリブレーションを行います。（省略可）
-  if (display.touch())
-  {
+  //if (display.touch())
+  //{
     if (display.width() < display.height()) display.setRotation(display.getRotation() ^ 1);
 
     // 画面に案内文章を描画します。
@@ -247,14 +247,16 @@ void setup(void)
     std::uint16_t bg = TFT_BLACK;
     if (display.isEPD()) std::swap(fg, bg);
     display.calibrateTouch(nullptr, fg, bg, std::max(display.width(), display.height()) >> 3);
-  }
+  //}
 
+  delay(3000);
   display.fillScreen(TFT_BLACK);
 }
 
 uint32_t count = ~0;
 void loop(void)
 {
+  
   display.startWrite();
   display.setRotation(++count & 7);
   display.setColorDepth((count & 8) ? 16 : 24);
@@ -275,7 +277,10 @@ void loop(void)
   display.endWrite();
 
   int32_t x, y;
-  if (display.getTouch(&x, &y)) {
+  //if (display.getTouch(&x, &y)) {
+    x=10; y=10;
     display.fillRect(x-2, y-2, 5, 5, count*7);
-  }
+  //}
+  delay(2000);
+  
 }
