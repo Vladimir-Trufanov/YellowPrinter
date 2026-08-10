@@ -26,7 +26,7 @@ XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
-#define FONT_SIZE 2
+#define FONT_SIZE 4
 
 // Координаты сенсорного экрана: (x, y) и давление (z)
 int x, y, z;
@@ -94,6 +94,8 @@ void setup()
   tft.init();
   // Установить поворот TFT дисплея в ландшафтный режим
   tft.setRotation(1);
+  tft.loadFont("HuaweiSans16");   
+
 
   // Очистить экран перед записью на него
   tft.fillScreen(TFT_WHITE);
@@ -114,14 +116,14 @@ void setup()
     {
         if (i == selected) 
         {
-            y=i*10;
+            y=i*16;
             tft.setCursor(0, y);
             tft.print(">");  // Маркер выбора
             tft.print(menuItems[i]);
         } 
         else 
         {
-            y=i*10;
+            y=i*16;
             tft.setCursor(0, y);
             tft.print(" ");
             //tft.setCursor(0, 0);
