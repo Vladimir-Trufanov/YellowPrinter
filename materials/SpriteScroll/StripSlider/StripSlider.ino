@@ -80,20 +80,20 @@ void loop()
   // 1 вариант
   tft.fillScreen(TFT_BLACK); // clear the screen
   tft.fillRect(4, 0, 24, 208, TFT_WHITE);
-  tft.drawSmoothRoundRect(0, 169, 8, 4, 32, 34, TFT_RED, TFT_WHITE);
+  tft.drawSmoothRoundRect(0, 168, 8, 4, 32, 35, TFT_RED, TFT_WHITE);
   tft.fillSmoothRoundRect(0, 210, 32, 30, 4, TFT_YELLOW, TFT_BLACK);
   delay(2000);
   
   tft.fillScreen(TFT_BLACK); // clear the screen
   tft.fillRect(4, 0, 24, 208, TFT_WHITE);
-  tft.drawSmoothRoundRect(0, 173, 8, 4, 32, 34, TFT_RED, TFT_WHITE);
+  tft.drawSmoothRoundRect(0, 172, 8, 4, 32, 35, TFT_RED, TFT_WHITE);   // бегунок
   tft.fillSmoothRoundRect(0, 210, 32, 30, 4, TFT_YELLOW, TFT_BLACK);
-  delay(10000);
+  delay(5000);
   
   // 2 вариант
   tft.fillScreen(TFT_BLACK); // clear the screen
   tft.fillRect(2, 0, 12, 212, TFT_WHITE);
-  tft.drawSmoothRoundRect(0, 182, 6, 3, 16, 25, TFT_RED, TFT_WHITE);
+  tft.drawSmoothRoundRect(0, 182, 6, 3, 16, 25, TFT_RED, TFT_WHITE);   // бегунок
   tft.fillSmoothRoundRect(0, 214, 16, 22, 3, TFT_YELLOW, TFT_BLACK);
   delay(2000);
   
@@ -101,5 +101,5 @@ void loop()
   tft.fillRect(2, 0, 12, 212, TFT_WHITE);
   tft.drawSmoothRoundRect(0, 186, 6, 3, 16, 25, TFT_RED, TFT_WHITE);
   tft.fillSmoothRoundRect(0, 214, 16, 22, 3, TFT_YELLOW, TFT_BLACK);
-  delay(10000);
+  delay(5000);
 }
