@@ -18,8 +18,9 @@
 // типа или мьютекса. xMutex это только дескриптор, инициализированный NULL значением. 
 // Пока его невозможно использовать, это будет сделано в setup() 
 // с помощью xSemaphoreCreateMutex())
-SemaphoreHandle_t    xMutex = NULL;  
-SemaphoreHandle_t messMutex = NULL;  
+SemaphoreHandle_t xMutex     = NULL;  
+SemaphoreHandle_t messMutex  = NULL;   // захват структуры сообщения от внешнего контроллера-передатчика.
+SemaphoreHandle_t touchMutex = NULL;   // захват структуры данных о текущей позиции touchscreen (на сенсорной панели)
 
 // Определяем глобальную переменную counter, которая будет действовать как общий ресурс. 
 // Две задачи - task1 и task2 могут обращаться к переменной counter. Однако, поскольку 
@@ -41,12 +42,15 @@ int WDT_TIMEOUT = 5; // WDT Timeout in seconds
 // с последовательного порта для иммитации зависания и других действий
 volatile int inumber=-1;
 // Флаги контрольных участков сторожевого таймера
-#define fLoop      1   // 1 => loop();
-#define ftaskMain  2   // 2 => taskMain()
-int flag[] = {-1,0,0};   
+#define fLoop            1   // 1 => loop();
+#define ftaskMain        2   // 2 => taskMain()
+#define ftaskTouchscreen 3
+// биты флагов задач: 0  1  2  3
+int flag[] =        {-1, 0, 0, 0};   
 
 #include "spriteMain.h"
 TSprite_Main ypsMain;
+#include "TouchPress.h"
 
 typedef struct message 
 {
@@ -123,14 +127,28 @@ void setup()
   // Создаем объект мьютекса - мьютекс
   xMutex = xSemaphoreCreateMutex();  
   messMutex = xSemaphoreCreateMutex();  
+  
   // Cоздаем задачи
+  
+  // Приём сообщения от внешнего контроллера-передатчика
   xTaskCreatePinnedToCore 
   (
     taskMain,       // Function to implement the task
     "taskMain",     // Name of the task
     4096,           // Stack size in words
     NULL,           // Task input parameter
-    15,             // Priority of the task
+    7,             // Priority of the task
+    NULL,           // Task handle.
+    0               // Core where the task should run
+  );
+  // текущей позиции touchscreen (на сенсорной панели)
+  xTaskCreatePinnedToCore 
+  (
+    taskTouchscreen,      
+    "taskTouchscreen",    
+    4096,           // Stack size in words
+    NULL,           // Task input parameter
+    8,              // Priority of the task
     NULL,           // Task handle.
     0               // Core where the task should run
   );
@@ -140,7 +158,7 @@ void setup()
     "CheckFlags",   // Task name
     1024,           // Stack size
     NULL,           // Parameters passed to the task function
-    16,             // Priority
+    9,             // Priority
     NULL,           // Task handle
     0
   );
@@ -275,10 +293,11 @@ void vCheckFlagTask(void* pvParameters)
   for ( ;; )
   {
     // Сбрасываем флаги и "пинаем сторожевую собаку" (fLoop=1, fmessageReceived=2)
-    if (flag[fLoop] == 1 && flag[ftaskMain] == 1) 
+    if (flag[fLoop] == 1 && flag[ftaskMain] == 1 && flag[ftaskTouchscreen] == 1) 
     {
       flag[fLoop] = 0;
       flag[ftaskMain] = 0;
+      flag[ftaskTouchscreen] = 0;
       WDT_TIMEOUT = 5;
     }
     else 

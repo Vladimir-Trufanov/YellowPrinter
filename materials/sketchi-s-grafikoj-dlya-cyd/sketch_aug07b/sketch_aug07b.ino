@@ -94,7 +94,8 @@ void setup()
   tft.init();
   // Установить поворот TFT дисплея в ландшафтный режим
   tft.setRotation(1);
-  tft.loadFont("HuaweiSans16");   
+  //tft.loadFont("HuaweiSans16");   
+  tft.loadFont("nasalization48");   
 
 
   // Очистить экран перед записью на него

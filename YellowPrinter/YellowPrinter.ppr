@@ -20,22 +20,44 @@ YellowPrinter
 	+YellowPrinter
 		-data
 			data\HuaweiSans16.vlw
+		error.txt
 		fs_trass.h
 		inimem.h
 		spriteMain.h
-		xspritesize_v9.h
+		TouchPress.h
 		YellowPrinter.ino
 		YellowPrinter.md
+		YellowPrinter.md.backup
 		YellowPrinter.ppr
 [Open project files]
 0=YellowPrinter.ino
 1=error.txt
+2=inimem.h
+3=TouchPress.h
+4=fs_trass.h
+5=spriteMain.h
+6=..\..\ittve-GPS-GSM\09-gps-treker-na-moej-mashine\Kvizzy900\s16_Kvizzy900v3.h
 [Selected Project Files]
 Main=
-Selected=YellowPrinter.ino
+Selected=TouchPress.h
 [YellowPrinter.ino]
-TopLine=241
-Caret=1,263
+TopLine=101
+Caret=1,111
 [error.txt]
 TopLine=1
 Caret=1,21
+[inimem.h]
+TopLine=28
+Caret=7,40
+[TouchPress.h]
+TopLine=13
+Caret=24,29
+[fs_trass.h]
+TopLine=23
+Caret=1,1
+[spriteMain.h]
+TopLine=7
+Caret=1,37
+[..\..\ittve-GPS-GSM\09-gps-treker-na-moej-mashine\Kvizzy900\s16_Kvizzy900v3.h]
+TopLine=223
+Caret=1,278

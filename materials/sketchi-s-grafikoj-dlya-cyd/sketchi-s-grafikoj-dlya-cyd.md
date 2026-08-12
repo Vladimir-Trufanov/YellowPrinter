@@ -1,14 +1,21 @@
 ## [Скетчи с графикой для CYD](#)
 
-### [ESP32 CYD Display together with Touch Control and SD Card Reader](https://github.com/AndroidCrypto/ESP32_CYD_Display_with_Touch_and_SD_Card)
-
-Здесь 2 ценных работающих примера с чтением графических файлов 240*320 с SD-карты и вывод их на экран дисплея с управлением от сенсорной панели.
+### [Репозитарий библиотек для CYD: LovyanGFX, TFT_eSPI, LVGL, SD](https://github.com/embedded-kiddie/Arduino-CYD-2432S028R)
 
 ---
 
-#### [Репозитарий библиотек для CYD: LovyanGFX, TFT_eSPI, LVGL, SD](https://github.com/embedded-kiddie/Arduino-CYD-2432S028R)
+### [ESP32 CYD Display together with Touch Control and SD Card Reader](https://github.com/AndroidCrypto/ESP32_CYD_Display_with_Touch_and_SD_Card)
 
-***1 пример с библиотеками:***
+Здесь 2 ценных работающих примера с чтением графических файлов 240*320 с SD-карты и вывод их на экран дисплея с управлением от сенсорной панели:
+
+
+#### [1. Esp32_CYD_TFT_eSPI_SD_with_Touch](ESP32_CYD_Display_with_Touch_and_SD_Card-main/ESP32_CYD_Display_with_Touch_and_SD_Card-main/Esp32_CYD_TFT_eSPI_SD_with_Touch/Esp32_CYD_TFT_eSPI_SD_with_Touch.ino)
+
+#### [2. Esp32_CYD_LovyanGFX_SD_with_Touch](ESP32_CYD_Display_with_Touch_and_SD_Card-main/ESP32_CYD_Display_with_Touch_and_SD_Card-main/Esp32_CYD_LovyanGFX_SD_with_Touch/Esp32_CYD_LovyanGFX_SD_with_Touch.ino)
+
+---
+
+### Рабочие библиотеки выше представленных примеров
 
 #### [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
 
@@ -16,22 +23,12 @@
 
 #### [XPT2046_Touchscreen](https://github.com/PaulStoffregen/XPT2046_Touchscreen)
 
-***2 пример с библиотеками:***
-
-#### [LovyanGFX](#)
-
----
-
-### [CYD Multi-Page Touch Menu](https://github.com/Carlo47/CYD_MultipageMenu)
-
-В этой примерной программе показано, как реализовать многостраничное сенсорное меню для вызова различных действий. Выбранный пункт меню подсвечивается. При повторном нажатии на выбранный пункт меню выполняется назначенное действие. Другие пункты меню отображаются при смахивании (вверх или вниз).
-
-Для управления меню реализован сенсорный обработчик, который может различать события клик, длительный клик и свайп в четырех направлениях вверх, вниз, влево и вправо. Для этого установлены пользовательские обратные вызовы onShortClick, onLongClick, onSwipeUp, onSwipeDown, onSwipeLeft и onSwipeRight. Программа получает время с сервера NTP, поэтому для ее работы требуется подключение к Wi-Fi. Поэтому SSID и пароль от роутера необходимо ввести в файле initWiFi.cpp.
-
-### [LovyanGFX](https://github.com/lovyan03/LovyanGFX)
+#### [LovyanGFX](https://github.com/lovyan03/LovyanGFX)
 
 Библиотека графики для дисплеев (LCD / OLED / EPD) (для ESP32 SPI, I2C, 8bitParallel / ESP8266 SPI, I2C / ATSAMD51 SPI).
 M5Stack / M5StickC / TTGO T-Watch / ODROID-GO / ESP-WROVER-KIT / WioTerminal / и другие...
+
+***[Пример: 1_simple_use](1_simple_use/1_simple_use.ino)***
 
 Графическая библиотека, работающая с комбинацией ESP32 с SPI, I2C, 8-битным параллельным подключением / ESP8266 с SPI / ATSAMD51 с SPI и дисплеем.
 Это графическая библиотека, которая работает с комбинацией ESP32 с SPI, I2C, 8-битным параллельным подключением / ESP8266 с SPI / ATSAMD51 с SPI и дисплеем. (см. список совместимости ниже).
@@ -57,6 +54,12 @@ AdafruitGFX и TFT_eSPI в некоторой степени совместим�
 - OpenCV, SDL2 можно использовать в качестве места назначения для рисования, и они могут работать на ПК.
 
 - Выход композитного видеосигнала (NTSC, PAL) (только для ESP32).
+
+### [CYD Multi-Page Touch Menu](https://github.com/Carlo47/CYD_MultipageMenu)
+
+В этой примерной программе показано, как реализовать многостраничное сенсорное меню для вызова различных действий. Выбранный пункт меню подсвечивается. При повторном нажатии на выбранный пункт меню выполняется назначенное действие. Другие пункты меню отображаются при смахивании (вверх или вниз).
+
+Для управления меню реализован сенсорный обработчик, который может различать события клик, длительный клик и свайп в четырех направлениях вверх, вниз, влево и вправо. Для этого установлены пользовательские обратные вызовы onShortClick, onLongClick, onSwipeUp, onSwipeDown, onSwipeLeft и onSwipeRight. Программа получает время с сервера NTP, поэтому для ее работы требуется подключение к Wi-Fi. Поэтому SSID и пароль от роутера необходимо ввести в файле initWiFi.cpp.
 
 ### [CYD_Projects](https://github.com/bitbank2/CYD_Projects)
 
