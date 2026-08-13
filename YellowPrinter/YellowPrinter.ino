@@ -116,10 +116,6 @@ void setup()
   tft.init();
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
-
-  tft.setCursor(0, 212);
-  tft.print("Начало 1");
-
   
   // инициализация SPIFFS
   if (!SPIFFS.begin()) 
@@ -332,10 +328,10 @@ void taskMain (void *pvParameters)
       if (!(copyCalc==messCalc))
       {
         memcpy(CYD_message.line, CtrlMessage.line, smLINESIZE);
-        Serial.println("***");
-        Serial.println(CtrlMessage.line);
+        //Serial.println("***");
+        //Serial.println(CtrlMessage.line);
         Serial.println(CYD_message.line);
-        Serial.println("***");
+        //Serial.println("***");
         ypsMain.View(CYD_message.line);
 
         // memset(CtrlMessage.line,'\0',smLINESIZE); 

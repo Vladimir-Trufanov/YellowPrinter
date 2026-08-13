@@ -66,7 +66,7 @@ void TSprite_Main::View(char* line0)
   stext3.createSprite(smWIDTH, smHEIGHT);
   if (stext3.created())
   {
-    getheap("Создан спрайт");
+    //getheap("Создан спрайт");
     // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
     stext3.fillSprite(TFT_BLACK);
     // Отключаем перенос текста и по горизонтали и по вертикали 
@@ -78,7 +78,7 @@ void TSprite_Main::View(char* line0)
     // Чистим заполнитель
     memset(fill,32,smLINESIZE-1); 
     fill[smLINESIZE-1]='\0';
-    getheap("Загружен фонт");
+    //getheap("Загружен фонт");
 
     viewLine(line0);
     stext3.pushSprite(smLEFT,smTOP);
