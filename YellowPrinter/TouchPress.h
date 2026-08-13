@@ -11,29 +11,113 @@
 #include <Arduino.h>
 #include "inimem.h"
 
+
+// st - префикс спрайта spriteTouch - данных по нажатию на сенсорной панели 
+#define stLINESIZE    80    // размер буфера одного сообщения
+#define stWIDTH      304    // ширина спрайта сообщений 
+#define stHEIGHT      16    // высота спрайта
+#define stTOP        212    // позиция по вертикали размещения спрайта на экране 
+#define stLEFT        16    // позиция по горизонтали
+
+/*
+#define smLINEHEIGHT  16    // высота строки в спрайте (px)
+#define smLINEOFFSET   2    // смещение текста от левого края спрайта (px)
+#define smMAXLINE     13    // число строк в спрайте
+*/
+
+TFT_eSprite spriteTouch = TFT_eSprite(&tft);
+
+class TSprite_Touch 
+{
+  public:
+
+  TSprite_Touch(); 
+  void View();
+
+  private:
+
+  char line[stLINESIZE];  // буфер cообщения
+  uint16_t touchCalc;     // счетчик нажатий на сенсорную панель
+
+
+};
+
+TSprite_Touch::TSprite_Touch() 
+{
+  // Чистим заполнитель
+  //memset(fill,32,smLINESIZE-1); 
+  //fill[smLINESIZE-1]='\0';
+  touchCalc=0;
+};
+
+void TSprite_Touch::View()
+{
+  // Изменяем счетчик
+  touchCalc++;
+
+  //
+  spriteTouch.setColorDepth(8);
+  spriteTouch.createSprite(stWIDTH, stHEIGHT);
+  if (spriteTouch.created())
+  {
+    getheap("Создан spriteTouch");
+    // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
+    spriteTouch.fillSprite(TFT_BLACK);
+    // Отключаем перенос текста и по горизонтали и по вертикали 
+    spriteTouch.setTextWrap(false, false);
+    // Определяем цвет текста с прозрачным фоном  
+    spriteTouch.setTextColor(TFT_WHITE,TFT_BLACK,true); 
+    // Загружаем шрифт в память спрайта
+    spriteTouch.loadFont("HuaweiSans16");   
+    // Чистим строку
+    //memset(line,32,stLINESIZE-1); 
+    //line[stLINESIZE-1]='\0';
+
+    memset(line,'\0',stLINESIZE); 
+    strcat(line,"touchCalc = "); 
+    strcat(line,IntToChar(touchCalc)); 
+
+    Serial.println(line);
+    getheap("Сделана строка spriteTouch");
+
+    spriteTouch.setCursor(0,0);
+    spriteTouch.print(line);
+    spriteTouch.pushSprite(stLEFT,stTOP);
+
+    spriteTouch.unloadFont();             // выгрузка шрифта из памяти
+    spriteTouch.deleteSprite();
+  }
+  else
+  {
+    Serial.println("НЕ ПОЛУЧИЛОСЬ создать spriteTouch!");
+  }
+}
+
 // Счетчик нажатий на сенсорную панель
-uint16_t touchCalc=0;
+//uint16_t touchCalc=0;
+// Объект для работы с сенсорной панелью
+TSprite_Touch ypsTouch;
 
 void taskTouchscreen (void *pvParameters) 
 {
   char mess[smLINESIZE];      // буфер входного сообщения
   while (1) 
   {
-    // Изменяем счетчик и фиксируем начало цикла задачи
-    touchCalc++;
+    // Фиксируем начало цикла задачи
+    //touchCalc++;
     TickType_t start = xTaskGetTickCount();
 
-    /*
-    memset(mess,'\0',smLINESIZE); 
-    strcat(mess,"touchCalc = "); 
-    strcat(mess,IntToChar(touchCalc)); 
+    //memset(mess,'\0',smLINESIZE); 
+    //strcat(mess,"touchCalc = "); 
+    //strcat(mess,IntToChar(touchCalc)); 
     
-    tft.setCursor(0, 210);
-    tft.print(mess);
+    //Serial.println(mess);
+    ypsTouch.View();
+
+
+    //tft.setCursor(0, 212);
+    //tft.print("Начало 222");
     
-    Serial.println(mess);
-    */
-    Serial.println(touchCalc);
   
 
 
@@ -76,115 +160,5 @@ void taskTouchscreen (void *pvParameters)
 }
 
 
-
-/*
-
-// sm - префикс спрайта сообщений, поступающих в CYD
-#define smLINESIZE    80    // размер буфера одного сообщения
-#define smLINEHEIGHT  16    // высота строки в спрайте (px)
-#define smLINEOFFSET   2    // смещение текста от левого края спрайта (px)
-#define smMAXLINE     13    // число строк в спрайте
-#define smWIDTH      304    // ширина спрайта сообщений 
-#define smHEIGHT     208    // высота спрайта
-#define smTOP          0    // позиция по вертикали размещения спрайта на экране 
-#define smLEFT        16    // позиция по горизонтали
-
-TFT_eSprite stext3 = TFT_eSprite(&tft);
-
-class TSprite_Main 
-{
-  public:
-
-  TSprite_Main(); 
-  void View(char* line0);
-  void viewLine(char* line0);
-
-  private:
-
-  char lineIn[smLINESIZE];      // буфер входного сообщения
-  char fill[smLINESIZE];        // заполнитель строки
-  char line[smMAXLINE][smLINESIZE] =   // буфер всех сообщений экрана дисплея
-  {
-    "Text",
-    "Привет Hello world",
-    "Line 2",
-    "0123456 10 123456 20 123456 30 123456 40",
-    "04 Это пробный текст на русском языке для CYD",   
-    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "06 Это пробный текст на русском языке для CYD",   
-    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "08 Это пробный текст на русском языке для CYD",   
-    "0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "10 Это пробный текст на русском языке для CYD",   
-    "11 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-    "12 0123456 10 123456 20 123456 30 123456 40 123456 50 123456 60",
-  };
-};
-
-TSprite_Main::TSprite_Main() 
-{
-  // Чистим заполнитель
-  memset(fill,32,smLINESIZE-1); 
-  fill[smLINESIZE-1]='\0';
-};
-
-void TSprite_Main::View(char* line0)
-{
-  stext3.setColorDepth(8);
-  stext3.createSprite(smWIDTH, smHEIGHT);
-  if (stext3.created())
-  {
-    getheap("Создан спрайт");
-    // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
-    stext3.fillSprite(TFT_BLACK);
-    // Отключаем перенос текста и по горизонтали и по вертикали 
-    stext3.setTextWrap(false, false);
-    // Определяем цвет текста с прозрачным фоном  
-    stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
-    // Загружаем шрифт в память спрайта
-    stext3.loadFont("HuaweiSans16");   
-    // Чистим заполнитель
-    memset(fill,32,smLINESIZE-1); 
-    fill[smLINESIZE-1]='\0';
-    getheap("Загружен фонт");
-
-    viewLine(line0);
-    stext3.pushSprite(smLEFT,smTOP);
-
-    stext3.unloadFont();             // выгрузка шрифта из памяти
-    stext3.deleteSprite();
-  }
-  else
-  {
-    Serial.println("НЕ ПОЛУЧИЛОСЬ!");
-  }
-}
-//
-void TSprite_Main::viewLine(char* line0)
-{
-  // В окончательном варианте работать через семафор на формирование и вывод спрайта
-
-  uint8_t ypoint;
-
-  // Сдвигаем строки спрайта вниз
-  for (uint8_t jline = smMAXLINE-1; jline > 0; jline--) 
-  {
-    memcpy(line[jline],line[jline-1], sizeof(line[jline-1]));
-  }
-  // Заполняем 0 строку
-  memset(line[0],'\0',smLINESIZE); 
-  memcpy(line[0],line0,smLINESIZE);
-
-  // Размещаем строки в спрайте
-  for (uint8_t jline = 0; jline < smMAXLINE; jline++) 
-  {
-    ypoint=jline*smLINEHEIGHT;
-    stext3.setCursor(smLINEOFFSET,ypoint);
-    stext3.print(fill);
-    stext3.setCursor(smLINEOFFSET,ypoint);
-    stext3.print(line[jline]);
-  }
-}
-*/
 
 // *********************************************************** TouchPress.h ***

@@ -116,6 +116,10 @@ void setup()
   tft.init();
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
+
+  tft.setCursor(0, 212);
+  tft.print("Начало 1");
+
   
   // инициализация SPIFFS
   if (!SPIFFS.begin()) 
@@ -124,9 +128,11 @@ void setup()
   }  
 
   pinMode (LED_BUILTIN, OUTPUT);
-  // Создаем объект мьютекса - мьютекс
-  xMutex = xSemaphoreCreateMutex();  
-  messMutex = xSemaphoreCreateMutex();  
+ 
+  // Создаем объекты мьютексов
+  xMutex     = xSemaphoreCreateMutex();  
+  messMutex  = xSemaphoreCreateMutex();  
+  touchMutex = xSemaphoreCreateMutex();  
   
   // Cоздаем задачи
   
