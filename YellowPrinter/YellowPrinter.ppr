@@ -17,7 +17,7 @@ HTServer=localhost
 Extensions=*.*
 [Project tree]
 YellowPrinter
-	+YellowPrinter
+	-YellowPrinter
 		-data
 			data\HuaweiSans16.vlw
 		error.txt
@@ -27,7 +27,6 @@ YellowPrinter
 		TouchPress.h
 		YellowPrinter.ino
 		YellowPrinter.md
-		YellowPrinter.md.backup
 		YellowPrinter.ppr
 [Open project files]
 0=YellowPrinter.ino
@@ -36,28 +35,24 @@ YellowPrinter
 3=TouchPress.h
 4=fs_trass.h
 5=spriteMain.h
-6=..\..\ittve-GPS-GSM\09-gps-treker-na-moej-mashine\Kvizzy900\s16_Kvizzy900v3.h
 [Selected Project Files]
 Main=
 Selected=TouchPress.h
 [YellowPrinter.ino]
 TopLine=32
-Caret=14,54
+Caret=1,54
 [error.txt]
 TopLine=1
 Caret=1,21
 [inimem.h]
-TopLine=2
+TopLine=101
 Caret=7,40
 [TouchPress.h]
-TopLine=87
-Caret=1,79
+TopLine=184
+Caret=5,52
 [fs_trass.h]
 TopLine=23
 Caret=1,1
 [spriteMain.h]
 TopLine=1
 Caret=1,37
-[..\..\ittve-GPS-GSM\09-gps-treker-na-moej-mashine\Kvizzy900\s16_Kvizzy900v3.h]
-TopLine=239
-Caret=1,278

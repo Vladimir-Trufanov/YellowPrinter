@@ -14,28 +14,25 @@
 
 #include "inimem.h"
 
-
 // st - префикс спрайта spriteTouch - данных по нажатию на сенсорной панели 
-#define stLINESIZE    80    // размер буфера одного сообщения
-#define stWIDTH      304    // ширина спрайта сообщений 
-#define stHEIGHT      16    // высота спрайта
-#define stTOP        212    // позиция по вертикали размещения спрайта на экране 
-#define stLEFT        16    // позиция по горизонтали
+#define stLINESIZE     80    // размер буфера одного сообщения
+#define stWIDTH       304    // ширина спрайта сообщений 
+#define stHEIGHT       16    // высота спрайта
+#define stTOP         212    // позиция по вертикали размещения спрайта на экране 
+#define stLEFT         16    // позиция по горизонтали
 
 // Touchscreen pins
-#define XPT2046_IRQ 36   // T_IRQ
-#define XPT2046_MOSI 32  // T_DIN
-#define XPT2046_MISO 39  // T_OUT
-#define XPT2046_CLK 25   // T_CLK
-#define XPT2046_CS 33    // T_CS
+#define XPT2046_IRQ    36    // T_IRQ
+#define XPT2046_MOSI   32    // T_DIN
+#define XPT2046_MISO   39    // T_OUT
+#define XPT2046_CLK    25    // T_CLK
+#define XPT2046_CS     33    // T_CS
 
-#define SCREEN_WIDTH 320
+#define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 240
-
 
 SPIClass touchscreenSPI = SPIClass(VSPI);
 XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
-
 TFT_eSprite spriteTouch = TFT_eSprite(&tft);
 
 class TSprite_Touch 
@@ -43,23 +40,20 @@ class TSprite_Touch
   public:
 
   TSprite_Touch(); 
-  void View(int x, int y, int z);
+  void View(int x, int y, int z, uint16_t touchCalc);
 
   private:
 
   char line[stLINESIZE];  // буфер cообщения
-  uint16_t touchCalc;     // счетчик нажатий на сенсорную панель
 };
 
 TSprite_Touch::TSprite_Touch() 
 {
-  touchCalc=0;
+  //
 };
 
-void TSprite_Touch::View(int x, int y, int z)
+void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
 {
-  // Изменяем счетчик
-  touchCalc++;
   //
   spriteTouch.setColorDepth(8);
   spriteTouch.createSprite(stWIDTH, stHEIGHT);
@@ -74,19 +68,19 @@ void TSprite_Touch::View(int x, int y, int z)
     spriteTouch.setTextColor(TFT_WHITE,TFT_BLACK,true); 
     // Загружаем шрифт в память спрайта
     spriteTouch.loadFont("HuaweiSans16");   
-
+    // Формируем сообщение с данными о нажатии на серсорну. панель
     memset(line,'\0',stLINESIZE); 
-    strcat(line,"x: "); 
+    strcat(line,"x:"); 
     strcat(line,IntToChar(x)); 
-    strcat(line," y: "); 
+    strcat(line," y:"); 
     strcat(line,IntToChar(y)); 
-    strcat(line,"z: "); 
+    strcat(line," z:"); 
     strcat(line,IntToChar(z)); 
-    strcat(line,"touchCalc = "); 
+    strcat(line," touchCalc = "); 
     strcat(line,IntToChar(touchCalc)); 
 
     Serial.println(line);
-    getheap("Сделана строка spriteTouch");
+    //getheap("Сделана строка spriteTouch");
 
     spriteTouch.setCursor(0,0);
     spriteTouch.print(line);
@@ -106,71 +100,74 @@ TSprite_Touch ypsTouch;
 
 void taskTouchscreen (void *pvParameters) 
 {
-  char mess[smLINESIZE];      // буфер входного сообщения
-  // Touchscreen coordinates: (x, y) and pressure (z)
-  int x, y, z;
+  char mess[smLINESIZE];  // буфер входного сообщения
+  int x, y, z;            // координаты точки касания (x,y) и силу нажатия (z)
+  uint16_t touchCalc=0;   // счетчик нажатий на сенсорную панель
 
-  // Start the SPI for the touchscreen and init the touchscreen
+  // Запускаем SPI для сенсорного экрана и инициализируем экран
   touchscreenSPI.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
   touchscreen.begin(touchscreenSPI);
-  // Set the Touchscreen rotation in landscape mode
-  // Note: in some displays, the touchscreen might be upside down, so you might need to set the rotation to 3: touchscreen.setRotation(3);
   touchscreen.setRotation(1);
 
   while (1) 
   {
     // Фиксируем начало цикла задачи
-    //touchCalc++;
     TickType_t start = xTaskGetTickCount();
+    // Проверяет, есть ли касание к сенсорному экрану, и выводит информацию о X, Y 
+    // и давлении (Z) на TFT-дисплей и последовательный монитор
+    if (touchscreen.tirqTouched() && touchscreen.touched()) 
+    {
+      // Изменяем счетчик
+      touchCalc++;
+      // Получаем данные по точке нажатия на сенсорном экране
+      TS_Point p = touchscreen.getPoint();
+      // Калибруем точку на сенсорном экране с помощью функции отображения на 
+      // карте по фактической ширине и высоте
+      /*
+      Этот код — калибровка сенсорного экрана для проектов на платформе Arduino 
+      (часто встречается на платах ESP32 с TFT-дисплеем, например, на «Cheap Yellow Display», CYD). 
 
-  // Checks if Touchscreen was touched, and prints X, Y and Pressure (Z) info on the TFT display and Serial Monitor
-  if (touchscreen.tirqTouched() && touchscreen.touched()) 
-  {
-    // Get Touchscreen points
-    TS_Point p = touchscreen.getPoint();
-    // Calibrate Touchscreen points with map function to the correct width and height
-    /*
-     Этот код — калибровка сенсорного экрана для проектов на платформе Arduino (часто встречается на платах ESP32 с TFT-дисплеем, например, на «Cheap Yellow Display», CYD). 
-kafkar.com
-nanajanafunrun.com
-nanajanafunrun.com
-Что делает эта строка
-Функция map() преобразует «сырые» значения с сенсорного экрана в координаты пикселей дисплея. 
-kafkar.com
-nanajanafunrun.com
-Разберём параметры:
-p.x — значение, которое сенсор возвращает при касании по оси X. 
-200, 3700 — эмпирически найденные границы диапазона «сырых» значений. При касании в крайних точках (слева и справа) сенсор выдаёт примерно эти числа. Эти значения учитывают «мёртвую зону» у края экрана, смещение АЦП и нелинейность сенсора. 
-voltiq.ru
-1, SCREEN_WIDTH — диапазон, в который функция «мапит» результат. То есть: если сенсор при касании в правой границе экрана вернул 3700, map() пересчитает это в SCREEN_WIDTH (собственно, ширину дисплея в пикселях). 
-kafkar.com
-nanajanafunrun.com
-Зачем это нужно
-Сенсорный экран часто физически больше видимой области дисплея, а его контроллер выдаёт значения за пределами видимой зоны. Функция map() «сжимает» или «растягивает» диапазон сырых сенсорных данных до нужного диапазона пикселей дисплея. Это позволяет логике работы с касаниями (например, проверка попадания в кнопки) оперировать привычными пиксельными координатами. 
-voltiq.ru
-kafkar.com
-elektroda.com
-Важный нюанс
-Числа 200, 3700 (и аналогично для оси Y: 240, 3800) не универсальны. Они зависят от конкретной модели сенсора, способа подключения и его калибровки. Если касания «съезжают» или работают некорректно, эти значения нужно найти экспериментально (нажать в крайних точках и записать показания) и подставить свои в map(). 
-voltiq.ru
-Аналогично для оси Y: y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);. 
-kafkar.com
-nanajanafunrun.com
-Так что эта строка — не жёсткий стандарт, а рабочий шаблон, который нужно адаптировать под вашу конкретную связку «экран + контроллер». 
-voltiq.ru
+      Функция map() преобразует «сырые» значения с сенсорного экрана в координаты пикселей дисплея, где: 
+    
+      p.x — значение, которое сенсор возвращает при касании по оси X. 200, 3700 — эмпирически найденные 
+      границы диапазона «сырых» значений. При касании в крайних точках (слева и справа) сенсор выдаёт 
+      примерно эти числа. Эти значения учитывают «мёртвую зону» у края экрана, смещение АЦП и 
+      нелинейность сенсора;
+    
+      1, SCREEN_WIDTH — диапазон, в который функция «мапит» результат. То есть: если сенсор при касании 
+      в правой границе экрана вернул 3700, map() пересчитает это в SCREEN_WIDTH (собственно, ширину 
+      дисплея в пикселях). 
+    
+      Зачем это нужно. Сенсорный экран часто физически больше видимой области дисплея, 
+      а его контроллер выдаёт значения за пределами видимой зоны. Функция map() «сжимает» 
+      или «растягивает» диапазон сырых сенсорных данных до нужного диапазона пикселей 
+      дисплея. Это позволяет логике работы с касаниями (например, проверка попадания 
+      в кнопки) оперировать привычными пиксельными координатами.
+    
+      Важный нюанс. Числа 200, 3700 (и аналогично для оси Y: 240, 3800) не универсальны. Они 
+      зависят от конкретной модели сенсора, способа подключения и его калибровки. Если касания 
+      «съезжают» или работают некорректно, эти значения нужно найти экспериментально (нажать 
+      в крайних точках и записать показания) и подставить свои в map().
+    
+      Аналогично для оси Y: y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);.
+    
+      Так что эти строки — не жёсткий стандарт, а рабочий шаблон, который нужно адаптировать 
+      под вашу конкретную связку «экран + контроллер». 
 
-1. [Подключение сенсорного TFT дисплея к ESP32: Схема и пример кода](https://voltiq.ru/esp32-touchscreen-display-connection/)
-2. [Ultimate Beginner’s Guide to the Cheap Yellow Display]          (https://kafkar.com/projects/smart-home/mastering-the-cyd-your-ultimate-beginners-guide-to-the-cheap-yellow-display-esp32-2432s028r-using-platform-io/)
-3. [     
-     */
-    x = map(p.x, 200, 3700, 1, SCREEN_WIDTH);
-    y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);
-    z = p.z;
-    Serial.println("Есть touchscreen");
-
-    ypsTouch.View(x,y,z);
-  }
-
+      1. [Подключение сенсорного TFT дисплея к ESP32: Схема и пример кода]
+      (https://voltiq.ru/esp32-touchscreen-display-connection/)
+    
+      2. [Ultimate Beginner’s Guide to the Cheap Yellow Display]
+      (https://kafkar.com/projects/smart-home/mastering-the-cyd-your-ultimate-beginners-guide-to-the-cheap-yellow-display-esp32-2432s028r-using-platform-io/)
+      */
+      x = map(p.x, 200, 3700, 1, SCREEN_WIDTH);
+      y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);
+      z = p.z;
+      // Выводим данные
+      Serial.println("Есть touchscreen");
+      ypsTouch.View(x,y,z,touchCalc);
+    }
+    // Размещаем данные для других задач
     /*
     if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
     { 
