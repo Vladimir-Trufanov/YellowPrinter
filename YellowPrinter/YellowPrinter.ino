@@ -4,7 +4,7 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v1.0.6, 26.07.2026                                 Автор:      Труфанов В.Е.
+ * v1.0.7, 14.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
@@ -31,8 +31,6 @@ int counter = 0;
 #include <esp_now.h>
 #include <WiFi.h>
 #include <ESP.h>
-#include <SPIFFS.h>
-#include "inimem.h"
 
 // Готовим к использованию сторожевой таймер
 #include <esp_task_wdt.h>
@@ -48,21 +46,10 @@ volatile int inumber=-1;
 // биты флагов задач: 0  1  2  3
 int flag[] =        {-1, 0, 0, 0};   
 
+#include "inimem.h"
+#include "ypSPIFFS.h"
 #include "spriteMain.h"
-TSprite_Main ypsMain;
 #include "TouchPress.h"
-
-typedef struct message 
-{
-  char line[smLINESIZE];
-} message;
-message CtrlMessage;    // сообщение контроллера
-message CYD_message;    // сообщение для дисплея CYD
-
-// Инициируем счетчик поступающих сообщений
-uint16_t messCalc=0;   
-// Готовим индикатор ожидания мьютекса и выборки поступающего сообщения
-bool messBool;      
   
 // ****************************************************************************
 // *            Принять поступающее сообщение в захвате мьютекса              *
@@ -117,12 +104,9 @@ void setup()
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
   
-  // инициализация SPIFFS
-  if (!SPIFFS.begin()) 
-  {
-    while (1) yield();
-  }  
-
+  // Инициализируем SPIFFS
+  iniSPIFFS();
+  
   pinMode (LED_BUILTIN, OUTPUT);
  
   // Создаем объекты мьютексов
@@ -139,7 +123,7 @@ void setup()
     "taskMain",     // Name of the task
     4096,           // Stack size in words
     NULL,           // Task input parameter
-    7,             // Priority of the task
+    7,              // Priority of the task
     NULL,           // Task handle.
     0               // Core where the task should run
   );
@@ -160,7 +144,7 @@ void setup()
     "CheckFlags",   // Task name
     1024,           // Stack size
     NULL,           // Parameters passed to the task function
-    9,             // Priority
+    9,              // Priority
     NULL,           // Task handle
     0
   );
@@ -196,18 +180,6 @@ void setup()
   Если вам нужно не просто нарисовать контур, а заполнить фигуру цветом, в библиотеке есть родственный метод fillSmoothRoundRect() 
   **/
   tft.drawSmoothRoundRect(0, 26, 4, 8, 10, 30, TFT_RED, TFT_WHITE);
-}
-
-// ****************************************************************************
-// *                  Имитировать событие зависания процессора                *
-// ****************************************************************************
-void MimicMCUhangEvent(String NameTask)
-{
-  while (true)
-  {
-    Serial.print(NameTask);
-    Serial.println(": зависание процессора!!!");
-  }
 }
 
 // ****************************************************************************
@@ -315,6 +287,7 @@ void vCheckFlagTask(void* pvParameters)
 }
 
 
+/*
 uint16_t copyCalc=195;  // !=0
 
 void taskMain (void *pvParameters) 
@@ -357,5 +330,6 @@ void taskMain (void *pvParameters)
     vTaskDelay(64);
   }
 }
+*/
 
 // ****************************************************** YellowPrinter.ino ***

@@ -12,7 +12,6 @@
 #include "inimem.h"
 
 // sm - префикс спрайта сообщений, поступающих в CYD
-#define smLINESIZE    80    // размер буфера одного сообщения
 #define smLINEHEIGHT  16    // высота строки в спрайте (px)
 #define smLINEOFFSET   2    // смещение текста от левого края спрайта (px)
 #define smMAXLINE     13    // число строк в спрайте
@@ -115,6 +114,44 @@ void TSprite_Main::viewLine(char* line0)
     stext3.print(fill);
     stext3.setCursor(smLINEOFFSET,ypoint);
     stext3.print(line[jline]);
+  }
+}
+
+TSprite_Main ypsMain;
+void taskMain (void *pvParameters) 
+{
+  while (1) 
+  {
+    TickType_t start = xTaskGetTickCount();
+    if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
+    { 
+      // Выбираем сообщение единственный раз в интервале ожидания и приема сообщения
+      // Serial.print("copyCalc==messCalc: "); Serial.print(copyCalc); Serial.print("="); Serial.println(messCalc);
+      if (!(copyCalc==messCalc))
+      {
+        memcpy(CYD_message.line, CtrlMessage.line, smLINESIZE);
+        //Serial.println("***");
+        //Serial.println(CtrlMessage.line);
+        Serial.println(CYD_message.line);
+        //Serial.println("***");
+        ypsMain.View(CYD_message.line);
+        copyCalc=messCalc;
+      }
+      xSemaphoreGive(messMutex);  
+    }
+    else 
+    {  
+      //Serial.print ("Task 2: Mutex не захвачен ");
+      //Serial.println (xTaskGetTickCount());
+    }
+    // Отмечаем завершение цикла задачи для сторожевого таймера
+    flag[ftaskMain] = 1;
+    TickType_t duration = xTaskGetTickCount() - start;
+    //Serial.printf("Длительность taskMain(): %d ms\n", duration * portTICK_PERIOD_MS);
+    // Если было введено число=fmessageReceived
+    if (inumber == ftaskMain) MimicMCUhangEvent("taskMain");   
+
+    vTaskDelay(64);
   }
 }
 

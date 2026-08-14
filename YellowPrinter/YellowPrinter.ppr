@@ -17,7 +17,7 @@ HTServer=localhost
 Extensions=*.*
 [Project tree]
 YellowPrinter
-	-YellowPrinter
+	+YellowPrinter
 		-data
 			data\HuaweiSans16.vlw
 		error.txt
@@ -28,31 +28,36 @@ YellowPrinter
 		YellowPrinter.ino
 		YellowPrinter.md
 		YellowPrinter.ppr
+		ypSPIFFS.h
 [Open project files]
 0=YellowPrinter.ino
 1=error.txt
 2=inimem.h
-3=TouchPress.h
+3=ypSPIFFS.h
 4=fs_trass.h
 5=spriteMain.h
+6=TouchPress.h
 [Selected Project Files]
 Main=
-Selected=TouchPress.h
+Selected=spriteMain.h
 [YellowPrinter.ino]
-TopLine=32
-Caret=1,54
+TopLine=58
+Caret=1,65
 [error.txt]
 TopLine=1
-Caret=1,21
+Caret=69,1
 [inimem.h]
-TopLine=101
-Caret=7,40
-[TouchPress.h]
-TopLine=184
-Caret=5,52
+TopLine=1
+Caret=17,6
+[ypSPIFFS.h]
+TopLine=75
+Caret=17,104
 [fs_trass.h]
 TopLine=23
 Caret=1,1
 [spriteMain.h]
-TopLine=1
-Caret=1,37
+TopLine=133
+Caret=29,128
+[TouchPress.h]
+TopLine=164
+Caret=18,188
