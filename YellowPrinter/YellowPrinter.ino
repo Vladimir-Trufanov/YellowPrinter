@@ -48,8 +48,6 @@ int flag[] =        {-1, 0, 0, 0};
 
 #include "inimem.h"
 
-//#include "ypSPIFFS.h"
-
 #include "spriteMain.h"
 #include "TouchPress.h"
   
@@ -101,13 +99,14 @@ void setup()
   }
   esp_now_register_recv_cb(messageReceived);
 
-
   tft.init();
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
   
+  #ifdef FontFromSPIFFS
   // Инициализируем SPIFFS
-  // iniSPIFFS();
+  iniSPIFFS();
+  #endif
   
   pinMode (LED_BUILTIN, OUTPUT);
  
@@ -287,51 +286,5 @@ void vCheckFlagTask(void* pvParameters)
     vTaskDelay(1000/portTICK_PERIOD_MS);
   }
 }
-
-
-/*
-uint16_t copyCalc=195;  // !=0
-
-void taskMain (void *pvParameters) 
-{
-  while (1) 
-  {
-    TickType_t start = xTaskGetTickCount();
-    if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
-    { 
-      //Serial.print("copyCalc==messCalc: "); Serial.print(copyCalc); Serial.print("="); Serial.println(messCalc);
-      if (!(copyCalc==messCalc))
-      {
-        memcpy(CYD_message.line, CtrlMessage.line, smLINESIZE);
-        //Serial.println("***");
-        //Serial.println(CtrlMessage.line);
-        Serial.println(CYD_message.line);
-        //Serial.println("***");
-        ypsMain.View(CYD_message.line);
-
-        // memset(CtrlMessage.line,'\0',smLINESIZE); 
-        // memcpy(&CtrlMessage, incomingData, len);
-        // memcpy(&CtrlMessage.line, CtrlMessage.line, smLINESIZE);
-
-        copyCalc=messCalc;
-      }
-      xSemaphoreGive(messMutex);  
-    }
-    else 
-    {  
-      //Serial.print ("Task 2: Mutex не захвачен ");
-      //Serial.println (xTaskGetTickCount());
-    }
-    // Отмечаем завершение цикла задаси для сторожевого таймера
-    flag[ftaskMain] = 1;
-    TickType_t duration = xTaskGetTickCount() - start;
-    //Serial.printf("Длительность taskMain(): %d ms\n", duration * portTICK_PERIOD_MS);
-    // Если было введено число=fmessageReceived
-    if (inumber == ftaskMain) MimicMCUhangEvent("taskMain");   
-
-    vTaskDelay(64);
-  }
-}
-*/
 
 // ****************************************************** YellowPrinter.ino ***

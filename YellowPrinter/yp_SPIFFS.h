@@ -1,4 +1,4 @@
-/** YellowPrinter-Esp32-Arduino                              *** ypSPIFFS.h ***
+/** YellowPrinter-Esp32-Arduino                             *** yp_SPIFFS.h ***
  * 
  * Обcлужить работу со SPIFFS
  * 
@@ -111,4 +111,4 @@ void iniSPIFFS()
 }
 
 
-// ************************************************************* ypSPIFFS.h ***
+// ************************************************************ yp_SPIFFS.h ***

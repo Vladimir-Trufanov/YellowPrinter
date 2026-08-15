@@ -1,6 +1,6 @@
-/** Arduino, ESP32, C/C++ ************************************** fs_trass.h ***
+/** Arduino, ESP32, C/C++ ************************************** yp_Trass.h ***
  * 
- *                           Обеспечить вывод сообщений в последовательный порт 
+ *                           -- Обеспечить вывод сообщений в последовательный порт 
  *                                               и запись лог-файла на SD-карту
  *                                                     
  * v2.2.1, 14.06.2026                                 Автор:      Труфанов В.Е.
@@ -9,15 +9,14 @@
 
 #pragma once 
 
-//#include "time.h"
-//#include "esp_log.h"
-//#include "FS.h"
-//#include <SD_MMC.h>
+#include "esp_psram.h"
 
-#define jpr         say  
-#define jprln       sayln  
-#define print_mem   saymem  
-#define major_fail  blinkRestart  
+
+
+// Подсчитать число символов UTF-8 в последовательности char* 
+size_t utf8len(const char* str); 
+// Показать состояние памяти с заданным префиксом  
+void saymem(char* text); 
 
 #define say(format, ...) \
   { \
@@ -25,9 +24,6 @@
     snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
     Serial.print(buffer); \
   }
-    //if (logfile) { \
-    //  logfile.print(buffer); \
-    //} \
 
 #define sayln(format, ...) \
   { \
@@ -35,32 +31,25 @@
     snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
     Serial.println(buffer); \
   }
-    //if (logfile) { \
-    //  logfile.println(buffer); \
-    //} \
-  
-// Подсчитать число символов UTF-8 в последовательности char* 
-size_t utf8len(const char* str); 
-// Показать состояние памяти с заданным префиксом  
-void saymem(char* text); 
-// Отмигать аварийную ситуацию контрольным светодиодом и перезагрузить контроллер 
-void blinkRestart(); 
 
-//File logfile;           // дескриптор файла информационных сообщений и об ошибках
-//char buffer[256];       // буфер сообщения
-  
 // ****************************************************************************
 // *              Показать состояние памяти с заданным префиксом              *
 // ****************************************************************************
 // Специальные сообщения - это сообщения по использованию памяти, по времени ... 
 #define isSAYLOG true   // true - вести файл дублирования сообщений
 bool isSAY=true;        // true - разрешить вывод неспециальных сообщений
-bool isSAYMEM=true;    // true - разрешить трассировку состояния памяти
+bool isSAYMEM=true;     // true - разрешить трассировку состояния памяти
 
 void saymem(char* text) 
 {
   if (isSAYMEM)
   {
+
+size_t psram_size = esp_psram_get_size();
+printf("Размер PSRAM: %zu bytes", psram_size);
+
+
+    
     // Запоминаем состояние разрешения на вывод сообщений
     bool oldSay=isSAY;       
     // Разрешаем вывод сообщений
@@ -92,31 +81,6 @@ void saymem(char* text)
   }
 }
 // ****************************************************************************
-// *      Отмигать аварийную ситуацию контрольным светодиодом в 10 циклов     *
-// *               в случае неудачной работы камеры или sd-карты              *
-// ****************************************************************************
-void blinkRestart() 
-{
-  for  (int i = 0;  i < 10; i++) 
-  {                
-    for (int j = 0; j < 3; j++) 
-    {
-      digitalWrite(33, LOW);   delay(150);
-      digitalWrite(33, HIGH);  delay(150);
-    }
-    delay(1000);
-    for (int j = 0; j < 3; j++) 
-    {
-      digitalWrite(33, LOW);  delay(500);
-      digitalWrite(33, HIGH); delay(500);
-    }
-    delay(1000);
-    sayln("Аварийная ситуация [%d/10], перезагрузка контроллера",i);
-  }
-  //if (logfile) logfile.close();
-  ESP.restart();
-}
-// ****************************************************************************
 // *        Подсчитать число символов UTF-8 в последовательности char*        *
 // * https://stackoverflow.com/questions/4063146/getting-the-actual-length-of-a-utf-8-encoded-stdstring
 // ****************************************************************************
@@ -133,4 +97,4 @@ size_t utf8len(const char* str)
   return len;
 }
 
-// ************************************************************* fs_trass.h ***
+// ************************************************************* yp_Trass.h ***

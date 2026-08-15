@@ -9,15 +9,25 @@
 
 #pragma once 
 
-#include <MemoryFree.h>
-#include "HuaweiSans16.h"
+//#include <MemoryFree.h>
 
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
 
+#include "yp_Trass.h"
+
 char* IntToChar(uint16_t numbIn); 
 void getheap(char* prefix);
 void MimicMCUhangEvent(String NameTask);
+
+// Определяем способ загрузки шрифтов: 
+//#define FontFromSPIFFS    // загрузка шрифта из SPIFFS
+#define FontFromFile        // загрузка шрифта из вкладываемого файла *.h
+#ifdef FontFromFile
+  #include "HuaweiSans16.h"
+#else
+  #include "yp_SPIFFS.h"
+#endif
 
 // Определяем структуры принимаемых сообщений (оригинал и копия для внутренней работы)
 #define smLINESIZE    80  // размер буфера одного сообщения
@@ -35,13 +45,16 @@ uint16_t copyCalc=195;    // Дублер счетчика для выделен
 
 void getheap(char* prefix)
 {
+  /*
   Serial.print(prefix); Serial.print(": ");
   // uint32_t getHeapSize();      //total heap size
-  //Serial.print("HeapSize = "); Serial.print(ESP.getHeapSize());
-  //Serial.print("; ");
+  Serial.print("HeapSize="); Serial.print(ESP.getHeapSize());
+  Serial.print("; ");
   // uint32_t getFreeHeap();      //available heap
-  Serial.print("FreeHeap = "); Serial.println(ESP.getFreeHeap());
-  //Serial.print("Свободной памяти: "); Serial.println(getFreeMemory());
+  Serial.print("FreeHeap="); Serial.print(ESP.getFreeHeap());
+  Serial.print("; ");
+  Serial.print("Свободной памяти: "); Serial.println(getFreeMemory());
+  */
 }
 
 // getheap("setup        ");

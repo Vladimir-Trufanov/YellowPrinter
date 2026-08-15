@@ -73,16 +73,19 @@ void TSprite_Main::View(char* line0)
     // Определяем цвет текста с прозрачным фоном  
     stext3.setTextColor(TFT_WHITE,TFT_BLACK,true); 
     // Загружаем шрифт в память спрайта
-    stext3.loadFont("HuaweiSans16");   
+    #ifdef FontFromFile
+      stext3.loadFont(HuaweiSans16);   
+    #else
+      stext3.loadFont("HuaweiSans16");   
+    #endif
     // Чистим заполнитель
     memset(fill,32,smLINESIZE-1); 
     fill[smLINESIZE-1]='\0';
-    //getheap("Загружен фонт");
 
     viewLine(line0);
     stext3.pushSprite(smLEFT,smTOP);
-
-    stext3.unloadFont();             // выгрузка шрифта из памяти
+    // Выгружаем шрифт из памяти и удаляем спрайт
+    stext3.unloadFont();         
     stext3.deleteSprite();
   }
   else

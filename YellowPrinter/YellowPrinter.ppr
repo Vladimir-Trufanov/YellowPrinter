@@ -21,43 +21,36 @@ YellowPrinter
 		-data
 			data\HuaweiSans16.vlw
 		error.txt
-		fs_trass.h
+		HuaweiSans16.h
 		inimem.h
 		spriteMain.h
 		TouchPress.h
 		YellowPrinter.ino
 		YellowPrinter.md
 		YellowPrinter.ppr
-		ypSPIFFS.h
+		yp_SPIFFS.h
+		yp_Trass.h
 [Open project files]
 0=YellowPrinter.ino
-1=error.txt
+1=yp_Trass.h
 2=inimem.h
-3=ypSPIFFS.h
-4=fs_trass.h
-5=spriteMain.h
-6=TouchPress.h
+3=spriteMain.h
+4=TouchPress.h
 [Selected Project Files]
 Main=
-Selected=spriteMain.h
+Selected=inimem.h
 [YellowPrinter.ino]
-TopLine=58
-Caret=1,65
-[error.txt]
-TopLine=1
-Caret=69,1
+TopLine=253
+Caret=1,289
+[yp_Trass.h]
+TopLine=20
+Caret=25,39
 [inimem.h]
-TopLine=1
-Caret=17,6
-[ypSPIFFS.h]
-TopLine=75
-Caret=17,104
-[fs_trass.h]
-TopLine=23
-Caret=1,1
+TopLine=39
+Caret=17,51
 [spriteMain.h]
-TopLine=133
-Caret=29,128
+TopLine=57
+Caret=27,85
 [TouchPress.h]
-TopLine=164
-Caret=18,188
+TopLine=55
+Caret=40,93
