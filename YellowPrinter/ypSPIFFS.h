@@ -103,8 +103,8 @@
 // Инициализировать SPIFFS
 void iniSPIFFS()
 {
-  //if (!SPIFFS.begin(true)) 
-  if (!SPIFFS.begin()) 
+  if (!SPIFFS.begin(true)) 
+  //if (!SPIFFS.begin()) 
   {
     while (1) yield();
   }  

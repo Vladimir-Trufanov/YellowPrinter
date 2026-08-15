@@ -47,7 +47,9 @@ volatile int inumber=-1;
 int flag[] =        {-1, 0, 0, 0};   
 
 #include "inimem.h"
-#include "ypSPIFFS.h"
+
+//#include "ypSPIFFS.h"
+
 #include "spriteMain.h"
 #include "TouchPress.h"
   
@@ -105,7 +107,7 @@ void setup()
   tft.fillScreen(TFT_NAVY);
   
   // Инициализируем SPIFFS
-  iniSPIFFS();
+  // iniSPIFFS();
   
   pinMode (LED_BUILTIN, OUTPUT);
  

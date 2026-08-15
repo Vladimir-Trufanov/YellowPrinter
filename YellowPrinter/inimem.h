@@ -10,6 +10,7 @@
 #pragma once 
 
 #include <MemoryFree.h>
+#include "HuaweiSans16.h"
 
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
