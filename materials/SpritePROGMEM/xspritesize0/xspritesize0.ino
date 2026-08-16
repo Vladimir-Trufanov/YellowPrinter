@@ -1,83 +1,40 @@
-// xsprite_v9.ino
+// xspritesize0.ino
 
-#include <esp_now.h>
-#include <WiFi.h>
-#include <ESP.h>
-#include <SPIFFS.h>
-#include "inimem.h"
-
-#include "spriteMain.h"
-TSprite_Main ypsMain;
-
-typedef struct message 
-{
-  char line[smLINESIZE];
-} message;
-
-message CtrlMessage;    // сообщение контроллера
-
-void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
-{
-  //memcpy(&CtrlMessage, incomingData, sizeof(CtrlMessage));
-  memset(CtrlMessage.line,'\0',smLINESIZE); 
-  memcpy(&CtrlMessage, incomingData, len);
-  Serial.printf("Transmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n\r", 
-    info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-  Serial.print("Message: ");
-  Serial.println(CtrlMessage.line);
-  Serial.println();
-  ypsMain.View(CtrlMessage.line);
-}
-
+#include <TFT_eSPI.h>
+TFT_eSPI tft = TFT_eSPI();
+#include "HuaweiSans16.h"
 
 void setup()
 {
   Serial.begin(115200);
-  delay(3000); // uncomment if your serial monitor is empty
-  getheap("setup        ");
-  
-  WiFi.mode(WIFI_STA);
-  if (esp_now_init() == ESP_OK) 
-  {
-    Serial.println("ESPNow Init success");
-  }
-  else 
-  {
-    Serial.println("ESPNow Init fail");
-    return;
-  }
-  esp_now_register_recv_cb(messageReceived);
-
+  delay(3000);
 
   tft.init();
-  tft.setRotation(1);      
-  tft.fillScreen(TFT_NAVY);
-  
-  // инициализация SPIFFS
-  if (!SPIFFS.begin()) 
-  {
-    while (1) yield();
-  }  
+  tft.setRotation(1);
+  tft.fillScreen(TFT_BLACK);
+  // Отключаем перенос текста и по горизонтали и по вертикали 
+  tft.setTextWrap(false, false);
+  // Определяем цвет текста с прозрачным фоном  
+  tft.setTextColor(TFT_WHITE,TFT_BLACK,true); 
+  tft.loadFont(HuaweiSans16);     // загрузка в память шрифта
+  tft.setCursor(0,0);
+  tft.setTextColor(TFT_ORANGE,TFT_BLACK,true);
+  //tft.unloadFont();               // выгрузка шрифта из памяти
+ 
+  Serial.println("\nПриложение запущено!");
+  tft.println("Приложение запущено!");
 }
 
 uint16_t i=0;
-//char lineIn[smLINESIZE];    // буфер входного сообщения
-//char chi[] = "Число i = ";
 
 void loop()
 {
-  // Формируем  0 строку
-  
-  /*
-  memset(lineIn,'\0',80); 
-  strcat(lineIn,chi);   
-  strcat(lineIn,IntToChar(i));   
-  ypsMain.View(lineIn);
-  */
-  
-  getheap("Цикл пройден ");
+  tft.println   (i);
+  Serial.println(i);
+  tft.println   ("1234567 10 234567 20 234567 30 234567 40 234567 50 234567 60 234567 70 234567 80 234567 90 23456 100 23456 110");
+  Serial.println("1234567 10 234567 20 234567 30 234567 40 234567 50 234567 60 234567 70 234567 80 234567 90 23456 100 23456 110");
   i++;
-  delay(3000);
+  delay(1000);
 }
 
 /*

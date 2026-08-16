@@ -17,9 +17,11 @@ HTServer=localhost
 Extensions=*.*
 [Project tree]
 YellowPrinter
-	+YellowPrinter
+	-YellowPrinter
 		-data
 			data\HuaweiSans16.vlw
+		-res
+			res\yp_Trass.h
 		error.txt
 		HuaweiSans16.h
 		inimem.h
@@ -29,28 +31,23 @@ YellowPrinter
 		YellowPrinter.md
 		YellowPrinter.ppr
 		yp_SPIFFS.h
-		yp_Trass.h
 [Open project files]
 0=YellowPrinter.ino
-1=yp_Trass.h
-2=inimem.h
-3=spriteMain.h
-4=TouchPress.h
+1=inimem.h
+2=spriteMain.h
+3=TouchPress.h
 [Selected Project Files]
 Main=
-Selected=inimem.h
+Selected=TouchPress.h
 [YellowPrinter.ino]
 TopLine=253
 Caret=1,289
-[yp_Trass.h]
-TopLine=20
-Caret=25,39
 [inimem.h]
-TopLine=39
-Caret=17,51
+TopLine=19
+Caret=17,46
 [spriteMain.h]
 TopLine=57
-Caret=27,85
+Caret=21,85
 [TouchPress.h]
-TopLine=55
-Caret=40,93
+TopLine=101
+Caret=64,122

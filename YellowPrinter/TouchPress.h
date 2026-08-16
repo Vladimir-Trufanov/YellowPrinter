@@ -59,7 +59,6 @@ void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
   spriteTouch.createSprite(stWIDTH, stHEIGHT);
   if (spriteTouch.created())
   {
-    // getheap("Создан spriteTouch");
     // Заполняем буфер памяти, выделенный под спрайт, заданным цветом
     spriteTouch.fillSprite(TFT_BLACK);
     // Отключаем перенос текста и по горизонтали и по вертикали 
@@ -84,13 +83,12 @@ void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
     strcat(line,IntToChar(touchCalc)); 
 
     Serial.println(line);
-    //getheap("Сделана строка spriteTouch");
 
     spriteTouch.setCursor(0,0);
     spriteTouch.print(line);
     spriteTouch.pushSprite(stLEFT,stTOP);
 
-    saymem("spriteTouch.pushSprite"); 
+    getheap("===> spriteTouch.pushSprite"); 
 
     // Выгружаем шрифт из памяти и удаляем спрайт
     spriteTouch.unloadFont();          
