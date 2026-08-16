@@ -65,14 +65,16 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       TickType_t start = xTaskGetTickCount();
       memset(CtrlMessage.line,'\0',smLINESIZE); 
       memcpy(&CtrlMessage, incomingData, len);
-      Serial.printf("Transmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n\r", 
-        info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-      //Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line); Serial.println();
       messCalc++;
       messBool=false;
-      xSemaphoreGive (messMutex);  
       TickType_t duration = xTaskGetTickCount() - start;
-      //Serial.printf("Длительность messageReceived(): %d ms\n", duration * portTICK_PERIOD_MS);
+
+      Serial.printf("\nTransmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n", 
+        info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
+      Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
+      Serial.printf("Длительность messageReceived(): %d ms\n\n", duration * portTICK_PERIOD_MS);
+
+      xSemaphoreGive (messMutex);  
     }
     vTaskDelay(64);
   }
@@ -84,8 +86,7 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
 void setup() 
 {
   Serial.begin(115200);
-  delay(300);
-  getheap("setup        ");
+  delay(3000);
   
   WiFi.mode(WIFI_STA);
   if (esp_now_init() == ESP_OK) 
@@ -102,6 +103,16 @@ void setup()
   tft.init();
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
+  //tft.setTextWrap(false, false);               // отключили перенос текста и по горизонтали и по вертикали 
+  //tft.setTextColor(TFT_WHITE,TFT_BLACK,true);  // определили цвет текста с прозрачным фоном  
+/*
+    // Загружаем шрифт в память спрайта
+    #ifdef FontFromFile
+      stext3.loadFont(HuaweiSans16);   
+    #else
+      stext3.loadFont("HuaweiSans16");   
+    #endif
+*/
   
   #ifdef FontFromSPIFFS
   // Инициализируем SPIFFS
@@ -150,7 +161,7 @@ void setup()
     0
   );
    
-  tft.fillRect(0, 0, 16, 208, TFT_WHITE);
+  //tft.fillRect(0, 0, 16, 208, TFT_WHITE);
   /**
   Рисуем сглаженный (anti-aliased) прямоугольник с закруглёнными углами. 
   
@@ -180,7 +191,7 @@ void setup()
   Это полезно для создания сложных эффектов.
   Если вам нужно не просто нарисовать контур, а заполнить фигуру цветом, в библиотеке есть родственный метод fillSmoothRoundRect() 
   **/
-  tft.drawSmoothRoundRect(0, 26, 4, 8, 10, 30, TFT_RED, TFT_WHITE);
+  //tft.drawSmoothRoundRect(0, 26, 4, 8, 10, 30, TFT_RED, TFT_WHITE);
 }
 
 // ****************************************************************************
@@ -199,12 +210,18 @@ void loop()
     if (ii>0) inumber=ii;
   }
   TickType_t start = xTaskGetTickCount();
+
+  /*
   digitalWrite (LED_BUILTIN, HIGH);  
   vTaskDelay(1000);
   digitalWrite (LED_BUILTIN, LOW);   
   vTaskDelay(872);
   // Задержку на сборку мусора
   vTaskDelay(128);
+  */
+  
+  vTaskDelay(512);
+
   iLoop++;
   TickType_t duration = xTaskGetTickCount() - start;
   //Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);

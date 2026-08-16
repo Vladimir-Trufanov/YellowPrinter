@@ -126,6 +126,8 @@ void taskMain (void *pvParameters)
   while (1) 
   {
     TickType_t start = xTaskGetTickCount();
+    
+    /*
     if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
     { 
       // Выбираем сообщение единственный раз в интервале ожидания и приема сообщения
@@ -147,6 +149,22 @@ void taskMain (void *pvParameters)
       //Serial.print ("Task 2: Mutex не захвачен ");
       //Serial.println (xTaskGetTickCount());
     }
+    */
+    
+    if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
+    { 
+      tft.setCursor(17,17);
+      tft.print("messCalc = "); tft.println(messCalc);
+      //tft.setCursor(17,34); tft.println("                                                                      ");
+      tft.setCursor(17,34); tft.println(CtrlMessage.line);
+      xSemaphoreGive(messMutex);  
+    }
+    else 
+    {  
+      //Serial.print ("Task 2: Mutex не захвачен ");
+      //Serial.println (xTaskGetTickCount());
+    }
+    
     // Отмечаем завершение цикла задачи для сторожевого таймера
     flag[ftaskMain] = 1;
     TickType_t duration = xTaskGetTickCount() - start;
@@ -154,7 +172,7 @@ void taskMain (void *pvParameters)
     // Если было введено число=fmessageReceived
     if (inumber == ftaskMain) MimicMCUhangEvent("taskMain");   
 
-    vTaskDelay(64);
+    vTaskDelay(1064);
   }
 }
 
