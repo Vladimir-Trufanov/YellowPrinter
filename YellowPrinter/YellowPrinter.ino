@@ -4,7 +4,7 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v1.0.7, 14.08.2026                                 Автор:      Труфанов В.Е.
+ * v1.0.8, 17.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
@@ -62,18 +62,18 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
     // Как только захватили мьютекс, выполняем свою работу
     if (xSemaphoreTake (messMutex, portMAX_DELAY)) 
     {
-      TickType_t start = xTaskGetTickCount();
+      //TickType_t start = xTaskGetTickCount();
       memset(CtrlMessage.line,'\0',smLINESIZE); 
       memcpy(&CtrlMessage, incomingData, len);
       messCalc++;
       messBool=false;
-      TickType_t duration = xTaskGetTickCount() - start;
-
+      //TickType_t duration = xTaskGetTickCount() - start;
+      /*
       Serial.printf("\nTransmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n", 
         info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
       Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
       Serial.printf("Длительность messageReceived(): %d ms\n\n", duration * portTICK_PERIOD_MS);
-
+      */
       xSemaphoreGive (messMutex);  
     }
     vTaskDelay(64);
@@ -117,7 +117,7 @@ void setup()
   iniSPIFFS();
   #endif
   
-  pinMode (LED_BUILTIN, OUTPUT);
+  //pinMode (LED_BUILTIN, OUTPUT);
  
   // Создаем объекты мьютексов
   xMutex     = xSemaphoreCreateMutex();  

@@ -38,16 +38,16 @@ YellowPrinter
 3=TouchPress.h
 [Selected Project Files]
 Main=
-Selected=TouchPress.h
+Selected=YellowPrinter.ino
 [YellowPrinter.ino]
 TopLine=87
-Caret=1,106
+Caret=5,113
 [inimem.h]
 TopLine=19
 Caret=17,46
 [spriteMain.h]
 TopLine=141
-Caret=20,154
+Caret=8,154
 [TouchPress.h]
-TopLine=65
-Caret=7,94
+TopLine=71
+Caret=5,94

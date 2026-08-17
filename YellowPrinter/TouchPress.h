@@ -49,12 +49,10 @@ class TSprite_Touch
 
 TSprite_Touch::TSprite_Touch() 
 {
-  //
 };
 
 void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
 {
-  //
   spriteTouch.setColorDepth(8);
   spriteTouch.createSprite(stWIDTH, stHEIGHT);
   if (spriteTouch.created())
@@ -66,12 +64,12 @@ void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
     // Определяем цвет текста с прозрачным фоном  
     spriteTouch.setTextColor(TFT_WHITE,TFT_BLACK,true); 
     // Загружаем шрифт в память спрайта
-    //#ifdef FontFromFile
-    //  spriteTouch.loadFont(HuaweiSans16);   
-    //#else
-    //  spriteTouch.loadFont("HuaweiSans16");   
-    //#endif
-    // Формируем сообщение с данными о нажатии на серсорну. панель
+    #ifdef FontFromFile
+      spriteTouch.loadFont(HuaweiSans16);   
+    #else
+      spriteTouch.loadFont("HuaweiSans16");   
+    #endif
+    // Формируем сообщение с данными о нажатии на сенсорную панель
     memset(line,'\0',stLINESIZE); 
     strcat(line,"x:"); 
     strcat(line,IntToChar(x)); 
@@ -82,16 +80,14 @@ void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
     strcat(line," touchCalc = "); 
     strcat(line,IntToChar(touchCalc)); 
 
-    Serial.println(line);
-
     spriteTouch.setCursor(0,0);
     spriteTouch.print(line);
+    Serial.println(line);
     spriteTouch.pushSprite(stLEFT,stTOP);
-
     getheap("===> spriteTouch.pushSprite"); 
 
     // Выгружаем шрифт из памяти и удаляем спрайт
-    //spriteTouch.unloadFont();          
+    spriteTouch.unloadFont();          
     spriteTouch.deleteSprite();
   }
   else
