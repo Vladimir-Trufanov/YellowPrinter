@@ -103,17 +103,15 @@ void setup()
   tft.init();
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
-  //tft.setTextWrap(false, false);               // отключили перенос текста и по горизонтали и по вертикали 
-  //tft.setTextColor(TFT_WHITE,TFT_BLACK,true);  // определили цвет текста с прозрачным фоном  
-/*
-    // Загружаем шрифт в память спрайта
-    #ifdef FontFromFile
-      stext3.loadFont(HuaweiSans16);   
-    #else
-      stext3.loadFont("HuaweiSans16");   
-    #endif
-*/
-  
+  tft.setTextWrap(false, false);               // отключили перенос текста и по горизонтали и по вертикали 
+  tft.setTextColor(TFT_WHITE,TFT_BLACK,true);  // определили цвет текста с прозрачным фоном  
+  // Загружаем шрифт в память
+  #ifdef FontFromFile
+    tft.loadFont(HuaweiSans16);   
+  #else
+    tft.loadFont("HuaweiSans16");   
+  #endif
+ 
   #ifdef FontFromSPIFFS
   // Инициализируем SPIFFS
   iniSPIFFS();

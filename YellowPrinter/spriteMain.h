@@ -79,8 +79,8 @@ void TSprite_Main::View(char* line0)
       stext3.loadFont("HuaweiSans16");   
     #endif
     // Чистим заполнитель
-    memset(fill,32,smLINESIZE-1); 
-    fill[smLINESIZE-1]='\0';
+    //memset(fill,32,smLINESIZE-1); 
+    //fill[smLINESIZE-1]='\0';
 
     viewLine(line0);
     stext3.pushSprite(smLEFT,smTOP);
@@ -121,8 +121,14 @@ void TSprite_Main::viewLine(char* line0)
 }
 
 TSprite_Main ypsMain;
+char Spase[smLINESIZE]; // буфер чистки строки
+
 void taskMain (void *pvParameters) 
 {
+  // Заполняем буфер чистки строки
+  memset(Spase,32,smLINESIZE-1); 
+  Spase[smLINESIZE-1]='\0';
+
   while (1) 
   {
     TickType_t start = xTaskGetTickCount();
@@ -153,10 +159,8 @@ void taskMain (void *pvParameters)
     
     if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
     { 
-      tft.setCursor(17,17);
-      tft.print("messCalc = "); tft.println(messCalc);
-      //tft.setCursor(17,34); tft.println("                                                                      ");
-      tft.setCursor(17,34); tft.println(CtrlMessage.line);
+      tft.setCursor(17,17); tft.print("messCalc = "); tft.print(messCalc); tft.print(Spase);
+      tft.setCursor(17,34); tft.print(CtrlMessage.line); tft.print(Spase);
       xSemaphoreGive(messMutex);  
     }
     else 

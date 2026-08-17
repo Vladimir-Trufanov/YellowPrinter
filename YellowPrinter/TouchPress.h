@@ -66,11 +66,11 @@ void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
     // Определяем цвет текста с прозрачным фоном  
     spriteTouch.setTextColor(TFT_WHITE,TFT_BLACK,true); 
     // Загружаем шрифт в память спрайта
-    #ifdef FontFromFile
-      spriteTouch.loadFont(HuaweiSans16);   
-    #else
-      spriteTouch.loadFont("HuaweiSans16");   
-    #endif
+    //#ifdef FontFromFile
+    //  spriteTouch.loadFont(HuaweiSans16);   
+    //#else
+    //  spriteTouch.loadFont("HuaweiSans16");   
+    //#endif
     // Формируем сообщение с данными о нажатии на серсорну. панель
     memset(line,'\0',stLINESIZE); 
     strcat(line,"x:"); 
@@ -91,7 +91,7 @@ void TSprite_Touch::View(int x, int y, int z, uint16_t touchCalc)
     getheap("===> spriteTouch.pushSprite"); 
 
     // Выгружаем шрифт из памяти и удаляем спрайт
-    spriteTouch.unloadFont();          
+    //spriteTouch.unloadFont();          
     spriteTouch.deleteSprite();
   }
   else
