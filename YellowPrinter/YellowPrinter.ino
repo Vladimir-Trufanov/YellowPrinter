@@ -9,8 +9,7 @@
 **/
 
 // Определяем пин контрольного светодиода
-// #define LED_BUILTIN 33    // на ESP32-CAM
-#define LED_BUILTIN 16       // зеленый на CYD
+#define LED_BUILTIN 16 // зеленый на CYD
 
 // Определяем объект мьютекса - дескриптор (во FreeRTOS и мьютекс, и семафор реализованы
 // как обычные совместно используемые подпрограммы. Это связано со сходством между обеими 
@@ -29,52 +28,7 @@ SemaphoreHandle_t touchMutex = NULL;   // захват структуры дан
 int counter = 0;  
 
 #include <esp_now.h>
-#include <WiFi.h>
 #include <ESP.h>
-
-
-// ------------------------------------------------------------------- OTA2 ---
-
-// Copyright 2024 Espressif Systems (Shanghai) PTE LTD
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-#include <ESPmDNS.h>
-#include <NetworkUdp.h>
-#include <ArduinoOTA.h>
-
-// "OPPO A9 2020"; "TP-Link_B394"; "tve-DESKTOP"; "linksystve"; "linksystve";
-// "b277a4ee84e8"; "18009217"    ; "Ue18-647"   ; "x93k6kq6wf"; "X93K6KQ6WF";
-const char* ssid     = "OPPO A9 2020";
-const char* password = "b277a4ee84e8";
-
-uint32_t last_ota_time = 0;
-
-// ------------------------------------------------------------------- OTA2 ---
-
-
-
-/*
-#if defined(ESP8266)
-  #include <ESP8266WiFi.h>
-  #include <WiFiClient.h>
-  #include <ESP8266WebServer.h>
-#elif defined(ESP32)
-  #include <WiFi.h>
-  #include <WiFiClient.h>
-  #include <WebServer.h>
-#endif
-*/
 
 /***
 // Готовим к использованию сторожевой таймер
@@ -93,43 +47,47 @@ int flag[] =        {-1, 0, 0, 0};
 *///
 
 #include "inimem.h"
+#include "WiFiOTA.h"
 
 /***
-#include "WiFiOTA.h"
 #include "spriteMain.h"
 #include "TouchPress.h"
 *///
   
-/***
 // ****************************************************************************
 // *            Принять поступающее сообщение в захвате мьютекса              *
 // ****************************************************************************
 void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
 {
+  /*
   messBool=true;  
   while (messBool) 
   {
     // Как только захватили мьютекс, выполняем свою работу
     if (xSemaphoreTake (messMutex, portMAX_DELAY)) 
     {
-      //TickType_t start = xTaskGetTickCount();
       memset(CtrlMessage.line,'\0',smLINESIZE); 
       memcpy(&CtrlMessage, incomingData, len);
       messCalc++;
       messBool=false;
-      //TickType_t duration = xTaskGetTickCount() - start;
       / *
       Serial.printf("\nTransmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n", 
         info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
+      * /
       Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
+      / *
       Serial.printf("Длительность messageReceived(): %d ms\n\n", duration * portTICK_PERIOD_MS);
       * /
       xSemaphoreGive (messMutex);  
     }
     vTaskDelay(64);
   }
+  */
+      memset(CtrlMessage.line,'\0',smLINESIZE); 
+      memcpy(&CtrlMessage, incomingData, len);
+      Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
+
 }
-*///
 
 // ****************************************************************************
 // *                                 setup                                    *
@@ -139,100 +97,17 @@ void setup()
   Serial.begin(115200);
   delay(3000);
   WiFi.mode(WIFI_STA);
-  
-  
-// ------------------------------------------------------------------- OTA2 ---
-  WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) 
-  {
-    delay(500);
-    Serial.print(".");
-    //Serial.println("Connection Failed! Rebooting...");
-    //delay(5000);
-    //ESP.restart();
-  }
 
-  // Port defaults to 3232
-  // ArduinoOTA.setPort(3232);
+  iniWiFi(); 
+  iniOTA(); 
+    
+  //pinMode (LED_BUILTIN, OUTPUT);
+ 
+  // Создаем объекты мьютексов
+  //xMutex     = xSemaphoreCreateMutex();  
+  messMutex  = xSemaphoreCreateMutex();  
+  //touchMutex = xSemaphoreCreateMutex();  
 
-  // Hostname defaults to esp3232-[MAC]
-  // ArduinoOTA.setHostname("myesp32");
-
-  // Password can be set with plain text (will be hashed internally)
-  // The authentication uses PBKDF2-HMAC-SHA256 with 10,000 iterations
-  // ArduinoOTA.setPassword("admin");
-
-  // Or set password with pre-hashed value (SHA256 hash of "admin")
-  // SHA256(admin) = 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
-  // ArduinoOTA.setPasswordHash("8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918");
-
-  ArduinoOTA
-    .onStart([]() 
-    {
-      String type;
-      if (ArduinoOTA.getCommand() == U_FLASH) 
-      {
-        type = "sketch";
-      } 
-      else 
-      {  
-        // U_SPIFFS
-        type = "filesystem";
-      }
-
-      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      Serial.println("Start updating " + type);
-    })
-    .onEnd([]() 
-    {
-      Serial.println("\nEnd");
-    })
-    .onProgress([](unsigned int progress, unsigned int total) 
-    {
-      if (millis() - last_ota_time > 500) 
-      {
-        Serial.printf("Прошивание: %u%%\n", (progress / (total / 100)));
-        last_ota_time = millis();
-      }
-    })
-    .onError([](ota_error_t error) 
-    {
-      Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR) 
-      {
-        Serial.println("Auth Failed");
-      } 
-      else if (error == OTA_BEGIN_ERROR) 
-      {
-        Serial.println("Begin Failed");
-      } 
-      else if (error == OTA_CONNECT_ERROR) 
-      {
-        Serial.println("Connect Failed");
-      } 
-      else if (error == OTA_RECEIVE_ERROR) 
-      {
-        Serial.println("Receive Failed");
-      } 
-      else if (error == OTA_END_ERROR) 
-      {
-        Serial.println("End Failed");
-      }
-    });
-
-  ArduinoOTA.begin();
-
-  Serial.println("Ready 02");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  ipStr = WiFi.localIP().toString();
-
-// ------------------------------------------------------------------- OTA2 ---
-
-  
-  
-
-/***
   if (esp_now_init() == ESP_OK) 
   {
     Serial.println("ESPNow Init success");
@@ -244,6 +119,7 @@ void setup()
   }
   esp_now_register_recv_cb(messageReceived);
 
+  /***
   tft.init();
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
@@ -260,13 +136,6 @@ void setup()
   // Инициализируем SPIFFS
   iniSPIFFS();
   #endif
-  
-  //pinMode (LED_BUILTIN, OUTPUT);
- 
-  // Создаем объекты мьютексов
-  xMutex     = xSemaphoreCreateMutex();  
-  messMutex  = xSemaphoreCreateMutex();  
-  touchMutex = xSemaphoreCreateMutex();  
   
   // Cоздаем задачи
   
@@ -346,7 +215,6 @@ uint16_t iLoop=0;
 static char taskList[1024]; 
 void loop() 
 {
-
   ArduinoOTA.handle();
 
 /***
@@ -362,17 +230,17 @@ void loop()
 *///
 
   /*
+  // Мигаем зеленой лампочкой
   digitalWrite (LED_BUILTIN, HIGH);  
   vTaskDelay(1000);
   digitalWrite (LED_BUILTIN, LOW);   
-  vTaskDelay(872);
-  // Задержку на сборку мусора
-  vTaskDelay(128);
+  vTaskDelay(936);
   */
 
-/***  
-  vTaskDelay(512);
+  // Задержку на сборку мусора
+  vTaskDelay(64);
 
+/***  
   iLoop++;
   TickType_t duration = xTaskGetTickCount() - start;
   //Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);

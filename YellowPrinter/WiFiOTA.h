@@ -9,53 +9,56 @@
 #pragma once
 
 /*
-
-Шаг 2. Напишите скетч с поддержкой OTA
-Вам понадобится библиотека ArduinoOTA. В коде нужно:
+Пишем скетч с поддержкой BasicOTA
+---------------------------------
+Понадобится библиотека ArduinoOTA. В коде нужно:
 Подключить нужные заголовочные файлы: <WiFi.h>, <ArduinoOTA.h>.
 Заполнить переменные ssid и password с данными вашей Wi-Fi-сети.
 В функции setup() подключить Wi-Fi и вызвать ArduinoOTA.begin(), чтобы активировать OTA.
 В loop() добавить ArduinoOTA.handle(), чтобы плата постоянно проверяла наличие обновлений.
 Можно добавить обработчики событий (onStart, onEnd, onProgress, onError), чтобы видеть прогресс и ошибки в Мониторе порта.
  
-github.com
-programmingelectronics.com
-Пример скеча:
 #include <WiFi.h>
 #include <ArduinoOTA.h>
 
 const char* ssid = "Ваша_SSID";
 const char* password = "Ваш_Пароль";
 
-void setup() {
+void setup() 
+{
   Serial.begin(115200);
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED) 
+  {
     delay(500);
     Serial.println("Connecting to WiFi...");
   }
   Serial.println("Connected to WiFi");
 
-  ArduinoOTA.onStart(() {
+  ArduinoOTA.onStart(() 
+  {
     String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
     Serial.println("Начинается обновление: " + type);
   }); 
 
-  ArduinoOTA.onEnd(() {
+  ArduinoOTA.onEnd(() 
+  {
     Serial.println("\пОбновление завершено");
   }); 
 
-  ArduinoOTA.onProgress((unsigned int progress, unsigned int total) {
+  ArduinoOTA.onProgress((unsigned int progress, unsigned int total) 
+  {
     Serial.printf("Прогресс: %u%%\r", (progress * 100) / total);
   }); 
 
-  ArduinoOTA.onError((ota_error_t error) {
+  ArduinoOTA.onError((ota_error_t error) 
+  {
     Serial.printf("Ошибка [%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Ошибка аутентификации");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Ошибка начала");
+    if (error      == OTA_AUTH_ERROR)    Serial.println("Ошибка аутентификации");
+    else if (error == OTA_BEGIN_ERROR)   Serial.println("Ошибка начала");
     else if (error == OTA_CONNECT_ERROR) Serial.println("Ошибка подключения");
     else if (error == OTA_RECEIVE_ERROR) Serial.println("Ошибка приёма");
-    else if (error == OTA_END_ERROR) Serial.println("Ошибка завершения");
+    else if (error == OTA_END_ERROR)     Serial.println("Ошибка завершения");
   }); 
 
   ArduinoOTA.begin();
@@ -69,27 +72,141 @@ void loop()
   ArduinoOTA.handle();
 }
 
-Важное правило: каждое обновление, которое вы загружаете по воздуху, должно содержать этот код с OTA-логикой. Если в новом скетче нет вызова ArduinoOTA.begin(), устройство перестанет реагировать на OTA-запросы. Поэтому для первого запуска всегда загружайте скетч с OTA-логикой по USB, а уже потом обновляйте «по воздуху». 
-programmingelectronics.com
-github.com
-v3trov.pro
-Шаг 3. Первая загрузка (по USB)
-Подключите ESP32 к компьютеру через USB-кабель, выберите в Arduino IDE правильную плату и порт, загрузите скетч. В Мониторе порта вы увидите IP-адрес устройства. 
-github.com
-programmingboss.com
-Шаг 4. Настройка разделов памяти
-Для работы OTA в ESP32 нужно, чтобы в таблице разделов были два специальных раздела (например, ota_0 и ota_1). В Arduino IDE это настраивается так: Инструменты → Размер flash-памяти → Выбрать схему разделов. Ищите вариант, где есть поддержка OTA (например, Minimal SPIFFS или Default 4MB with spiffs). Если выбрать схему без OTA, обновление не сработает. 
-lesson.iarduino.ru
-kotyara12.ru
-github.com
-Шаг 5. Загрузка обновлений «по воздуху»
-Теперь можно обновлять прошивку без провода:
-В Arduino IDE выберите в Инструменты → Порт сетевой порт с IP-адресом ESP32 (он появится после первой загрузки). 
-github.com
-programmingboss.com
-Внесите изменения в скетч (добавьте логику, исправьте ошибки). 
+Важное правило: каждое обновление, которое вы загружаете по воздуху, должно 
+содержать этот код с OTA-логикой. Если в новом скетче нет вызова ArduinoOTA.begin(), 
+устройство перестанет реагировать на OTA-запросы. Поэтому для первого запуска всегда 
+загружайте скетч с OTA-логикой по USB, а уже потом обновляйте «по воздуху». 
 
+Первая загрузка (по USB)
+------------------------
+Подключите ESP32 к компьютеру через USB-кабель, выберите в Arduino IDE правильную 
+плату и порт, загрузите скетч. После запуска в мониторе порта вы увидите IP-адрес устройства. 
+
+Настройка разделов памяти
+-------------------------
+Для работы OTA в ESP32 нужно, чтобы в таблице разделов были два специальных раздела 
+(например, ota_0 и ota_1). В Arduino IDE это настраивается так: 
+Инструменты → Размер flash-памяти → Выбрать схему разделов.
+
+Ищите вариант, где есть поддержка OTA (например, Minimal SPIFFS или Default 4MB with spiffs). 
+Если выбрать схему без OTA, обновление не сработает. 
+
+Загрузка обновлений «по воздуху»
+--------------------------------
+
+Теперь можно обновлять прошивку без провода:
+В Arduino IDE выберите в Инструменты → Порт сетевой порт с IP-адресом ESP32 
+(он появится после первой загрузки). 
+
+Внесите изменения в скетч (добавьте логику, исправьте ошибки). 
 */
+
+//#include <ESPmDNS.h>
+//#include <NetworkUdp.h>
+#include <WiFi.h>
+#include <ArduinoOTA.h>
+
+#include "inimem.h"
+
+// "OPPO A9 2020"; "TP-Link_B394"; "tve-DESKTOP"; "linksystve"; "linksystve";
+// "b277a4ee84e8"; "18009217"    ; "Ue18-647"   ; "x93k6kq6wf"; "X93K6KQ6WF";
+const char* ssid     = "OPPO A9 2020";
+const char* password = "b277a4ee84e8";
+
+uint32_t last_ota_time = 0;
+
+void iniWiFi(); 
+void iniOTA(); 
+
+void iniWiFi() 
+{
+  WiFi.begin(ssid, password);
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) 
+  {
+    delay(500);
+    Serial.print(".");
+  }
+}
+
+void iniOTA() 
+{
+  // Port defaults to 3232
+  // ArduinoOTA.setPort(3232);
+
+  // Hostname defaults to esp3232-[MAC]
+  // ArduinoOTA.setHostname("myesp32");
+
+  // Password can be set with plain text (will be hashed internally)
+  // The authentication uses PBKDF2-HMAC-SHA256 with 10,000 iterations
+  // ArduinoOTA.setPassword("admin");
+
+  // Or set password with pre-hashed value (SHA256 hash of "admin")
+  // SHA256(admin) = 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+  // ArduinoOTA.setPasswordHash("8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918");
+
+  ArduinoOTA
+    .onStart([]() 
+    {
+      String type;
+      if (ArduinoOTA.getCommand() == U_FLASH) 
+      {
+        type = "sketch";
+      } 
+      else 
+      {  
+        // U_SPIFFS
+        type = "filesystem";
+      }
+
+      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+      Serial.println("Start updating " + type);
+    })
+    .onEnd([]() 
+    {
+      Serial.println("\nEnd");
+    })
+    .onProgress([](unsigned int progress, unsigned int total) 
+    {
+      if (millis() - last_ota_time > 500) 
+      {
+        Serial.printf("Flash it: %u%%\n", (progress / (total / 100)));
+        last_ota_time = millis();
+      }
+    })
+    .onError([](ota_error_t error) 
+    {
+      Serial.printf("Error[%u]: ", error);
+      if (error == OTA_AUTH_ERROR) 
+      {
+        Serial.println("Auth Failed");
+      } 
+      else if (error == OTA_BEGIN_ERROR) 
+      {
+        Serial.println("Begin Failed");
+      } 
+      else if (error == OTA_CONNECT_ERROR) 
+      {
+        Serial.println("Connect Failed");
+      } 
+      else if (error == OTA_RECEIVE_ERROR) 
+      {
+        Serial.println("Receive Failed");
+      } 
+      else if (error == OTA_END_ERROR) 
+      {
+        Serial.println("End Failed");
+      }
+    });
+
+  ArduinoOTA.begin();
+
+  Serial.println("Ready 09");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  ipStr = WiFi.localIP().toString();
+}
+
+
 
 /*
 Какой тип возвращает WiFi.localIP()
@@ -254,5 +371,215 @@ if (!checkIP())
   - Убедитесь, что адрес принадлежит локальной сети.
   - При ошибке — переподключитесь.
 */
+
+
+/*
+На самом деле сама по себе регистрация callback-функции esp_now_register_recv_cb(messageReceived) не блокирует OTA напрямую — проблема обычно кроется в том, как в вашем коде выстроены логика ESP-NOW и процесс обновления прошивки. Я объясню, в чём тут дело, чтобы вам было проще отладить ситуацию. 
+arduino.stackexchange.com
+arduino.stackexchange.com
+Суть в том, что ESP-NOW и OTA решают разные задачи, и конфликт возникает из-за совместного использования ресурсов или порядка действий. 
+arduino.stackexchange.com
+arduino.stackexchange.com
+ESP-NOW работает на уровне Wi-Fi. Когда вы регистрируете esp_now_register_recv_cb, вы настраиваете обработчик, который вызывается при получении сообщения по протоколу ESP-NOW. Этот модуль напрямую использует Wi-Fi (режим station, SoftAP), и если в коде одновременно активно используется Wi-Fi для других задач (например, для подключения к роутеру во время OTA), могут возникать конфликты. Например, во время загрузки прошивки через OTA модуль Wi-Fi может быть временно отключён или переконфигурирован, и тогда приём через ESP-NOW просто перестаёт срабатывать. 
+docs.espressif.com
+wolles-elektronikkiste.de
+arduino.stackexchange.com
+arduino.stackexchange.com
+forum.arduino.cc
+OTA и Wi-Fi — это две разные фазы. Процесс OTA обычно включает отключение Wi-Fi, запись нового кода во флеш-память и последующую перезагрузку. Если в этот момент активен код, который параллельно использует Wi-Fi (например, слушает ESP-NOW-сообщения), это нарушает атомарность операций и приводит к сбоям. 
+arduino.stackexchange.com
+arduino.stackexchange.com
+Типичный сценарий: вы настраиваете ESP-NOW для обмена данными, а в loop() или в функции, которая запускает OTA, одновременно включаете Wi-Fi. В этот момент что-то идёт не так — приём через ESP-NOW может «зависнуть» или начать работать с ошибками. 
+arduino.stackexchange.com
+arduino.stackexchange.com
+Как это решить?
+Не обязательно убирать регистрацию callback-функции, но нужно грамотно выстроить последовательность действий:
+Не включайте Wi-Fi и не запускайте OTA одновременно с активным приёмом ESP-NOW. Лучше разделить логику: например, сначала завершить приём ESP-NOW, затем отключить Wi-Fi и начать OTA. 
+arduino.stackexchange.com
+forum.arduino.cc
+Можно использовать флаг (например, do_OTA), который устанавливается при получении специальной команды по ESP-NOW. В функции setup() или в цикле loop() проверьте этот флаг: если он установлен — выполняем переход на OTA-режим, предварительно отключив Wi-Fi. 
+arduino.stackexchange.com
+arduino.stackexchange.com
+Проверьте, как в вашей библиотеке для OTA (например, ArduinoOTA) взаимодействует с модулем Wi-Fi. 
+forum.arduino.cc
+Ещё один нюанс
+Иногда путаница возникает из-за версий библиотек. В разных версиях API ESP-NOW (например, 2.x и 3.x) сигнатура функции обратного вызова могла измениться. Если вы мигрируете код с старой версии на новую, это тоже может вызывать неожиданные сбои в работе. 
+forum.dronebotworkshop.com
+Мой совет: начните с того, чтобы вынести код, который активно использует ESP-NOW, в отдельную функцию или блок, который вызывается только тогда, когда точно не идёт процесс обновления или не активен Wi-Fi. Так вы сразу увидите, в этом ли дело. 
+arduino.stackexchange.com
+arduino.stackexchange.com
+Если расскажете чуть подробнее — какой именно код у вас сейчас в loop() и как именно запускается OTA (через ArduinoOTA.begin()), — я помогу точнее найти слабое место!
+*/
+
+/*
+ Алиса
+Разберу пошагово, как правильно настроить ESP‑NOW, чтобы избежать конфликтов (в т. ч. с OTA).
+
+Пошаговая настройка ESP-NOW
+Шаг 1. Инициализация Wi‑Fi и ESP‑NOW
+
+Сначала запустите Wi‑Fi, затем инициализируйте ESP‑NOW:
+
+cpp
+#include <esp_now.h>
+#include <WiFi.h>
+
+void setup() {
+  Serial.begin(115200);
+
+  // Инициализируем Wi‑Fi (режим STA или AP)
+  WiFi.mode(WIFI_STA);
+  // Или WiFi.mode(WIFI_APSTA) для смешанного режима
+
+  // Инициализируем ESP‑NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP‑NOW");
+    return;
+  }
+
+  // Регистрируем callback для приёма данных
+  esp_now_register_recv_cb(OnDataRecv);
+}
+Шаг 2. Добавление пиров (устройств)
+
+Перед отправкой данных добавьте пиры в список:
+
+cpp
+esp_now_peer_info_t peerInfo;
+
+// Заполняем информацию о пире
+memcpy(peerInfo.peer_addr, receiverMacAddress, 6);
+peerInfo.channel = 0;  // 0 = текущий канал
+peerInfo.encrypt = false; // или true для шифрования
+
+// Добавляем пир
+if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+  Serial.println("Failed to add peer");
+  return;
+}
+Шаг 3. Настройка callback‑функций
+
+Callback для приёма данных:
+
+cpp
+void OnDataRecv(const uint8_t *mac, const uint8_t *data, int len) {
+  // Обрабатываем данные
+  Serial.print("Received data from: ");
+  printMacAddress(mac);
+  Serial.print("Data: ");
+  for (int i = 0; i < len; i++) {
+    Serial.print((char)data[i]);
+  }
+  Serial.println();
+}
+Callback для отправки (опционально):
+
+cpp
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  Serial.print("Last Packet Send Status: ");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+}
+Шаг 4. Отправка данных
+
+cpp
+esp_err_t result = esp_now_send(receiverMacAddress, (uint8_t *)&myData, sizeof(myData));
+if (result == ESP_OK) {
+  Serial.println("Send success");
+} else {
+  Serial.println("Send failed");
+}
+Ключевые правила для избежания конфликтов
+Порядок инициализации:
+
+сначала WiFi.mode();
+затем esp_now_init().
+Деинициализация перед OTA:
+
+cpp
+void startOTA() {
+  // Останавливаем ESP‑NOW перед OTA
+  esp_now_deinit();
+  WiFi.disconnect();
+  WiFi.mode(WIFI_OFF);
+
+  // Запускаем OTA
+  ArduinoOTA.begin();
+}
+Ограничение длины данных: отправляйте не более 250 байт за раз.
+
+Интервалы между отправкой: не отправляйте данные слишком часто — дождитесь callback от предыдущей отправки.
+
+Избегайте тяжёлых операций в callback‑функциях:
+
+не используйте delay();
+не выполняйте длительные вычисления;
+передавайте данные в очередь для обработки в основном цикле.
+Управление пирами:
+
+добавляйте пиры через esp_now_add_peer();
+удаляйте ненужные пиры через esp_now_del_peer().
+Обработка ошибок: проверяйте возвращаемые значения функций ESP‑NOW.
+
+Пример полной настройки
+cpp
+#include <esp_now.h>
+#include <WiFi.h>
+
+// MAC-адрес приёмника
+uint8_t receiverMacAddress[] = {0x24, 0x6F, 0x28, 0xAB, 0xCD, 0xEF};
+
+// Структура данных
+typedef struct struct_message {
+  int id;
+  float temp;
+  char text[32];
+} struct_message;
+struct_message myData;
+
+void OnDataRecv(const uint8_t *mac, const uint8_t *data, int len) {
+  memcpy(&myData, data, sizeof(myData));
+  Serial.printf("ID: %d, Temp: %.2f, Text: %s\n", myData.id, myData.temp, myData.text);
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // Инициализируем Wi‑Fi
+  WiFi.mode(WIFI_STA);
+
+  // Инициализируем ESP‑NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("ESP‑NOW init failed");
+    return;
+  }
+
+  // Регистрируем callback
+  esp_now_register_recv_cb(OnDataRecv);
+
+  // Добавляем пир
+  esp_now_peer_info_t peerInfo;
+  memcpy(peerInfo.peer_addr, receiverMacAddress, 6);
+  peerInfo.channel = 0;
+  peerInfo.encrypt = false;
+
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+    Serial.println("Failed to add peer");
+    return;
+  }
+}
+
+void loop() {
+  // Основной код
+  delay(1000);
+}
+Дополнительные рекомендации
+Шифрование: для защиты данных используйте esp_now_set_pmk() и esp_now_set_lmk().
+Отладка: включайте логирование для отслеживания ошибок ESP‑NOW.
+Обновление прошивки: перед OTA полностью деинициализируйте ESP‑NOW и Wi‑Fi.
+Тестирование: проверяйте работу в разных режимах Wi‑Fi (STA, AP, AP+STA).
+Ресурсы: помните, что ESP‑NOW использует ресурсы Wi‑Fi — не перегружайте систему параллельными задачами.
+*/
+
+
 
 // ************************************************************** WiFiOTA.h ***

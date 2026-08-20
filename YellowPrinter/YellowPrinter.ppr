@@ -41,8 +41,8 @@ YellowPrinter
 Main=
 Selected=YellowPrinter.ino
 [YellowPrinter.ino]
-TopLine=1
-Caret=22,7
+TopLine=211
+Caret=1,215
 [inimem.h]
 TopLine=7
 Caret=25,28
@@ -50,5 +50,5 @@ Caret=25,28
 TopLine=123
 Caret=82,162
 [WiFiOTA.h]
-TopLine=79
-Caret=1,102
+TopLine=110
+Caret=1,128
