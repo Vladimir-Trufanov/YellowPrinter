@@ -159,7 +159,7 @@ void taskMain (void *pvParameters)
     
     if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
     { 
-      tft.setCursor(17,17); tft.print("messCalc = "); tft.print(messCalc); tft.print(Spase);
+      tft.setCursor(17,17); tft.print(ipStr); tft.print(": "); tft.print(messCalc); tft.print(Spase);
       tft.setCursor(17,34); tft.print(CtrlMessage.line); tft.print(Spase);
       xSemaphoreGive(messMutex);  
     }

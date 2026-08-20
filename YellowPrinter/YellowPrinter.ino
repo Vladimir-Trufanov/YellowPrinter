@@ -32,6 +32,94 @@ int counter = 0;
 #include <WiFi.h>
 #include <ESP.h>
 
+
+// ------------------------------------------------------------------- OTA2 ---
+
+// Copyright 2024 Espressif Systems (Shanghai) PTE LTD
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <ESPmDNS.h>
+#include <NetworkUdp.h>
+#include <ArduinoOTA.h>
+
+// "OPPO A9 2020"; "TP-Link_B394"; "tve-DESKTOP"; "linksystve"; "linksystve";
+// "b277a4ee84e8"; "18009217"    ; "Ue18-647"   ; "x93k6kq6wf"; "X93K6KQ6WF";
+const char* ssid     = "OPPO A9 2020";
+const char* password = "b277a4ee84e8";
+
+uint32_t last_ota_time = 0;
+
+// ------------------------------------------------------------------- OTA2 ---
+
+
+
+/*
+#if defined(ESP8266)
+  #include <ESP8266WiFi.h>
+  #include <WiFiClient.h>
+  #include <ESP8266WebServer.h>
+#elif defined(ESP32)
+  #include <WiFi.h>
+  #include <WiFiClient.h>
+  #include <WebServer.h>
+#endif
+
+// -------------------------------------------------------------------- OTA ---
+#include <ElegantOTA.h>
+// Указываем учетные данные Wi-Fi
+// "OPPO A9 2020"; "TP-Link_B394"; "tve-DESKTOP"; "linksystve"; "linksystve";
+// "b277a4ee84e8"; "18009217"    ; "Ue18-647"   ; "x93k6kq6wf"; "X93K6KQ6WF";
+const char* ssid     = "OPPO A9 2020";
+const char* password = "b277a4ee84e8";
+#if defined(ESP8266)
+  ESP8266WebServer server(80);
+#elif defined(ESP32)
+  WebServer server(80);
+#endif
+unsigned long ota_progress_millis = 0;
+void onOTAStart() 
+{
+  // Log when OTA has started
+  Serial.println("Обновление OTA стартовало!");
+  // <Add your own code here>
+}
+void onOTAProgress(size_t current, size_t final) 
+{
+  // Log every 1 second
+  if (millis() - ota_progress_millis > 1000) 
+  {
+    ota_progress_millis = millis();
+    Serial.printf("Ход выполнения OTA: %u байт, до завершения: %u байт\n", current, final);
+  }
+}
+void onOTAEnd(bool success) 
+{
+  // Log when OTA has finished
+  if (success) 
+  {
+
+    Serial.println("Обновление OTA завершено успешно!");
+  } 
+  else 
+  {
+    Serial.println("Произошла ошибка при обновлении OTA!");
+  }
+  // <Add your own code here>
+}
+// -------------------------------------------------------------------- OTA ---
+*/
+
 // Готовим к использованию сторожевой таймер
 #include <esp_task_wdt.h>
 int WDT_TIMEOUT = 5; // WDT Timeout in seconds
@@ -47,7 +135,7 @@ volatile int inumber=-1;
 int flag[] =        {-1, 0, 0, 0};   
 
 #include "inimem.h"
-
+#include "WiFiOTA.h"
 #include "spriteMain.h"
 #include "TouchPress.h"
   
@@ -87,8 +175,132 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000);
-  
   WiFi.mode(WIFI_STA);
+  
+  
+// ------------------------------------------------------------------- OTA2 ---
+  WiFi.begin(ssid, password);
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) 
+  {
+    delay(500);
+    Serial.print(".");
+    //Serial.println("Connection Failed! Rebooting...");
+    //delay(5000);
+    //ESP.restart();
+  }
+
+  // Port defaults to 3232
+  // ArduinoOTA.setPort(3232);
+
+  // Hostname defaults to esp3232-[MAC]
+  // ArduinoOTA.setHostname("myesp32");
+
+  // Password can be set with plain text (will be hashed internally)
+  // The authentication uses PBKDF2-HMAC-SHA256 with 10,000 iterations
+  // ArduinoOTA.setPassword("admin");
+
+  // Or set password with pre-hashed value (SHA256 hash of "admin")
+  // SHA256(admin) = 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+  // ArduinoOTA.setPasswordHash("8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918");
+
+  ArduinoOTA
+    .onStart([]() 
+    {
+      String type;
+      if (ArduinoOTA.getCommand() == U_FLASH) 
+      {
+        type = "sketch";
+      } 
+      else 
+      {  
+        // U_SPIFFS
+        type = "filesystem";
+      }
+
+      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+      Serial.println("Start updating " + type);
+    })
+    .onEnd([]() 
+    {
+      Serial.println("\nEnd");
+    })
+    .onProgress([](unsigned int progress, unsigned int total) 
+    {
+      if (millis() - last_ota_time > 500) 
+      {
+        Serial.printf("Прошивание: %u%%\n", (progress / (total / 100)));
+        last_ota_time = millis();
+      }
+    })
+    .onError([](ota_error_t error) 
+    {
+      Serial.printf("Error[%u]: ", error);
+      if (error == OTA_AUTH_ERROR) 
+      {
+        Serial.println("Auth Failed");
+      } 
+      else if (error == OTA_BEGIN_ERROR) 
+      {
+        Serial.println("Begin Failed");
+      } 
+      else if (error == OTA_CONNECT_ERROR) 
+      {
+        Serial.println("Connect Failed");
+      } 
+      else if (error == OTA_RECEIVE_ERROR) 
+      {
+        Serial.println("Receive Failed");
+      } 
+      else if (error == OTA_END_ERROR) 
+      {
+        Serial.println("End Failed");
+      }
+    });
+
+  ArduinoOTA.begin();
+
+  Serial.println("Ready");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  ipStr = WiFi.localIP().toString();
+
+// ------------------------------------------------------------------- OTA2 ---
+
+  
+  
+
+/*
+// -------------------------------------------------------------------- OTA ---
+  WiFi.begin(ssid, password);
+  Serial.println("");
+  Serial.println("Elegant OTA");
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  ipStr = WiFi.localIP().toString();
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  //Serial.print("IP address: ");
+  Serial.print("http://"); Serial.println(WiFi.localIP());
+  Serial.print("http://"); Serial.print(WiFi.localIP()); Serial.println("/update");
+  server.on("/", []() 
+  {
+    server.send(200, "text/plain", "Only English32! This is ElegantOTA Demo.");
+  });
+  ElegantOTA.begin(&server);    // Start ElegantOTA
+  // ElegantOTA callbacks
+  ElegantOTA.onStart(onOTAStart);
+  ElegantOTA.onProgress(onOTAProgress);
+  ElegantOTA.onEnd(onOTAEnd);
+  server.begin();
+  Serial.println("HTTP server стартовал");
+// -------------------------------------------------------------------- OTA ---
+*/  
+
   if (esp_now_init() == ESP_OK) 
   {
     Serial.println("ESPNow Init success");
@@ -126,6 +338,7 @@ void setup()
   
   // Cоздаем задачи
   
+  
   // Приём сообщения от внешнего контроллера-передатчика
   xTaskCreatePinnedToCore 
   (
@@ -158,6 +371,7 @@ void setup()
     NULL,           // Task handle
     0
   );
+  
    
   //tft.fillRect(0, 0, 16, 208, TFT_WHITE);
   /**
@@ -199,6 +413,17 @@ uint16_t iLoop=0;
 static char taskList[1024]; 
 void loop() 
 {
+
+/*
+// -------------------------------------------------------------------- OTA ---
+  server.handleClient();
+  ElegantOTA.loop();
+// -------------------------------------------------------------------- OTA ---
+*/
+
+  ArduinoOTA.handle();
+
+
   // Считываем с последовательного порта целое число
   // (так как в зависимости от окружения за целым числом может следовать нулевое значение,
   // то отсекаем 0)  
@@ -275,7 +500,7 @@ void loop()
     // Сбрасываем значение индикатора
     inumber=-1;  
   }
-  getheap("Цикл пройден ");
+  //getheap("Цикл пройден ");
 }
 
 void vCheckFlagTask(void* pvParameters) 

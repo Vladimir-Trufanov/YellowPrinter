@@ -25,6 +25,8 @@ void MimicMCUhangEvent(String NameTask);
   #include "yp_SPIFFS.h"
 #endif
 
+String ipStr = "messCalc";  // IP-адрес, как строка
+
 // Определяем структуры принимаемых сообщений (оригинал и копия для внутренней работы)
 #define smLINESIZE    80  // размер буфера одного сообщения
 typedef struct message 
