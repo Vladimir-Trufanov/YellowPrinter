@@ -4,7 +4,7 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v1.0.8, 17.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.0, 20.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
@@ -74,52 +74,9 @@ uint32_t last_ota_time = 0;
   #include <WiFiClient.h>
   #include <WebServer.h>
 #endif
-
-// -------------------------------------------------------------------- OTA ---
-#include <ElegantOTA.h>
-// Указываем учетные данные Wi-Fi
-// "OPPO A9 2020"; "TP-Link_B394"; "tve-DESKTOP"; "linksystve"; "linksystve";
-// "b277a4ee84e8"; "18009217"    ; "Ue18-647"   ; "x93k6kq6wf"; "X93K6KQ6WF";
-const char* ssid     = "OPPO A9 2020";
-const char* password = "b277a4ee84e8";
-#if defined(ESP8266)
-  ESP8266WebServer server(80);
-#elif defined(ESP32)
-  WebServer server(80);
-#endif
-unsigned long ota_progress_millis = 0;
-void onOTAStart() 
-{
-  // Log when OTA has started
-  Serial.println("Обновление OTA стартовало!");
-  // <Add your own code here>
-}
-void onOTAProgress(size_t current, size_t final) 
-{
-  // Log every 1 second
-  if (millis() - ota_progress_millis > 1000) 
-  {
-    ota_progress_millis = millis();
-    Serial.printf("Ход выполнения OTA: %u байт, до завершения: %u байт\n", current, final);
-  }
-}
-void onOTAEnd(bool success) 
-{
-  // Log when OTA has finished
-  if (success) 
-  {
-
-    Serial.println("Обновление OTA завершено успешно!");
-  } 
-  else 
-  {
-    Serial.println("Произошла ошибка при обновлении OTA!");
-  }
-  // <Add your own code here>
-}
-// -------------------------------------------------------------------- OTA ---
 */
 
+/***
 // Готовим к использованию сторожевой таймер
 #include <esp_task_wdt.h>
 int WDT_TIMEOUT = 5; // WDT Timeout in seconds
@@ -133,12 +90,17 @@ volatile int inumber=-1;
 #define ftaskTouchscreen 3
 // биты флагов задач: 0  1  2  3
 int flag[] =        {-1, 0, 0, 0};   
+*///
 
 #include "inimem.h"
+
+/***
 #include "WiFiOTA.h"
 #include "spriteMain.h"
 #include "TouchPress.h"
+*///
   
+/***
 // ****************************************************************************
 // *            Принять поступающее сообщение в захвате мьютекса              *
 // ****************************************************************************
@@ -156,17 +118,18 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       messCalc++;
       messBool=false;
       //TickType_t duration = xTaskGetTickCount() - start;
-      /*
+      / *
       Serial.printf("\nTransmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n", 
         info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
       Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
       Serial.printf("Длительность messageReceived(): %d ms\n\n", duration * portTICK_PERIOD_MS);
-      */
+      * /
       xSemaphoreGive (messMutex);  
     }
     vTaskDelay(64);
   }
 }
+*///
 
 // ****************************************************************************
 // *                                 setup                                    *
@@ -259,7 +222,7 @@ void setup()
 
   ArduinoOTA.begin();
 
-  Serial.println("Ready");
+  Serial.println("Ready 02");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
   ipStr = WiFi.localIP().toString();
@@ -269,38 +232,7 @@ void setup()
   
   
 
-/*
-// -------------------------------------------------------------------- OTA ---
-  WiFi.begin(ssid, password);
-  Serial.println("");
-  Serial.println("Elegant OTA");
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    delay(500);
-    Serial.print(".");
-  }
-  ipStr = WiFi.localIP().toString();
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  //Serial.print("IP address: ");
-  Serial.print("http://"); Serial.println(WiFi.localIP());
-  Serial.print("http://"); Serial.print(WiFi.localIP()); Serial.println("/update");
-  server.on("/", []() 
-  {
-    server.send(200, "text/plain", "Only English32! This is ElegantOTA Demo.");
-  });
-  ElegantOTA.begin(&server);    // Start ElegantOTA
-  // ElegantOTA callbacks
-  ElegantOTA.onStart(onOTAStart);
-  ElegantOTA.onProgress(onOTAProgress);
-  ElegantOTA.onEnd(onOTAEnd);
-  server.begin();
-  Serial.println("HTTP server стартовал");
-// -------------------------------------------------------------------- OTA ---
-*/  
-
+/***
   if (esp_now_init() == ESP_OK) 
   {
     Serial.println("ESPNow Init success");
@@ -374,7 +306,7 @@ void setup()
   
    
   //tft.fillRect(0, 0, 16, 208, TFT_WHITE);
-  /**
+  / **
   Рисуем сглаженный (anti-aliased) прямоугольник с закруглёнными углами. 
   
   Синтаксис
@@ -402,8 +334,9 @@ void setup()
   Маска quadrants позволяет контролировать, какие дуги (верхняя, нижняя, левая, правая) будут сглажены.
   Это полезно для создания сложных эффектов.
   Если вам нужно не просто нарисовать контур, а заполнить фигуру цветом, в библиотеке есть родственный метод fillSmoothRoundRect() 
-  **/
+  ** /
   //tft.drawSmoothRoundRect(0, 26, 4, 8, 10, 30, TFT_RED, TFT_WHITE);
+  *///
 }
 
 // ****************************************************************************
@@ -414,16 +347,9 @@ static char taskList[1024];
 void loop() 
 {
 
-/*
-// -------------------------------------------------------------------- OTA ---
-  server.handleClient();
-  ElegantOTA.loop();
-// -------------------------------------------------------------------- OTA ---
-*/
-
   ArduinoOTA.handle();
 
-
+/***
   // Считываем с последовательного порта целое число
   // (так как в зависимости от окружения за целым числом может следовать нулевое значение,
   // то отсекаем 0)  
@@ -433,6 +359,7 @@ void loop()
     if (ii>0) inumber=ii;
   }
   TickType_t start = xTaskGetTickCount();
+*///
 
   /*
   digitalWrite (LED_BUILTIN, HIGH);  
@@ -442,7 +369,8 @@ void loop()
   // Задержку на сборку мусора
   vTaskDelay(128);
   */
-  
+
+/***  
   vTaskDelay(512);
 
   iLoop++;
@@ -456,7 +384,7 @@ void loop()
   // ---Имитируем зависание микроконтроллера с помощью опознанного числа,
   // ---принятого в последовательном порту
 
-  /**
+  / **
   Формируем читаемый отчёт со списком всех текущих задач и их состоянием с помощью  
   функции vTaskList(char *pcWriteBuffer) - в FreeRTOS она предназначена для отладки  
 
@@ -492,7 +420,7 @@ void loop()
     FreeRTOS есть альтернативная, более компактная реализация sprintf(). 
   - Рекомендация для продакшена. Если вам нужна «сырая» статистика для анализа, лучше напрямую вызывать 
     uxTaskGetSystemState(), а не форматировать его через vTaskList(). 
-  **/
+  ** /
   if (inumber == 3)
   {
     vTaskList(taskList);
@@ -525,6 +453,7 @@ void vCheckFlagTask(void* pvParameters)
     }
     vTaskDelay(1000/portTICK_PERIOD_MS);
   }
+  *///
 }
 
 // ****************************************************** YellowPrinter.ino ***

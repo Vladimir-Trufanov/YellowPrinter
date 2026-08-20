@@ -18,19 +18,6 @@ Extensions=*.*
 [Project tree]
 YellowPrinter
 	+YellowPrinter
-		-build
-			-esp32.esp32.jczn_2432s028r
-				build\esp32.esp32.jczn_2432s028r\boot_app0.bin
-				build\esp32.esp32.jczn_2432s028r\build.options.json
-				build\esp32.esp32.jczn_2432s028r\flash_args
-				build\esp32.esp32.jczn_2432s028r\partitions.csv
-				build\esp32.esp32.jczn_2432s028r\sdkconfig
-				build\esp32.esp32.jczn_2432s028r\YellowPrinter.ino.bin
-				build\esp32.esp32.jczn_2432s028r\YellowPrinter.ino.bootloader.bin
-				build\esp32.esp32.jczn_2432s028r\YellowPrinter.ino.elf
-				build\esp32.esp32.jczn_2432s028r\YellowPrinter.ino.map
-				build\esp32.esp32.jczn_2432s028r\YellowPrinter.ino.merged.bin
-				build\esp32.esp32.jczn_2432s028r\YellowPrinter.ino.partitions.bin
 		-data
 			data\HuaweiSans16.vlw
 		-res
@@ -42,7 +29,6 @@ YellowPrinter
 		TouchPress.h
 		WiFiOTA.h
 		YellowPrinter.ino
-		YellowPrinter.ino.jczn_2432s028r.bin
 		YellowPrinter.md
 		YellowPrinter.ppr
 		yp_SPIFFS.h
@@ -51,15 +37,14 @@ YellowPrinter
 1=inimem.h
 2=spriteMain.h
 3=WiFiOTA.h
-4=..\..\ittve-ESP32\24-Перепрошивка esp32 через OTA\BasicOTA\BasicOTA.ino
 [Selected Project Files]
 Main=
 Selected=YellowPrinter.ino
 [YellowPrinter.ino]
-TopLine=294
-Caret=3,341
+TopLine=1
+Caret=22,7
 [inimem.h]
-TopLine=11
+TopLine=7
 Caret=25,28
 [spriteMain.h]
 TopLine=123
@@ -67,6 +52,3 @@ Caret=82,162
 [WiFiOTA.h]
 TopLine=79
 Caret=1,102
-[..\..\ittve-ESP32\24-Перепрошивка esp32 через OTA\BasicOTA\BasicOTA.ino]
-TopLine=104
-Caret=1,143
