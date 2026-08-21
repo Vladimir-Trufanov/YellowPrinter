@@ -1,0 +1,119 @@
+/** YellowPrinter-Esp32-Arduino                                *** yp_NVS.h ***
+ * 
+ * Обcлужить работу со NVS (пока хранить счетчик перезапусков)
+ * 
+ * v2.0.0, 21.08.2026                                 Автор:      Труфанов В.Е.
+ * Copyright © 2026 tve                               Дата создания: 12.08.2026
+**/
+
+#pragma once
+
+/** 
+ *                 Сохранить в NVS количество перезапусков контроллера, которое
+ *     увеличивается при каждом запуске (поскольку значение записывается в NVS, 
+ *                                        оно сохраняется между перезапусками).
+ *                 Также проверить, была ли операция чтения/записи успешной или 
+ *            определённое значение не было инициализировано в NVS. Диагностику 
+ *         представить в виде обычного текста, чтобы можно было отслеживать ход 
+ *                               выполнения программы и выявлять любые проблемы
+**/
+
+#include <Arduino.h>
+#include "nvs_flash.h"
+#include "nvs.h"
+
+char buffer[60];
+
+void learnRestart() 
+{
+  // --------------------------------------------------- Инициализация NVS ---
+  esp_err_t err = nvs_flash_init();
+  // Если раздел NVS не содержит пустых страниц или он содержит данные в 
+  // незнакомом формате, который не распознаётся текущей версией кода,
+  // то стираем весь раздел и снова вызываем инициализацию
+  if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) 
+  {
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    err = nvs_flash_init();
+  }
+  ESP_ERROR_CHECK(err);
+  // Открываем хранилище параметров
+  Serial.print("\n");
+  //Serial.print("Открываем энергонезависимое хранилище (NVS) ... ");
+  nvs_handle_t my_handle;
+  err = nvs_open("storage", NVS_READWRITE, &my_handle);
+  if (err != ESP_OK) 
+  {
+    sprintf(buffer,"Ошибка (%s) открытия хранилища!\n", esp_err_to_name(err));
+    Serial.print(buffer);
+  } 
+  else 
+  {
+    //Serial.println("Сделано!");
+    // ----------------------------------------------------------- Чтение ---
+    //Serial.print("Считываем значение счетчика перезапусков из NVS ... ");
+    // Присваиваем начальное значение счетчику = 0, 
+    // на случай, если значение счетчика еще не было записано в NVS
+    int32_t restart_counter = 0; 
+    err = nvs_get_i32(my_handle, "restart_counter", &restart_counter);
+    switch (err) 
+    {
+      case ESP_OK:
+        //Serial.println("Сделано!");
+        sprintf(buffer,"Значение счётчика перезапусков = %" PRIu32 "\n", restart_counter);
+        Serial.print(buffer);
+        break;
+      case ESP_ERR_NVS_NOT_FOUND:
+        Serial.print("Значение счётчика еще не инициализировано!\n");
+        break;
+      default :
+        sprintf(buffer,"Ошибка чтения (%s)!\n", esp_err_to_name(err));
+        Serial.print(buffer);
+    }
+    // ----------------------------------------------------------- Запись ---
+    Serial.print("Обновляем счётчик перезапусков в NVS ... ");
+    restart_counter++;
+    err = nvs_set_i32(my_handle, "restart_counter", restart_counter);
+    Serial.print((err != ESP_OK) ? "Не получилось!\n" : " \n");
+    // Фиксируем записанные значения (после установки любых значений необходимо
+    // вызывать функцию nvs_commit(), чтобы обеспечить запись изменений во 
+    // флэш-память)
+    Serial.print("Фиксируем обновления в NVS ... ");
+    err = nvs_commit(my_handle);
+    Serial.print((err != ESP_OK) ? "Не получилось!\n" : " \n");
+    // ----------------------------------------------------- Закрытие NVS ---
+    nvs_close(my_handle);
+  }
+  // Определяем и показываем причину последнего сброса (reset reason). 
+  esp_reset_reason_t reason = esp_reset_reason();
+  Serial.print("Причина перезагрузки: ");
+  switch (reason) 
+  {
+    case ESP_RST_UNKNOWN :   Serial.println("ESP_RST_UNKNOWN - ");  break;  // причина сброса неизвестна, может возникнуть из‑за некорректной инициализации системы или сбоя в механизме отслеживания причин сброса
+    case ESP_RST_POWERON :   Serial.println("ESP_RST_POWERON"); break;      // сброс при подаче питания на устройство (power‑on event), стандартный сценарий при включении платы или подаче питания после отключения
+    case ESP_RST_EXT :       Serial.println("ESP_RST_EXT");  break;         // сброс, инициированный внешним сигналом на выводе (external pin). Для ESP32 это значение не применимо — актуально для других платформ (например, ESP32‑S2, ESP32‑C3)
+    case ESP_RST_SW :        Serial.println("ESP_RST_SW");  break;          // программный сброс (вызван функцией вроде esp_restart). Выполняется программно: останавливает выполнение программы, сбрасывает CPU, загружает приложение через bootloader
+    case ESP_RST_PANIC :     Serial.println("ESP_RST_PANIC");  break;       // программный сброс из-за исключения или вызова panic. Возникает при критических ошибках в коде: разыменование нулевого указателя, переполнение стека и т. д.
+    case ESP_RST_INT_WDT :   Serial.println("ESP_RST_INT_WDT");  break;     // сброс из-за сторожевого таймера (interrupt watchdog). Происходит, если обработчик прерывания выполняется слишком долго и не освобождает процессор вовремя.
+    case ESP_RST_TASK_WDT :  Serial.println("ESP_RST_TASK_WDT");  break;    // сброс из‑за срабатывания сторожевого таймера задач (task watchdog). Возникает, если какая‑либо задача FreeRTOS не отдаёт управление в течение заданного времени (не вызывает vTaskDelay() или аналоги).
+    case ESP_RST_WDT :       Serial.println("ESP_RST_WDT");  break;         // сброс из‑за других сторожевых таймеров (не INT_WDT и не TASK_WDT). Общий случай для прочих watchdog‑механизмов в системе.
+    case ESP_RST_DEEPSLEEP : Serial.println("ESP_RST_DEEPSLEEP");  break;   // сброс после выхода из глубокого сна (deep sleep mode). Нормальное поведение: после пробуждения устройство перезагружается и начинает выполнение с начала.
+    case ESP_RST_BROWNOUT :  Serial.println("ESP_RST_BROWNOUT");  break;    // сброс из‑за пониженного напряжения питания (brownout reset). Может быть как аппаратным (срабатывание brownout detector), так и программным. Указывает на нестабильность питания: просадки напряжения ниже допустимого уровня.
+    case ESP_RST_SDIO :      Serial.println("ESP_RST_SDIO");  break;        // сброс через интерфейс SDIO. Характерен для модулей, где ESP выступает в роли ведомого устройства (slave) и получает команду сброса от хоста через SDIO.
+    default  :               Serial.println("не определена!"); break;
+  }
+
+   /*
+   // Предупреждаем о перезапусе контроллера и перезапускаем его
+   for (int i = 10; i >= 0; i--) 
+   {
+      sprintf(buffer,"Перезапуск через %d секунд ...\n", i);
+      Serial.print(buffer);
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
+   }
+   Serial.print("Перезапускаем контроллер.\n\n");
+   esp_restart();
+   */
+}
+
+// *************************************************************** yp_NVS.h ***

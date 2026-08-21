@@ -34,20 +34,11 @@ int counter = 0;
 // Готовим к использованию сторожевой таймер
 #include <esp_task_wdt.h>
 int WDT_TIMEOUT = 5; // WDT Timeout in seconds
-
-// Определяем число, которое будет считываться в основном цикле
-// с последовательного порта для иммитации зависания и других действий
-volatile int inumber=-1;
-// Флаги контрольных участков сторожевого таймера
-#define fLoop            1   // 1 => loop();
-#define ftaskMain        2   // 2 => taskMain()
-#define ftaskTouchscreen 3
-// биты флагов задач: 0  1  2  3
-int flag[] =        {-1, 0, 0, 0};   
 *///
 
 #include "inimem.h"
 #include "WiFiOTA.h"
+#include "yp_NVS.h"
 
 /***
 #include "spriteMain.h"
@@ -59,7 +50,6 @@ int flag[] =        {-1, 0, 0, 0};
 // ****************************************************************************
 void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
 {
-  /*
   messBool=true;  
   while (messBool) 
   {
@@ -70,23 +60,18 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       memcpy(&CtrlMessage, incomingData, len);
       messCalc++;
       messBool=false;
-      / *
+      /*
       Serial.printf("\nTransmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n", 
         info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-      * /
+      */
       Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
-      / *
+      /*
       Serial.printf("Длительность messageReceived(): %d ms\n\n", duration * portTICK_PERIOD_MS);
-      * /
+      */
       xSemaphoreGive (messMutex);  
     }
     vTaskDelay(64);
   }
-  */
-      memset(CtrlMessage.line,'\0',smLINESIZE); 
-      memcpy(&CtrlMessage, incomingData, len);
-      Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
-
 }
 
 // ****************************************************************************
@@ -96,10 +81,11 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000);
+  learnRestart();
   WiFi.mode(WIFI_STA);
 
-  iniWiFi(); 
-  iniOTA(); 
+  //iniWiFi(); 
+  //iniOTA(); 
     
   //pinMode (LED_BUILTIN, OUTPUT);
  
@@ -215,7 +201,7 @@ uint16_t iLoop=0;
 static char taskList[1024]; 
 void loop() 
 {
-  ArduinoOTA.handle();
+  //ArduinoOTA.handle();
 
 /***
   // Считываем с последовательного порта целое число
