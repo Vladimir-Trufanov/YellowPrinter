@@ -4,22 +4,12 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v2.0.0, 20.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.1, 22.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
 // Определяем пин контрольного светодиода
 #define LED_BUILTIN 16 // зеленый на CYD
-
-// Определяем объект мьютекса - дескриптор (во FreeRTOS и мьютекс, и семафор реализованы
-// как обычные совместно используемые подпрограммы. Это связано со сходством между обеими 
-// концепциями. Дескриптор семафора может использоваться для создания семафоров любого 
-// типа или мьютекса. xMutex это только дескриптор, инициализированный NULL значением. 
-// Пока его невозможно использовать, это будет сделано в setup() 
-// с помощью xSemaphoreCreateMutex())
-SemaphoreHandle_t xMutex     = NULL;  
-SemaphoreHandle_t messMutex  = NULL;   // захват структуры сообщения от внешнего контроллера-передатчика.
-SemaphoreHandle_t touchMutex = NULL;   // захват структуры данных о текущей позиции touchscreen (на сенсорной панели)
 
 // Определяем глобальную переменную counter, которая будет действовать как общий ресурс. 
 // Две задачи - task1 и task2 могут обращаться к переменной counter. Однако, поскольку 
@@ -39,12 +29,14 @@ int WDT_TIMEOUT = 5; // WDT Timeout in seconds
 #include "inimem.h"
 #include "WiFiOTA.h"
 #include "yp_NVS.h"
+#include "yp_ESPNOW.h"
 
 /***
 #include "spriteMain.h"
 #include "TouchPress.h"
 *///
-  
+
+/*
 // ****************************************************************************
 // *            Принять поступающее сообщение в захвате мьютекса              *
 // ****************************************************************************
@@ -60,19 +52,20 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       memcpy(&CtrlMessage, incomingData, len);
       messCalc++;
       messBool=false;
-      /*
+      / *
       Serial.printf("\nTransmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n", 
         info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-      */
+      * /
       Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
-      /*
+      / *
       Serial.printf("Длительность messageReceived(): %d ms\n\n", duration * portTICK_PERIOD_MS);
-      */
+      * /
       xSemaphoreGive (messMutex);  
     }
     vTaskDelay(64);
   }
 }
+*/
 
 // ****************************************************************************
 // *                                 setup                                    *
@@ -94,6 +87,7 @@ void setup()
   messMutex  = xSemaphoreCreateMutex();  
   //touchMutex = xSemaphoreCreateMutex();  
 
+  /*
   if (esp_now_init() == ESP_OK) 
   {
     Serial.println("ESPNow Init success");
@@ -103,7 +97,9 @@ void setup()
     Serial.println("ESPNow Init fail");
     return;
   }
-  esp_now_register_recv_cb(messageReceived);
+  */
+  iniESPNOW();
+  //esp_now_register_recv_cb(messageReceived);
 
   /***
   tft.init();
@@ -201,19 +197,23 @@ uint16_t iLoop=0;
 static char taskList[1024]; 
 void loop() 
 {
+  iLoop++;
+  TickType_t start = xTaskGetTickCount();
+
   //ArduinoOTA.handle();
 
-/***
   // Считываем с последовательного порта целое число
   // (так как в зависимости от окружения за целым числом может следовать нулевое значение,
   // то отсекаем 0)  
   if (Serial.available() > 0) 
   {
+    // 22/08/2026 Этот фрагмент кода проскакиваем дважды !!!
     int ii=Serial.parseInt();
     if (ii>0) inumber=ii;
+    Serial.println("\n*********************************");
+    Serial.print("Команда: "); Serial.println(inumber);
+    Serial.println  ("*********************************\n");
   }
-  TickType_t start = xTaskGetTickCount();
-*///
 
   /*
   // Мигаем зеленой лампочкой
@@ -222,16 +222,34 @@ void loop()
   digitalWrite (LED_BUILTIN, LOW);   
   vTaskDelay(936);
   */
+  
+  // Если команда, то
+  if (inumber==fOTA)
+  {
+    Serial.println("Переходим в режим OTA и отключаем ESPNOW");
+    deiESPNOW();
+    // Сбрасываем значение индикатора
+    inumber=-1;  
+  }
+  
+  // Если команда, то
+  if (inumber==fWORK)
+  {
+    Serial.println("Переходим в рабочий режим и ВКЛЮЧАЕМ ESPNOW");
+    iniESPNOW();
+    // Сбрасываем значение индикатора
+    inumber=-1;  
+  }
 
-  // Задержку на сборку мусора
-  vTaskDelay(64);
-
-/***  
-  iLoop++;
+  // Завершаем работу основного цикла
   TickType_t duration = xTaskGetTickCount() - start;
   //Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
   // Отмечаем завершение цикла Loop для сторожевого таймера
   flag[fLoop] = 1;
+  // Выполняем задержку на сборку мусора
+  vTaskDelay(64);
+
+  /*  
   // Имитируем зависание микроконтроллера с помощью опознанного числа,
   // принятого в последовательном порту
   if (inumber == fLoop) MimicMCUhangEvent("Loop");   
@@ -275,7 +293,7 @@ void loop()
   - Рекомендация для продакшена. Если вам нужна «сырая» статистика для анализа, лучше напрямую вызывать 
     uxTaskGetSystemState(), а не форматировать его через vTaskList(). 
   ** /
-  if (inumber == 3)
+  if (inumber == 207)
   {
     vTaskList(taskList);
     Serial.println(taskList);
@@ -283,8 +301,10 @@ void loop()
     inumber=-1;  
   }
   //getheap("Цикл пройден ");
+  */
 }
 
+/*
 void vCheckFlagTask(void* pvParameters) 
 {
   for ( ;; )
@@ -307,7 +327,7 @@ void vCheckFlagTask(void* pvParameters)
     }
     vTaskDelay(1000/portTICK_PERIOD_MS);
   }
-  *///
 }
+*/
 
 // ****************************************************** YellowPrinter.ino ***

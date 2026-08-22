@@ -31,6 +31,7 @@ YellowPrinter
 		YellowPrinter.ino
 		YellowPrinter.md
 		YellowPrinter.ppr
+		yp_ESPNOW.h
 		yp_NVS.h
 		yp_SPIFFS.h
 [Open project files]
@@ -39,25 +40,25 @@ YellowPrinter
 2=spriteMain.h
 3=WiFiOTA.h
 4=..\..\FrameStream\FrameStream\fs_eprom.h
-5=yp_NVS.h
+5=yp_ESPNOW.h
 [Selected Project Files]
 Main=
 Selected=YellowPrinter.ino
 [YellowPrinter.ino]
-TopLine=57
-Caret=18,84
+TopLine=223
+Caret=14,245
 [inimem.h]
-TopLine=11
-Caret=17,38
+TopLine=27
+Caret=14,35
 [spriteMain.h]
 TopLine=123
 Caret=82,162
 [WiFiOTA.h]
-TopLine=629
-Caret=1,667
+TopLine=425
+Caret=23,107
 [..\..\FrameStream\FrameStream\fs_eprom.h]
-TopLine=5
-Caret=1,1
-[yp_NVS.h]
+TopLine=19
+Caret=1,51
+[yp_ESPNOW.h]
 TopLine=1
-Caret=11,27
+Caret=15,13
