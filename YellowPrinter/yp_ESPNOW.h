@@ -2,7 +2,7 @@
  * 
  * Обcлужить работу с ESPNOW
  * 
- * v2.0.0, 22.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.10, 22.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 12.08.2026
 **/
 
@@ -21,7 +21,9 @@ void iniESPNOW()
   if (esp_now_init() == ESP_OK) 
   {
     Serial.println("ESPNow Init success");
-    esp_now_register_recv_cb(messageReceived);
+    //esp_now_register_recv_cb(messageReceived);
+    if (esp_now_register_recv_cb(messageReceived) != ESP_OK) 
+      Serial.println("ESPNow Register Message fail");
   }
   else 
   {
@@ -32,6 +34,9 @@ void iniESPNOW()
 
 void deiESPNOW() 
 {
+  if (esp_now_unregister_recv_cb() != ESP_OK) 
+    Serial.println("ESPNow UnRegister Message fail");
+  else
   if (esp_now_deinit() == ESP_OK) 
   {
     Serial.println("ESPNow DeINIT success");

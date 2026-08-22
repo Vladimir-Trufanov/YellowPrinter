@@ -37,28 +37,12 @@ YellowPrinter
 [Open project files]
 0=YellowPrinter.ino
 1=inimem.h
-2=spriteMain.h
-3=WiFiOTA.h
-4=..\..\FrameStream\FrameStream\fs_eprom.h
-5=yp_ESPNOW.h
 [Selected Project Files]
 Main=
-Selected=YellowPrinter.ino
+Selected=inimem.h
 [YellowPrinter.ino]
 TopLine=223
 Caret=14,245
 [inimem.h]
-TopLine=27
-Caret=14,35
-[spriteMain.h]
-TopLine=123
-Caret=82,162
-[WiFiOTA.h]
-TopLine=425
-Caret=23,107
-[..\..\FrameStream\FrameStream\fs_eprom.h]
-TopLine=19
-Caret=1,51
-[yp_ESPNOW.h]
-TopLine=1
-Caret=15,13
+TopLine=212
+Caret=1,1

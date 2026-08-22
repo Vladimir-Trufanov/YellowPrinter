@@ -1,108 +1,13 @@
 /** YellowPrinter-Esp32-Arduino                               *** WiFiOTA.h ***
  * 
- * Обнаружить нажатие на сенсорной панели и зафиксировать данные нажатия
+ * Выполнить запуск WiFi и обслужить работу OTA
  * 
- * v1.0.1, 12.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.0, 22.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 12.08.2026
 **/
 
 #pragma once
 
-/*
-Пишем скетч с поддержкой BasicOTA
----------------------------------
-Понадобится библиотека ArduinoOTA. В коде нужно:
-Подключить нужные заголовочные файлы: <WiFi.h>, <ArduinoOTA.h>.
-Заполнить переменные ssid и password с данными вашей Wi-Fi-сети.
-В функции setup() подключить Wi-Fi и вызвать ArduinoOTA.begin(), чтобы активировать OTA.
-В loop() добавить ArduinoOTA.handle(), чтобы плата постоянно проверяла наличие обновлений.
-Можно добавить обработчики событий (onStart, onEnd, onProgress, onError), чтобы видеть прогресс и ошибки в Мониторе порта.
- 
-#include <WiFi.h>
-#include <ArduinoOTA.h>
-
-const char* ssid = "Ваша_SSID";
-const char* password = "Ваш_Пароль";
-
-void setup() 
-{
-  Serial.begin(115200);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    delay(500);
-    Serial.println("Connecting to WiFi...");
-  }
-  Serial.println("Connected to WiFi");
-
-  ArduinoOTA.onStart(() 
-  {
-    String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
-    Serial.println("Начинается обновление: " + type);
-  }); 
-
-  ArduinoOTA.onEnd(() 
-  {
-    Serial.println("\пОбновление завершено");
-  }); 
-
-  ArduinoOTA.onProgress((unsigned int progress, unsigned int total) 
-  {
-    Serial.printf("Прогресс: %u%%\r", (progress * 100) / total);
-  }); 
-
-  ArduinoOTA.onError((ota_error_t error) 
-  {
-    Serial.printf("Ошибка [%u]: ", error);
-    if (error      == OTA_AUTH_ERROR)    Serial.println("Ошибка аутентификации");
-    else if (error == OTA_BEGIN_ERROR)   Serial.println("Ошибка начала");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Ошибка подключения");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Ошибка приёма");
-    else if (error == OTA_END_ERROR)     Serial.println("Ошибка завершения");
-  }); 
-
-  ArduinoOTA.begin();
-  Serial.println("Ready");
-  Serial.print("IP-адрес: ");
-  Serial.println(WiFi.localIP());
-}
-
-void loop() 
-{
-  ArduinoOTA.handle();
-}
-
-Важное правило: каждое обновление, которое вы загружаете по воздуху, должно 
-содержать этот код с OTA-логикой. Если в новом скетче нет вызова ArduinoOTA.begin(), 
-устройство перестанет реагировать на OTA-запросы. Поэтому для первого запуска всегда 
-загружайте скетч с OTA-логикой по USB, а уже потом обновляйте «по воздуху». 
-
-Первая загрузка (по USB)
-------------------------
-Подключите ESP32 к компьютеру через USB-кабель, выберите в Arduino IDE правильную 
-плату и порт, загрузите скетч. После запуска в мониторе порта вы увидите IP-адрес устройства. 
-
-Настройка разделов памяти
--------------------------
-Для работы OTA в ESP32 нужно, чтобы в таблице разделов были два специальных раздела 
-(например, ota_0 и ota_1). В Arduino IDE это настраивается так: 
-Инструменты → Размер flash-памяти → Выбрать схему разделов.
-
-Ищите вариант, где есть поддержка OTA (например, Minimal SPIFFS или Default 4MB with spiffs). 
-Если выбрать схему без OTA, обновление не сработает. 
-
-Загрузка обновлений «по воздуху»
---------------------------------
-
-Теперь можно обновлять прошивку без провода:
-В Arduino IDE выберите в Инструменты → Порт сетевой порт с IP-адресом ESP32 
-(он появится после первой загрузки). 
-
-Внесите изменения в скетч (добавьте логику, исправьте ошибки). 
-*/
-
-//#include <ESPmDNS.h>
-//#include <NetworkUdp.h>
 #include <WiFi.h>
 #include <ArduinoOTA.h>
 
@@ -206,6 +111,98 @@ void iniOTA()
   ipStr = WiFi.localIP().toString();
 }
 
+/*
+Пишем скетч с поддержкой BasicOTA
+---------------------------------
+Понадобится библиотека ArduinoOTA. В коде нужно:
+Подключить нужные заголовочные файлы: <WiFi.h>, <ArduinoOTA.h>.
+Заполнить переменные ssid и password с данными вашей Wi-Fi-сети.
+В функции setup() подключить Wi-Fi и вызвать ArduinoOTA.begin(), чтобы активировать OTA.
+В loop() добавить ArduinoOTA.handle(), чтобы плата постоянно проверяла наличие обновлений.
+Можно добавить обработчики событий (onStart, onEnd, onProgress, onError), чтобы видеть прогресс и ошибки в Мониторе порта.
+ 
+#include <WiFi.h>
+#include <ArduinoOTA.h>
+
+const char* ssid = "Ваша_SSID";
+const char* password = "Ваш_Пароль";
+
+void setup() 
+{
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    delay(500);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi");
+
+  ArduinoOTA.onStart(() 
+  {
+    String type = (ArduinoOTA.getCommand() == U_FLASH) ? "sketch" : "filesystem";
+    Serial.println("Начинается обновление: " + type);
+  }); 
+
+  ArduinoOTA.onEnd(() 
+  {
+    Serial.println("\пОбновление завершено");
+  }); 
+
+  ArduinoOTA.onProgress((unsigned int progress, unsigned int total) 
+  {
+    Serial.printf("Прогресс: %u%%\r", (progress * 100) / total);
+  }); 
+
+  ArduinoOTA.onError((ota_error_t error) 
+  {
+    Serial.printf("Ошибка [%u]: ", error);
+    if (error      == OTA_AUTH_ERROR)    Serial.println("Ошибка аутентификации");
+    else if (error == OTA_BEGIN_ERROR)   Serial.println("Ошибка начала");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Ошибка подключения");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Ошибка приёма");
+    else if (error == OTA_END_ERROR)     Serial.println("Ошибка завершения");
+  }); 
+
+  ArduinoOTA.begin();
+  Serial.println("Ready");
+  Serial.print("IP-адрес: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() 
+{
+  ArduinoOTA.handle();
+}
+
+Важное правило: каждое обновление, которое вы загружаете по воздуху, должно 
+содержать этот код с OTA-логикой. Если в новом скетче нет вызова ArduinoOTA.begin(), 
+устройство перестанет реагировать на OTA-запросы. Поэтому для первого запуска всегда 
+загружайте скетч с OTA-логикой по USB, а уже потом обновляйте «по воздуху». 
+
+Первая загрузка (по USB)
+------------------------
+Подключите ESP32 к компьютеру через USB-кабель, выберите в Arduino IDE правильную 
+плату и порт, загрузите скетч. После запуска в мониторе порта вы увидите IP-адрес устройства. 
+
+Настройка разделов памяти
+-------------------------
+Для работы OTA в ESP32 нужно, чтобы в таблице разделов были два специальных раздела 
+(например, ota_0 и ota_1). В Arduino IDE это настраивается так: 
+Инструменты → Размер flash-памяти → Выбрать схему разделов.
+
+Ищите вариант, где есть поддержка OTA (например, Minimal SPIFFS или Default 4MB with spiffs). 
+Если выбрать схему без OTA, обновление не сработает. 
+
+Загрузка обновлений «по воздуху»
+--------------------------------
+
+Теперь можно обновлять прошивку без провода:
+В Arduino IDE выберите в Инструменты → Порт сетевой порт с IP-адресом ESP32 
+(он появится после первой загрузки). 
+
+Внесите изменения в скетч (добавьте логику, исправьте ошибки). 
+*/
 
 
 /*

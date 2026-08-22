@@ -36,37 +36,6 @@ int WDT_TIMEOUT = 5; // WDT Timeout in seconds
 #include "TouchPress.h"
 *///
 
-/*
-// ****************************************************************************
-// *            Принять поступающее сообщение в захвате мьютекса              *
-// ****************************************************************************
-void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData, int len)
-{
-  messBool=true;  
-  while (messBool) 
-  {
-    // Как только захватили мьютекс, выполняем свою работу
-    if (xSemaphoreTake (messMutex, portMAX_DELAY)) 
-    {
-      memset(CtrlMessage.line,'\0',smLINESIZE); 
-      memcpy(&CtrlMessage, incomingData, len);
-      messCalc++;
-      messBool=false;
-      / *
-      Serial.printf("\nTransmitter MAC Address: %02X:%02X:%02X:%02X:%02X:%02X \n", 
-        info->src_addr[0], info->src_addr[1], info->src_addr[2], info->src_addr[3], info->src_addr[4], info->src_addr[5]);    
-      * /
-      Serial.print("CtrlMessage.line: "); Serial.println(CtrlMessage.line);
-      / *
-      Serial.printf("Длительность messageReceived(): %d ms\n\n", duration * portTICK_PERIOD_MS);
-      * /
-      xSemaphoreGive (messMutex);  
-    }
-    vTaskDelay(64);
-  }
-}
-*/
-
 // ****************************************************************************
 // *                                 setup                                    *
 // ****************************************************************************
@@ -87,19 +56,8 @@ void setup()
   messMutex  = xSemaphoreCreateMutex();  
   //touchMutex = xSemaphoreCreateMutex();  
 
-  /*
-  if (esp_now_init() == ESP_OK) 
-  {
-    Serial.println("ESPNow Init success");
-  }
-  else 
-  {
-    Serial.println("ESPNow Init fail");
-    return;
-  }
-  */
+  // Запускаем ESP_NOW
   iniESPNOW();
-  //esp_now_register_recv_cb(messageReceived);
 
   /***
   tft.init();
@@ -226,10 +184,13 @@ void loop()
   // Если команда, то
   if (inumber==fOTA)
   {
-    Serial.println("Переходим в режим OTA и отключаем ESPNOW");
+    Serial.println("Отключаем ESPNOW и переходим в режим OTA");
     deiESPNOW();
     // Сбрасываем значение индикатора
-    inumber=-1;  
+    inumber=-1;
+
+    iniWiFi(); 
+    iniOTA(); 
   }
   
   // Если команда, то

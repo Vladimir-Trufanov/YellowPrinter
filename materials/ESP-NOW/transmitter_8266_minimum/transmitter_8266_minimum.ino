@@ -1,5 +1,4 @@
-// transmitter_8266_32.ino 
-
+// transmitter_8266_minimum.ino 
 
 /*
 Чем этот скетч отличается от самого простого?
@@ -18,10 +17,14 @@
 #include <espnow.h>
 #include "ESP8266WiFi.h"
 /*
-[7] ESP32-2432S028 (CYD)         MAC-Address: B8:D6:1A:5C:F9:54
-                  Formated: {0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54} 
+[7]   ESP32-2432S028 (CYD)         MAC-Address: B8:D6:1A:5C:F9:54
+                    Formated: {0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54} 
+
+[13]  13_ESP32_2432S028_CYD        MAC_ADDRESS: A4:F0:0F:5A:B5:54   
+    uint8_t  MAC_FORMATED[] = {0xA4, 0xF0, 0x0F, 0x5A, 0xB5, 0x54};
 */
-uint8_t receiverAddress[] = {0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54};
+//uint8_t receiverAddress[] = {0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54};
+  uint8_t receiverAddress[] = {0xA4, 0xF0, 0x0F, 0x5A, 0xB5, 0x54};
 
 void messageSent(uint8_t *macAddr, uint8_t status) 
 {
