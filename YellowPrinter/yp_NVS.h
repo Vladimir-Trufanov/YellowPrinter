@@ -2,7 +2,7 @@
  * 
  * Обcлужить работу со NVS (пока хранить счетчик перезапусков)
  * 
- * v2.0.0, 21.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.1, 23.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 12.08.2026
 **/
 
@@ -21,8 +21,76 @@
 #include <Arduino.h>
 #include "nvs_flash.h"
 #include "nvs.h"
+#include "inimem.h"
 
-char buffer[60];
+// Инициируем счетчик перезапусков 
+int32_t restart_counter = 0; 
+// Инициируем режим работы контроллера 
+uint8_t mode_sketch = fWORK;  // рабочий режим (не обновление через OTA)
+// Выделяем дескриптор хранилища
+nvs_handle_t my_handle;
+
+void openNVS(); 
+
+bool openNVS()
+{
+  char buffer[60];
+  Serial.print("\n");
+  // --------------------------------------------------- Инициализация NVS ---
+  esp_err_t err = nvs_flash_init();
+  // Если раздел NVS не содержит пустых страниц или он содержит данные в 
+  // незнакомом формате, который не распознаётся текущей версией кода,
+  // то стираем весь раздел и снова вызываем инициализацию
+  if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) 
+  {
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    err = nvs_flash_init();
+    Serial.println("Раздел NVS переформатирован!");
+  }
+  ESP_ERROR_CHECK(err);
+  // Открываем хранилище параметров
+  //Serial.print("Открываем энергонезависимое хранилище (NVS) ... ");
+  err = nvs_open("storage", NVS_READWRITE, &my_handle);
+  if (err != ESP_OK) 
+  {
+    sprintf(buffer,"Ошибка (%s) открытия хранилища!\n", esp_err_to_name(err));
+    Serial.print(buffer);
+    return false;
+  } 
+  else 
+  {
+    // ----------------------------------------------------------- Чтение ---
+    //Serial.print("Считываем значение счетчика перезапусков из NVS ... ");
+    err = nvs_get_i32(my_handle, "restart_counter", &restart_counter);
+    switch (err) 
+    {
+      case ESP_OK:
+        sprintf(buffer,"Значение счётчика перезапусков = %" PRIu32, restart_counter);
+        Serial.println(buffer);
+      case ESP_ERR_NVS_NOT_FOUND:
+        Serial.println("Значение счётчика еще не инициализировано = 0");
+      default :
+        sprintf(buffer,"Ошибка чтения значения счётчика (%s)!\n", esp_err_to_name(err));
+        Serial.print(buffer);
+        return false;
+    }
+    //Serial.print("Считываем значение режима работы контроллера  ... ");
+    err = nvs_get_u8(my_handle, "mode_sketch", &mode_sketch);
+    switch (err) 
+    {
+      case ESP_OK:
+        sprintf(buffer,"Значение режима работы = %" PRIu8, mode_sketch);
+        Serial.println(buffer);
+      case ESP_ERR_NVS_NOT_FOUND:
+        Serial.println("Значение режима работы не инициализировано = fWORK");
+      default :
+        sprintf(buffer,"Ошибка чтения режима работы (%s)!\n", esp_err_to_name(err));
+        Serial.print(buffer);
+        return false;
+    }
+    return true;
+  }
+} 
 
 void learnRestart() 
 {
@@ -40,7 +108,6 @@ void learnRestart()
   // Открываем хранилище параметров
   Serial.print("\n");
   //Serial.print("Открываем энергонезависимое хранилище (NVS) ... ");
-  nvs_handle_t my_handle;
   err = nvs_open("storage", NVS_READWRITE, &my_handle);
   if (err != ESP_OK) 
   {
@@ -52,9 +119,6 @@ void learnRestart()
     //Serial.println("Сделано!");
     // ----------------------------------------------------------- Чтение ---
     //Serial.print("Считываем значение счетчика перезапусков из NVS ... ");
-    // Присваиваем начальное значение счетчику = 0, 
-    // на случай, если значение счетчика еще не было записано в NVS
-    int32_t restart_counter = 0; 
     err = nvs_get_i32(my_handle, "restart_counter", &restart_counter);
     switch (err) 
     {

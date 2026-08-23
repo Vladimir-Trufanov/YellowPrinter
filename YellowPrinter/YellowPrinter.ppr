@@ -37,12 +37,20 @@ YellowPrinter
 [Open project files]
 0=YellowPrinter.ino
 1=inimem.h
+2=yp_NVS.h
+3=..\..\Users\tve\AppData\Local\Arduino15\packages\esp32\tools\esp32-arduino-libs\idf-release_v5.5-9bb7aa84-v2\esp32c3\include\nvs_flash\include\nvs.h
 [Selected Project Files]
 Main=
-Selected=inimem.h
+Selected=yp_NVS.h
 [YellowPrinter.ino]
-TopLine=223
+TopLine=35
 Caret=14,245
 [inimem.h]
-TopLine=212
+TopLine=33
+Caret=14,35
+[yp_NVS.h]
+TopLine=76
+Caret=1,94
+[..\..\Users\tve\AppData\Local\Arduino15\packages\esp32\tools\esp32-arduino-libs\idf-release_v5.5-9bb7aa84-v2\esp32c3\include\nvs_flash\include\nvs.h]
+TopLine=397
 Caret=1,1
