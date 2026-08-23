@@ -43,11 +43,9 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000);
+  Serial.println("Ready 13");
   learnRestart();
   WiFi.mode(WIFI_STA);
-
-  //iniWiFi(); 
-  //iniOTA(); 
     
   //pinMode (LED_BUILTIN, OUTPUT);
  
@@ -157,15 +155,28 @@ void loop()
 {
   iLoop++;
   TickType_t start = xTaskGetTickCount();
+  if (inumber==fOTA)
+  {
+    //Serial.println("Ждём загрузку по OTA!");
+    ArduinoOTA.handle();
+  }
+  else _loop(); 
+  // Завершаем работу основного цикла
+  TickType_t duration = xTaskGetTickCount() - start;
+  //Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
+  // Отмечаем завершение цикла Loop для сторожевого таймера
+  flag[fLoop] = 1;
+  // Выполняем задержку на сборку мусора
+  vTaskDelay(64);
+}
 
-  //ArduinoOTA.handle();
-
+void _loop() 
+{
   // Считываем с последовательного порта целое число
   // (так как в зависимости от окружения за целым числом может следовать нулевое значение,
   // то отсекаем 0)  
   if (Serial.available() > 0) 
   {
-    // 22/08/2026 Этот фрагмент кода проскакиваем дважды !!!
     int ii=Serial.parseInt();
     if (ii>0) inumber=ii;
     Serial.println("\n*********************************");
@@ -181,19 +192,17 @@ void loop()
   vTaskDelay(936);
   */
   
-  // Если команда, то
+  // Если команда "Перейти в режим перепрошивки по OTA"
   if (inumber==fOTA)
   {
     Serial.println("Отключаем ESPNOW и переходим в режим OTA");
     deiESPNOW();
-    // Сбрасываем значение индикатора
-    inumber=-1;
-
     iniWiFi(); 
     iniOTA(); 
   }
-  
-  // Если команда, то
+
+  /*
+  // Если команда "Вернутся в рабочий режим"
   if (inumber==fWORK)
   {
     Serial.println("Переходим в рабочий режим и ВКЛЮЧАЕМ ESPNOW");
@@ -201,15 +210,8 @@ void loop()
     // Сбрасываем значение индикатора
     inumber=-1;  
   }
-
-  // Завершаем работу основного цикла
-  TickType_t duration = xTaskGetTickCount() - start;
-  //Serial.printf("Длительность loop(): %d ms\n", duration * portTICK_PERIOD_MS);
-  // Отмечаем завершение цикла Loop для сторожевого таймера
-  flag[fLoop] = 1;
-  // Выполняем задержку на сборку мусора
-  vTaskDelay(64);
-
+  */
+  
   /*  
   // Имитируем зависание микроконтроллера с помощью опознанного числа,
   // принятого в последовательном порту

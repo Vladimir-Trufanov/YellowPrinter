@@ -105,10 +105,9 @@ void iniOTA()
 
   ArduinoOTA.begin();
 
-  Serial.println("Ready 09");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  ipStr = WiFi.localIP().toString();
+  //Serial.print("IP address: ");
+  //Serial.println(WiFi.localIP());
+  //ipStr = WiFi.localIP().toString();
 }
 
 /*

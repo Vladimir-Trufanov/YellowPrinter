@@ -33,24 +33,29 @@ YellowPrinter
 		YellowPrinter.ppr
 		yp_ESPNOW.h
 		yp_NVS.h
+		yp_NVS.hold
 		yp_SPIFFS.h
 [Open project files]
 0=YellowPrinter.ino
 1=inimem.h
-2=yp_NVS.h
-3=..\..\Users\tve\AppData\Local\Arduino15\packages\esp32\tools\esp32-arduino-libs\idf-release_v5.5-9bb7aa84-v2\esp32c3\include\nvs_flash\include\nvs.h
+2=WiFiOTA.h
+3=yp_NVS.hold
+4=yp_NVS.h
 [Selected Project Files]
 Main=
 Selected=yp_NVS.h
 [YellowPrinter.ino]
-TopLine=35
-Caret=14,245
+TopLine=153
+Caret=34,162
 [inimem.h]
-TopLine=33
-Caret=14,35
+TopLine=7
+Caret=61,35
+[WiFiOTA.h]
+TopLine=137
+Caret=2,171
+[yp_NVS.hold]
+TopLine=96
+Caret=1,96
 [yp_NVS.h]
-TopLine=76
-Caret=1,94
-[..\..\Users\tve\AppData\Local\Arduino15\packages\esp32\tools\esp32-arduino-libs\idf-release_v5.5-9bb7aa84-v2\esp32c3\include\nvs_flash\include\nvs.h]
-TopLine=397
-Caret=1,1
+TopLine=12
+Caret=1,24

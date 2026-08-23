@@ -2,7 +2,7 @@
  * 
  * Обcлужить работу со NVS (пока хранить счетчик перезапусков)
  * 
- * v2.0.0, 21.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.1, 23.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 12.08.2026
 **/
 
@@ -21,7 +21,7 @@
 #include <Arduino.h>
 #include "nvs_flash.h"
 #include "nvs.h"
-#include "inimem.h"
+//#include "inimem.h"
 
 // Инициируем счетчик перезапусков 
 int32_t restart_counter = 0; 
@@ -29,7 +29,6 @@ int32_t restart_counter = 0;
 // uint8_t mode_sketch = fWORK;  // рабочий режим (не обновление через OTA)
 // Выделяем дескриптор хранилища
 nvs_handle_t my_handle;
-
 
 //bool openNVS(); 
 
@@ -95,9 +94,9 @@ bool openNVS()
 } 
 */
 
-char buffer[60];
 void learnRestart() 
 {
+  char buffer[60];
   // --------------------------------------------------- Инициализация NVS ---
   esp_err_t err = nvs_flash_init();
   // Если раздел NVS не содержит пустых страниц или он содержит данные в 
@@ -112,7 +111,6 @@ void learnRestart()
   // Открываем хранилище параметров
   Serial.print("\n");
   //Serial.print("Открываем энергонезависимое хранилище (NVS) ... ");
-  nvs_handle_t my_handle;
   err = nvs_open("storage", NVS_READWRITE, &my_handle);
   if (err != ESP_OK) 
   {
@@ -124,9 +122,6 @@ void learnRestart()
     //Serial.println("Сделано!");
     // ----------------------------------------------------------- Чтение ---
     //Serial.print("Считываем значение счетчика перезапусков из NVS ... ");
-    // Присваиваем начальное значение счетчику = 0, 
-    // на случай, если значение счетчика еще не было записано в NVS
-    //int32_t restart_counter = 0; 
     err = nvs_get_i32(my_handle, "restart_counter", &restart_counter);
     switch (err) 
     {
