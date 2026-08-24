@@ -20,11 +20,9 @@ int counter = 0;
 #include <esp_now.h>
 #include <ESP.h>
 
-/***
 // Готовим к использованию сторожевой таймер
 #include <esp_task_wdt.h>
 int WDT_TIMEOUT = 5; // WDT Timeout in seconds
-*///
 
 #include "inimem.h"
 #include "WiFiOTA.h"
@@ -43,7 +41,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000);
-  Serial.println("Ready 13");
+  Serial.println("Ready 14");
   learnRestart();
   WiFi.mode(WIFI_STA);
     
@@ -77,7 +75,6 @@ void setup()
   
   // Cоздаем задачи
   
-  
   // Приём сообщения от внешнего контроллера-передатчика
   xTaskCreatePinnedToCore 
   (
@@ -100,6 +97,7 @@ void setup()
     NULL,           // Task handle.
     0               // Core where the task should run
   );
+  */
    
   xTaskCreatePinnedToCore(
     vCheckFlagTask, // Task function
@@ -111,7 +109,7 @@ void setup()
     0
   );
   
-   
+  /* 
   //tft.fillRect(0, 0, 16, 208, TFT_WHITE);
   / **
   Рисуем сглаженный (anti-aliased) прямоугольник с закруглёнными углами. 
@@ -151,14 +149,20 @@ void setup()
 // ****************************************************************************
 uint16_t iLoop=0;
 static char taskList[1024]; 
+unsigned long otamess = millis();
+
 void loop() 
 {
   iLoop++;
   TickType_t start = xTaskGetTickCount();
   if (inumber==fOTA)
   {
-    //Serial.println("Ждём загрузку по OTA!");
     ArduinoOTA.handle();
+    if ((millis()-otamess)>5000)
+    {
+      Serial.println("Ждём загрузку по OTA!");
+      otamess = millis();
+    }
   }
   else _loop(); 
   // Завершаем работу основного цикла
@@ -267,17 +271,20 @@ void _loop()
   */
 }
 
-/*
 void vCheckFlagTask(void* pvParameters) 
 {
   for ( ;; )
   {
+    // Если НЕ команда "Перейти в режим перепрошивки по OTA"
+    if (inumber!=fOTA)
+    {
+
     // Сбрасываем флаги и "пинаем сторожевую собаку" (fLoop=1, fmessageReceived=2)
-    if (flag[fLoop] == 1 && flag[ftaskMain] == 1 && flag[ftaskTouchscreen] == 1) 
+    if (flag[fLoop] == 1 /*&& flag[ftaskMain] == 1 && flag[ftaskTouchscreen] == 1*/) 
     {
       flag[fLoop] = 0;
-      flag[ftaskMain] = 0;
-      flag[ftaskTouchscreen] = 0;
+      //flag[ftaskMain] = 0;
+      //flag[ftaskTouchscreen] = 0;
       WDT_TIMEOUT = 5;
     }
     else 
@@ -288,9 +295,10 @@ void vCheckFlagTask(void* pvParameters)
         ESP.restart();
       }
     }
+    
+    }
     vTaskDelay(1000/portTICK_PERIOD_MS);
   }
 }
-*/
 
 // ****************************************************** YellowPrinter.ino ***
