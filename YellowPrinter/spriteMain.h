@@ -128,45 +128,46 @@ void taskMain (void *pvParameters)
   // Заполняем буфер чистки строки
   memset(Spase,32,smLINESIZE-1); 
   Spase[smLINESIZE-1]='\0';
-
   while (1) 
   {
     TickType_t start = xTaskGetTickCount();
-    
-    /*
-    if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
-    { 
-      // Выбираем сообщение единственный раз в интервале ожидания и приема сообщения
-      // Serial.print("copyCalc==messCalc: "); Serial.print(copyCalc); Serial.print("="); Serial.println(messCalc);
-      if (!(copyCalc==messCalc))
-      {
-        memcpy(CYD_message.line, CtrlMessage.line, smLINESIZE);
-        //Serial.println("***");
-        //Serial.println(CtrlMessage.line);
-        Serial.println(CYD_message.line);
-        //Serial.println("***");
-        ypsMain.View(CYD_message.line);
-        copyCalc=messCalc;
+    // Если НЕ команда "Перейти в режим перепрошивки по OTA"
+    if (inumber!=fOTA)
+    {
+      /*
+      if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
+      { 
+        // Выбираем сообщение единственный раз в интервале ожидания и приема сообщения
+        // Serial.print("copyCalc==messCalc: "); Serial.print(copyCalc); Serial.print("="); Serial.println(messCalc);
+        if (!(copyCalc==messCalc))
+        {
+          memcpy(CYD_message.line, CtrlMessage.line, smLINESIZE);
+          //Serial.println("***");
+          //Serial.println(CtrlMessage.line);
+          Serial.println(CYD_message.line);
+          //Serial.println("***");
+          ypsMain.View(CYD_message.line);
+          copyCalc=messCalc;
+       }
+        xSemaphoreGive(messMutex);  
       }
-      xSemaphoreGive(messMutex);  
-    }
-    else 
-    {  
-      //Serial.print ("Task 2: Mutex не захвачен ");
-      //Serial.println (xTaskGetTickCount());
-    }
-    */
-    
-    if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
-    { 
-      tft.setCursor(17,17); tft.print(ipStr); tft.print(": "); tft.print(messCalc); tft.print(Spase);
-      tft.setCursor(17,34); tft.print(CtrlMessage.line); tft.print(Spase);
-      xSemaphoreGive(messMutex);  
-    }
-    else 
-    {  
-      //Serial.print ("Task 2: Mutex не захвачен ");
-      //Serial.println (xTaskGetTickCount());
+      else 
+      {  
+        //Serial.print ("Task 2: Mutex не захвачен ");
+        //Serial.println (xTaskGetTickCount());
+      }
+      */
+      if (xSemaphoreTake(messMutex, (200 * portTICK_PERIOD_MS))) 
+      { 
+        tft.setCursor(17,17); tft.print(ipStr); tft.print(": "); tft.print(messCalc); tft.print(Spase);
+        tft.setCursor(17,34); tft.print(CtrlMessage.line); tft.print(Spase);
+        xSemaphoreGive(messMutex);  
+      }
+      else 
+      {  
+        //Serial.print ("Task 2: Mutex не захвачен ");
+        //Serial.println (xTaskGetTickCount());
+      }  
     }
     
     // Отмечаем завершение цикла задачи для сторожевого таймера
@@ -175,7 +176,6 @@ void taskMain (void *pvParameters)
     //Serial.printf("Длительность taskMain(): %d ms\n", duration * portTICK_PERIOD_MS);
     // Если было введено число=fmessageReceived
     if (inumber == ftaskMain) MimicMCUhangEvent("taskMain");   
-
     vTaskDelay(1063);
   }
 }

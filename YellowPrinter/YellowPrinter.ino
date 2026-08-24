@@ -29,10 +29,8 @@ int WDT_TIMEOUT = 5; // WDT Timeout in seconds
 #include "yp_NVS.h"
 #include "yp_ESPNOW.h"
 
-/***
 #include "spriteMain.h"
-#include "TouchPress.h"
-*///
+//#include "TouchPress.h"
 
 // ****************************************************************************
 // *                                 setup                                    *
@@ -41,7 +39,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000);
-  Serial.println("Ready 16");
+  Serial.println("Ready 21");
   learnRestart();
   WiFi.mode(WIFI_STA);
     
@@ -55,7 +53,6 @@ void setup()
   // Запускаем ESP_NOW
   iniESPNOW();
 
-  /***
   tft.init();
   tft.setRotation(1);      
   tft.fillScreen(TFT_NAVY);
@@ -84,8 +81,10 @@ void setup()
     NULL,           // Task input parameter
     7,              // Priority of the task
     NULL,           // Task handle.
-    0               // Core where the task should run
+    1               // Core where the task should run
   );
+  
+  /*
   // текущей позиции touchscreen (на сенсорной панели)
   xTaskCreatePinnedToCore 
   (
@@ -95,7 +94,7 @@ void setup()
     NULL,           // Task input parameter
     8,              // Priority of the task
     NULL,           // Task handle.
-    0               // Core where the task should run
+    1               // Core where the task should run
   );
   */
    
@@ -273,24 +272,22 @@ void vCheckFlagTask(void* pvParameters)
     // Если НЕ команда "Перейти в режим перепрошивки по OTA"
     if (inumber!=fOTA)
     {
-
-    // Сбрасываем флаги и "пинаем сторожевую собаку" (fLoop=1, fmessageReceived=2)
-    if (flag[fLoop] == 1 /*&& flag[ftaskMain] == 1 && flag[ftaskTouchscreen] == 1*/) 
-    {
-      flag[fLoop] = 0;
-      //flag[ftaskMain] = 0;
-      //flag[ftaskTouchscreen] = 0;
-      WDT_TIMEOUT = 5;
-    }
-    else 
-    {
-      WDT_TIMEOUT --;
-      if (WDT_TIMEOUT == 0) 
+      // Сбрасываем флаги и "пинаем сторожевую собаку" (fLoop=1, fmessageReceived=2)
+      if (flag[fLoop] == 1 && flag[ftaskMain] == 1 /*&& flag[ftaskTouchscreen] == 1*/) 
       {
-        ESP.restart();
+        flag[fLoop] = 0;
+        flag[ftaskMain] = 0;
+        //flag[ftaskTouchscreen] = 0;
+        WDT_TIMEOUT = 5;
       }
-    }
-    
+      else 
+      {
+        WDT_TIMEOUT --;
+        if (WDT_TIMEOUT == 0) 
+        {
+          ESP.restart();
+        }
+      }
     }
     vTaskDelay(1009/portTICK_PERIOD_MS);
   }
