@@ -203,7 +203,7 @@ void taskTouchscreen (void *pvParameters)
     // Если было введено число=fmessageReceived
     // if (inumber == ftaskMain) MimicMCUhangEvent("taskMain");   
     // Делаем задержку на чиску мусора 
-    vTaskDelay(64);
+    vTaskDelay(71);
   }
 }
 

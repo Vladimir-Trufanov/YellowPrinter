@@ -41,7 +41,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000);
-  Serial.println("Ready 14");
+  Serial.println("Ready 16");
   learnRestart();
   WiFi.mode(WIFI_STA);
     
@@ -171,7 +171,7 @@ void loop()
   // Отмечаем завершение цикла Loop для сторожевого таймера
   flag[fLoop] = 1;
   // Выполняем задержку на сборку мусора
-  vTaskDelay(64);
+  vTaskDelay(61);
 }
 
 void _loop() 
@@ -216,14 +216,11 @@ void _loop()
   }
   */
   
-  /*  
   // Имитируем зависание микроконтроллера с помощью опознанного числа,
   // принятого в последовательном порту
   if (inumber == fLoop) MimicMCUhangEvent("Loop");   
-  // ---Имитируем зависание микроконтроллера с помощью опознанного числа,
-  // ---принятого в последовательном порту
 
-  / **
+  /**
   Формируем читаемый отчёт со списком всех текущих задач и их состоянием с помощью  
   функции vTaskList(char *pcWriteBuffer) - в FreeRTOS она предназначена для отладки  
 
@@ -259,7 +256,7 @@ void _loop()
     FreeRTOS есть альтернативная, более компактная реализация sprintf(). 
   - Рекомендация для продакшена. Если вам нужна «сырая» статистика для анализа, лучше напрямую вызывать 
     uxTaskGetSystemState(), а не форматировать его через vTaskList(). 
-  ** /
+  **/
   if (inumber == 207)
   {
     vTaskList(taskList);
@@ -267,8 +264,6 @@ void _loop()
     // Сбрасываем значение индикатора
     inumber=-1;  
   }
-  //getheap("Цикл пройден ");
-  */
 }
 
 void vCheckFlagTask(void* pvParameters) 
@@ -297,7 +292,7 @@ void vCheckFlagTask(void* pvParameters)
     }
     
     }
-    vTaskDelay(1000/portTICK_PERIOD_MS);
+    vTaskDelay(1009/portTICK_PERIOD_MS);
   }
 }
 

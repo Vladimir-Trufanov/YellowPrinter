@@ -176,7 +176,7 @@ void taskMain (void *pvParameters)
     // Если было введено число=fmessageReceived
     if (inumber == ftaskMain) MimicMCUhangEvent("taskMain");   
 
-    vTaskDelay(1064);
+    vTaskDelay(1063);
   }
 }
 

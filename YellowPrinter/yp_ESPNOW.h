@@ -73,7 +73,7 @@ void messageReceived(const esp_now_recv_info *info, const uint8_t* incomingData,
       */
       xSemaphoreGive (messMutex);  
     }
-    vTaskDelay(64);
+    vTaskDelay(197);
   }
 }
 

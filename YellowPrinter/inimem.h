@@ -228,7 +228,19 @@ void MimicMCUhangEvent(String NameTask)
   {
     Serial.print(NameTask);
     Serial.println(": зависание процессора!!!");
+    vTaskDelay(503/portTICK_PERIOD_MS);
   }
 }
+
+/*
+vTaskDelay
+----------
+loop                61
+messageReceived    197
+MimicMCUhangEvent  503
+taskMain          1063
+taskTouchscreen     71
+vCheckFlagTask    1009
+*/
 
 // *************************************************************** inimem.h ***
