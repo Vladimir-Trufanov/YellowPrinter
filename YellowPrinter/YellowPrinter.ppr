@@ -21,7 +21,6 @@ YellowPrinter
 		-data
 			data\HuaweiSans16.vlw
 		-res
-			res\yp_Trass.h
 		error.txt
 		HuaweiSans16.h
 		inimem.h
@@ -33,37 +32,33 @@ YellowPrinter
 		YellowPrinter.ppr
 		yp_ESPNOW.h
 		yp_NVS.h
-		yp_NVS.hold
 		yp_SPIFFS.h
+		yp_Trass.h
 [Open project files]
 0=YellowPrinter.ino
 1=inimem.h
-2=WiFiOTA.h
-3=yp_NVS.h
-4=spriteMain.h
-5=TouchPress.h
-6=yp_ESPNOW.h
+2=yp_Trass.h
+3=spriteMain.h
+4=WiFiOTA.h
+5=error.txt
 [Selected Project Files]
 Main=
-Selected=YellowPrinter.ino
+Selected=yp_Trass.h
 [YellowPrinter.ino]
-TopLine=259
-Caret=1,275
+TopLine=36
+Caret=20,56
 [inimem.h]
-TopLine=202
-Caret=23,240
-[WiFiOTA.h]
-TopLine=639
-Caret=13,677
-[yp_NVS.h]
-TopLine=152
-Caret=7,184
+TopLine=97
+Caret=11,135
+[yp_Trass.h]
+TopLine=8
+Caret=12,30
 [spriteMain.h]
-TopLine=147
-Caret=6,176
-[TouchPress.h]
-TopLine=101
-Caret=21,102
-[yp_ESPNOW.h]
-TopLine=42
-Caret=19,76
+TopLine=27
+Caret=1,60
+[WiFiOTA.h]
+TopLine=20
+Caret=78,20
+[error.txt]
+TopLine=1
+Caret=10,19

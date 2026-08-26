@@ -23,8 +23,9 @@
 [13]  13_ESP32_2432S028_CYD        MAC_ADDRESS: A4:F0:0F:5A:B5:54   
     uint8_t  MAC_FORMATED[] = {0xA4, 0xF0, 0x0F, 0x5A, 0xB5, 0x54};
 */
-//uint8_t receiverAddress[] = {0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54};
-  uint8_t receiverAddress[] = {0xA4, 0xF0, 0x0F, 0x5A, 0xB5, 0x54};
+
+  uint8_t receiverAddress[] = {0xB8, 0xD6, 0x1A, 0x5C, 0xF9, 0x54};
+//uint8_t receiverAddress[] = {0xA4, 0xF0, 0x0F, 0x5A, 0xB5, 0x54};
 
 void messageSent(uint8_t *macAddr, uint8_t status) 
 {
@@ -85,6 +86,7 @@ void loop()
   else
   {
     char message[] = "Привет от ESP8266 (Esp01) Hello! 0123456789";
+    char message[] = "Привет от ESP8266(Esp01) Hello! 123=37";
     esp_now_send(receiverAddress, (uint8_t *) message, sizeof(message)-1); // -1 to not send the NULL terminator
     Serial.println(message);
   }

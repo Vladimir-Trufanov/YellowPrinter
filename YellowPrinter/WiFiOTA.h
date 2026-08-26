@@ -2,8 +2,11 @@
  * 
  * Выполнить запуск WiFi и обслужить работу OTA
  * 
- * v2.0.0, 22.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.1, 26.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 12.08.2026
+ * 
+ * [Базовое OTA-обновление ESP32 «по воздуху» (OTA) в Arduino IDE]
+ * (https://wiki.alashed.kz/esp32/esp32-ota-updates-arduino-ide/index.html)
 **/
 
 #pragma once

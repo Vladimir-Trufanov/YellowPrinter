@@ -4,7 +4,7 @@
  *        (железо и программа на CYD, которые принимают и показывают сообщения, 
  *                поступающие через ESP_NOW или по последовательному интерфейсу    
  * 
- * v2.0.1, 22.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.0.2, 26.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 13.07.2026
 **/
 
@@ -25,6 +25,7 @@ int counter = 0;
 int WDT_TIMEOUT = 5; // WDT Timeout in seconds
 
 #include "inimem.h"
+#include "yp_Trass.h"
 #include "WiFiOTA.h"
 #include "yp_NVS.h"
 #include "yp_ESPNOW.h"
@@ -39,7 +40,6 @@ void setup()
 {
   Serial.begin(115200);
   delay(3000);
-  Serial.println("Ready 21");
   learnRestart();
   WiFi.mode(WIFI_STA);
     
@@ -49,31 +49,14 @@ void setup()
   //xMutex     = xSemaphoreCreateMutex();  
   messMutex  = xSemaphoreCreateMutex();  
   //touchMutex = xSemaphoreCreateMutex();  
-
   // Запускаем ESP_NOW
   iniESPNOW();
-
-  tft.init();
-  tft.setRotation(1);      
-  tft.fillScreen(TFT_NAVY);
-  tft.setTextWrap(false, false);               // отключили перенос текста и по горизонтали и по вертикали 
-  tft.setTextColor(TFT_WHITE,TFT_BLACK,true);  // определили цвет текста с прозрачным фоном  
-  // Загружаем шрифт в память
-  #ifdef FontFromFile
-    tft.loadFont(HuaweiSans16);   
-  #else
-    tft.loadFont("HuaweiSans16");   
-  #endif
- 
-  #ifdef FontFromSPIFFS
-  // Инициализируем SPIFFS
-  iniSPIFFS();
-  #endif
-  
+  // Инициируем вывод локальных сообщений в информационную строку дисплея
+  tft_init();
+  sayln("Ready 22");
+  delay(3000);
   // Cоздаем задачи
-  
-  // Приём сообщения от внешнего контроллера-передатчика
-  xTaskCreatePinnedToCore 
+  xTaskCreatePinnedToCore  // приём сообщения от внешнего контроллера-передатчика
   (
     taskMain,       // Function to implement the task
     "taskMain",     // Name of the task
@@ -98,7 +81,8 @@ void setup()
   );
   */
    
-  xTaskCreatePinnedToCore(
+  xTaskCreatePinnedToCore
+  (
     vCheckFlagTask, // Task function
     "CheckFlags",   // Task name
     1024,           // Stack size
@@ -110,7 +94,7 @@ void setup()
   
   /* 
   //tft.fillRect(0, 0, 16, 208, TFT_WHITE);
-  / **
+  
   Рисуем сглаженный (anti-aliased) прямоугольник с закруглёнными углами. 
   
   Синтаксис
@@ -138,9 +122,9 @@ void setup()
   Маска quadrants позволяет контролировать, какие дуги (верхняя, нижняя, левая, правая) будут сглажены.
   Это полезно для создания сложных эффектов.
   Если вам нужно не просто нарисовать контур, а заполнить фигуру цветом, в библиотеке есть родственный метод fillSmoothRoundRect() 
-  ** /
+  
   //tft.drawSmoothRoundRect(0, 26, 4, 8, 10, 30, TFT_RED, TFT_WHITE);
-  *///
+  */
 }
 
 // ****************************************************************************
