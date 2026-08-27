@@ -31,7 +31,7 @@ int WDT_TIMEOUT = 5; // WDT Timeout in seconds
 #include "yp_ESPNOW.h"
 
 #include "spriteMain.h"
-//#include "TouchPress.h"
+#include "TouchPress.h"
 
 // ****************************************************************************
 // *                                 setup                                    *
@@ -53,7 +53,7 @@ void setup()
   iniESPNOW();
   // Инициируем вывод локальных сообщений в информационную строку дисплея
   tft_init();
-  sayln("Ready 22");
+  sayln("Ready 24");
   delay(3000);
   // Cоздаем задачи
   xTaskCreatePinnedToCore  // приём сообщения от внешнего контроллера-передатчика
@@ -66,10 +66,7 @@ void setup()
     NULL,           // Task handle.
     1               // Core where the task should run
   );
-  
-  /*
-  // текущей позиции touchscreen (на сенсорной панели)
-  xTaskCreatePinnedToCore 
+  xTaskCreatePinnedToCore  // регистрация текущей позиции touchscreen (на сенсорной панели)
   (
     taskTouchscreen,      
     "taskTouchscreen",    
@@ -79,8 +76,6 @@ void setup()
     NULL,           // Task handle.
     1               // Core where the task should run
   );
-  */
-   
   xTaskCreatePinnedToCore
   (
     vCheckFlagTask, // Task function
@@ -182,10 +177,11 @@ void _loop()
   // Если команда "Перейти в режим перепрошивки по OTA"
   if (inumber==fOTA)
   {
-    Serial.println("Отключаем ESPNOW и переходим в режим OTA");
-    deiESPNOW();
-    iniWiFi(); 
-    iniOTA(); 
+    launchOTA();
+    //Serial.println("Отключаем ESPNOW и переходим в режим OTA");
+    //deiESPNOW();
+    //iniWiFi(); 
+    //iniOTA(); 
   }
 
   /*

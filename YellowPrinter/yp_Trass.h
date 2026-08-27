@@ -3,7 +3,7 @@
  *                          Обеспечить вывод сообщений в последовательный порт, 
  *                                      информационную строку CYD и на SD-карту
  *                                                     
- * v2.2.2, 26.08.2026                                 Автор:      Труфанов В.Е.
+ * v2.2.3, 27.08.2026                                 Автор:      Труфанов В.Е.
  * Copyright © 2026 tve                               Дата создания: 24.01.2026
 **/
 
@@ -13,16 +13,6 @@
 //#include <SD_MMC.h>
 #include "inimem.h"
 #include "yp_SPIFFS.h"
-
-
-void tft_say() 
-{
-  char fill[smLINESIZE];       
-  memset(fill,32,smLINESIZE-1); 
-  fill[smLINESIZE-1]='\0';
-  tft.setCursor(17, 223);
-  tft.print(fill);
-}
 
 #define say(format, ...) \
 { \
@@ -40,7 +30,7 @@ void tft_say()
   snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
   Serial.println(buffer); \
   tft_say(); \
-  tft.setCursor(223,16); \
+  tft.setCursor(17,223); \
   tft.print(buffer); \
 }
   //if (logfile) { \
@@ -50,7 +40,17 @@ void tft_say()
   //if (logfile) { \
   //  logfile.println(buffer); \
   //} \
-
+// ****************************************************************************
+// *    Зачистить поле локальных сообщений в информационной строке дисплея    *
+// ****************************************************************************
+void tft_say() 
+{
+  char fill[smLINESIZE];       
+  memset(fill,32,smLINESIZE-1); 
+  fill[smLINESIZE-1]='\0';
+  tft.setCursor(17, 223);
+  tft.print(fill);
+}
 // ****************************************************************************
 // *  Инициировать вывод локальных сообщений в информационную строку дисплея  *
 // ****************************************************************************

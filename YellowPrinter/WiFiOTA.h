@@ -15,6 +15,8 @@
 #include <ArduinoOTA.h>
 
 #include "inimem.h"
+#include "yp_Trass.h"
+#include "yp_ESPNOW.h"
 
 // "OPPO A9 2020"; "TP-Link_B394"; "tve-DESKTOP"; "linksystve"; "linksystve";
 // "b277a4ee84e8"; "18009217"    ; "Ue18-647"   ; "x93k6kq6wf"; "X93K6KQ6WF";
@@ -710,6 +712,15 @@ void messagereceived(const uint8_t *mac_addr, const uint8_t *data, int data_len)
 (https://translated.turbopages.org/proxy_u/en-ru.ru.775fcf0d-6a8864c1-51f20694-74722d776562/https/arduino.stackexchange.com/questions/77344/esp-now-and-wifi-and-ota-at-the-same-time-on-sender-and-receiver)
 
 */
+
+void launchOTA() 
+{
+  sayln("Отключаем ESPNOW и переходим в режим OTA");
+  deiESPNOW();
+  iniWiFi(); 
+  iniOTA(); 
+}
+
 
 
 // ************************************************************** WiFiOTA.h ***
