@@ -45,16 +45,16 @@ YellowPrinter
 7=yp_ESPNOW.h
 [Selected Project Files]
 Main=
-Selected=TouchPress.h
+Selected=yp_Trass.h
 [YellowPrinter.ino]
-TopLine=149
+TopLine=45
 Caret=20,178
 [inimem.h]
 TopLine=14
 Caret=14,26
 [yp_Trass.h]
-TopLine=1
-Caret=76,1
+TopLine=47
+Caret=1,53
 [spriteMain.h]
 TopLine=136
 Caret=5,136
@@ -65,8 +65,8 @@ Caret=18,716
 TopLine=1
 Caret=10,19
 [TouchPress.h]
-TopLine=216
-Caret=19,217
+TopLine=1
+Caret=1,116
 [yp_ESPNOW.h]
 TopLine=1
 Caret=1,1
