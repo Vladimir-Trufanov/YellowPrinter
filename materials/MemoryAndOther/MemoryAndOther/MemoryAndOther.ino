@@ -12,6 +12,8 @@ void saymem(char* text);
 void setup()
 {
   Serial.begin(115200);
+  delay(10000);
+  Serial.println("\nВыводим протокол!");
   saymem("setup");
 }
 

@@ -45,13 +45,13 @@ YellowPrinter
 7=yp_ESPNOW.h
 [Selected Project Files]
 Main=
-Selected=yp_Trass.h
+Selected=inimem.h
 [YellowPrinter.ino]
-TopLine=45
+TopLine=149
 Caret=20,178
 [inimem.h]
-TopLine=14
-Caret=14,26
+TopLine=71
+Caret=49,81
 [yp_Trass.h]
 TopLine=47
 Caret=1,53
@@ -59,13 +59,13 @@ Caret=1,53
 TopLine=136
 Caret=5,136
 [WiFiOTA.h]
-TopLine=689
-Caret=18,716
+TopLine=28
+Caret=13,28
 [error.txt]
 TopLine=1
 Caret=10,19
 [TouchPress.h]
-TopLine=1
+TopLine=87
 Caret=1,116
 [yp_ESPNOW.h]
 TopLine=1
